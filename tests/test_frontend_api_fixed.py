@@ -15,7 +15,11 @@ def test_form_only_plan_mocked(monkeypatch):
             "source": "Open-Meteo test",
         }
 
+    async def mock_explanation(*args, **kwargs):
+        return {"explanation": "AI explanation unavailable", "ai_available": False}
+
     monkeypatch.setattr(plan, "fetch_air_quality", mock_air_quality)
+    monkeypatch.setattr(plan, "explain_with_fallback", mock_explanation)
     payload = {
         "latitude": 28.6139,
         "longitude": 77.209,
@@ -63,8 +67,11 @@ def test_free_text_plan_falls_back_without_key(monkeypatch):
     async def mock_parse(text):
         raise RuntimeError("Groq unavailable")
 
+    async def mock_explanation(*args, **kwargs):
+        return {"explanation": "AI explanation unavailable", "ai_available": False}
+
     monkeypatch.setattr(plan, "fetch_air_quality", mock_air_quality)
-    monkeypatch.setattr(plan, "parse_routine", mock_parse)
+    monkeypatch.setattr(plan, "explain_with_fallback", mock_explanation)
     payload = {
         "latitude": 28.6139,
         "longitude": 77.209,

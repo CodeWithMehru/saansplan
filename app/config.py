@@ -13,9 +13,9 @@ AIR_QUALITY_ENDPOINT = "https://air-quality-api.open-meteo.com/v1/air-quality"
 # ASSUMPTION - approximate, see README Assumptions
 CACHE_TTL_SECONDS = 30 * 60
 # ASSUMPTION - approximate, see README Assumptions
-OUTBOUND_TIMEOUT_SECONDS = 60.0
+OUTBOUND_TIMEOUT_SECONDS = 6.0
 # ASSUMPTION - approximate, see README Assumptions
-OUTBOUND_RETRIES = 2
+OUTBOUND_RETRIES = 0
 # ASSUMPTION - approximate, see README Assumptions
 RATE_LIMIT = "30/minute"
 # ASSUMPTION - approximate, see README Assumptions

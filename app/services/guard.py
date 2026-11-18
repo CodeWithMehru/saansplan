@@ -16,7 +16,7 @@ def extract_numbers(text: str) -> set[float]:
 
 
 def allowed_numbers(engine: dict) -> set[float]:
-    """Build allowed exact values and sensible one-decimal/one-integer roundings."""
+    """Build allowed summary facts and sensible rounded forms."""
     values: set[float] = set()
     swap = engine.get("top_swap")
     if swap:
@@ -26,6 +26,8 @@ def allowed_numbers(engine: dict) -> set[float]:
             "exposure_before",
             "exposure_after",
             "percent_reduction",
+            "from_hour",
+            "to_hour",
         ):
             value = swap.get(key)
             if isinstance(value, int | float):
@@ -34,12 +36,12 @@ def allowed_numbers(engine: dict) -> set[float]:
         value = engine.get(key)
         if isinstance(value, int | float):
             values.update({float(value), round(float(value)), round(float(value), 1)})
-    for row in engine.get("hourly", []):
-        for key in ("hour", "aqi", "pm25", "exposure"):
-            value = row.get(key)
-            if isinstance(value, int | float):
-                values.update({float(value), round(float(value)), round(float(value), 1)})
     return values
+
+
+def rejected_numbers(text: str, engine: dict) -> set[float]:
+    """Return numbers present in text but absent from the compact engine whitelist."""
+    return extract_numbers(text) - allowed_numbers(engine)
 
 
 def validate_number_guard(text: str, engine: dict) -> bool:

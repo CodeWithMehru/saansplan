@@ -1,5 +1,7 @@
 """Family air-quality plan API."""
 
+import asyncio
+
 from fastapi import APIRouter, Request
 
 from app.config import RATE_LIMIT
@@ -37,14 +39,18 @@ def default_routine(request: PlanRequest) -> Routine:
 @limiter.limit(RATE_LIMIT)
 async def create_plan(request: Request, payload: PlanRequest) -> dict:
     """Fetch AQ, optionally parse text with Groq, run engine and return all UI data."""
-    air = await fetch_air_quality(payload.latitude, payload.longitude)
-    routine = payload.routine or default_routine(payload)
 
-    if payload.routine_text.strip() and payload.routine is None:
-        try:
-            routine = await parse_routine(payload.routine_text)
-        except Exception:
-            routine = default_routine(payload)
+    async def get_routine() -> Routine:
+        if payload.routine_text.strip() and payload.routine is None:
+            try:
+                return await asyncio.wait_for(parse_routine(payload.routine_text), timeout=6.0)
+            except Exception:
+                return default_routine(payload)
+        return payload.routine or default_routine(payload)
+
+    air_task = fetch_air_quality(payload.latitude, payload.longitude)
+    routine_task = get_routine()
+    air, routine = await asyncio.gather(air_task, routine_task)
 
     engine = simulate_exposure(air["pm25"], air["aqi"], payload.members, routine)
     swaps = generate_swaps(air["pm25"], air["aqi"], payload.members, routine)
@@ -54,7 +60,9 @@ async def create_plan(request: Request, payload: PlanRequest) -> dict:
     engine["sustainable_alternatives"] = sustainable_alternatives()
 
     try:
-        explanation = await explain_with_fallback(engine, payload.language)
+        explanation = await asyncio.wait_for(
+            explain_with_fallback(engine, payload.language), timeout=12.0
+        )
     except Exception:
         explanation = {
             "explanation": "AI explanation unavailable. Engine estimates are ready.",
