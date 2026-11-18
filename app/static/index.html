@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12372a">
+  <title>SaansPlan — Family air quality</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="site-header">
+    <div><span class="brand-mark" aria-hidden="true">S</span><strong data-i18n="title">SaansPlan</strong></div>
+    <button id="language-toggle" type="button" aria-label="Switch to Hinglish">हिं / EN</button>
+  </header>
+
+  <main id="main-content">
+    <section class="hero" aria-labelledby="page-title">
+      <p class="eyebrow" data-i18n="subtitle">Family air-quality day plan</p>
+      <h1 id="page-title">SaansPlan</h1>
+      <p id="medical-note" class="medical-note" data-i18n="estimates"></p>
+    </section>
+
+    <div class="layout">
+      <form id="plan-form" novalidate>
+        <fieldset>
+          <legend data-i18n="location">Location</legend>
+          <label for="city">City</label>
+          <div class="row">
+            <input id="city" name="city" type="text" maxlength="80" autocomplete="address-level2" placeholder="New Delhi">
+            <button id="city-search" type="button">Search</button>
+          </div>
+          <button id="geo-button" class="secondary" type="button" data-i18n="geolocate">Use my location</button>
+          <div class="row">
+            <div><label for="latitude">Latitude</label><input id="latitude" name="latitude" type="number" min="-90" max="90" step="0.0001" value="28.6139" required></div>
+            <div><label for="longitude">Longitude</label><input id="longitude" name="longitude" type="number" min="-180" max="180" step="0.0001" value="77.2090" required></div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend data-i18n="family">Family members</legend>
+          <div id="members"></div>
+          <button id="add-member" type="button" class="secondary" data-i18n="addMember">Add member</button>
+        </fieldset>
+
+        <fieldset>
+          <legend data-i18n="routine">Routine</legend>
+          <label for="routine-text" data-i18n="routine">Routine</label>
+          <textarea id="routine-text" maxlength="1000" rows="4" data-i18n-placeholder="routinePlaceholder"></textarea>
+
+          <div class="row controls">
+            <div><label for="commute" data-i18n="commute">Commute</label><select id="commute"><option value="none">None</option><option value="walk">Walk</option><option value="cycle">Cycle</option><option value="bike">Bike/scooter</option><option value="bus">Bus</option><option value="metro">Metro</option><option value="car">Car</option></select></div>
+            <div><label for="outdoor" data-i18n="outdoor">Outdoor time</label><select id="outdoor"><option value="30">30 min</option><option value="60" selected>1 hour</option><option value="120">2 hours</option></select></div>
+            <div><label for="cooking" data-i18n="cooking">Cooking fuel</label><select id="cooking"><option value="lpg" selected>LPG</option><option value="induction">Induction</option><option value="wood_coal">Wood/coal/biomass</option><option value="other">Other</option></select></div>
+            <div><label for="heating" data-i18n="heating">Heating</label><select id="heating"><option value="none" selected>None</option><option value="electric">Electric</option><option value="wood_coal">Wood/coal</option><option value="gas">Gas</option><option value="other">Other</option></select></div>
+            <div><label for="windows" data-i18n="windows">Window habit</label><select id="windows"><option value="mostly_closed" selected>Mostly closed</option><option value="mostly_open">Mostly open</option></select></div>
+            <div><label for="purifier" data-i18n="purifier">Purifier</label><select id="purifier"><option value="false" selected>No</option><option value="true">Yes</option></select></div>
+          </div>
+        </fieldset>
+        <button class="primary" type="submit" data-i18n="plan">Create my plan</button>
+      </form>
+
+      <section class="results" aria-live="polite" aria-busy="false">
+        <div id="status" role="status"></div>
+        <div id="error" role="alert" class="error"></div>
+
+        <article id="summary-card" hidden>
+          <div class="aqi-head"><div><span data-i18n="aqi">AQI</span> <strong id="peak-aqi">—</strong></div><div id="aqi-category"></div></div>
+          <p id="explanation"></p>
+        </article>
+
+        <section id="timeline-section" hidden>
+          <h2 data-i18n="timeline">Hour-by-hour</h2>
+          <div class="timeline" id="timeline" aria-label="Air quality timeline"></div>
+          <details><summary>Text/table alternative</summary><div class="table-wrap"><table id="timeline-table"><thead><tr><th>Hour</th><th>PM2.5 µg/m³</th><th>AQI</th><th>Exposure estimate</th><th>Interpolated</th></tr></thead><tbody></tbody></table></div></details>
+        </section>
+
+        <section id="swaps-section" hidden><h2 data-i18n="swaps">Top exposure swaps</h2><div id="swaps"></div></section>
+        <section id="indoor-section" hidden><h2 data-i18n="indoor">Indoor air hacks</h2><div id="indoor"></div></section>
+        <section id="alternatives-section" hidden><h2 data-i18n="alternatives">Sustainable alternatives</h2><div id="alternatives"></div></section>
+        <section id="share-section" hidden><h2 data-i18n="summary">Family summary</h2><p id="family-summary"></p><button id="copy-summary" type="button" data-i18n="copy">Copy summary</button></section>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="/static/app.js"></script>
+</body>
+</html>
