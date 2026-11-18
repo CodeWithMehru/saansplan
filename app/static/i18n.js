@@ -11,7 +11,14 @@ export const translations = {
     alternatives: "Sustainable alternatives", summary: "Family summary", copy: "Copy summary",
     estimates: "All values are estimates, not medical advice. Consult a doctor for symptoms or for at-risk children, elderly or sensitive members.",
     aqi: "AQI", peak: "Peak exposure", interpolated: "Some hours use estimated interpolation", child: "Child", adult: "Adult", elderly: "Elderly", remove: "Remove",
-    childLabel: "Child", adultLabel: "Adult", elderlyLabel: "Elderly"
+    childLabel: "Child", adultLabel: "Adult", elderlyLabel: "Elderly",
+    search: "Search", emptyState: "Fill the form and press Create my plan.",
+    citySearching: "Searching for the city…", cityNotFound: "City not found. Try another spelling.",
+    cityFailed: "City search failed. Please try again.", locationDenied: "Location permission was denied. Enter the coordinates manually.",
+    geolocationUnavailable: "Geolocation is unavailable in this browser.", copyFailed: "Copy failed. Select the family summary text manually.",
+    tableAlternative: "Text/table alternative", interpolatedYes: "Yes", interpolatedNo: "No",
+    nameOptional: "Name (optional)", categoryGood: "Good to moderate", categorySensitive: "Unhealthy for sensitive groups", categoryBad: "Unhealthy / severe",
+    before: "Before", after: "after", estimated: "estimated", lower: "lower", copied: "Summary copied"
   },
   hinglish: {
     skip: "Main content par jao", title: "SaansPlan", subtitle: "Family air-quality din plan",
@@ -25,6 +32,13 @@ export const translations = {
     alternatives: "Sustainable alternatives", summary: "Family summary", copy: "Summary copy karein",
     estimates: "Saare numbers anumaan hain, medical advice nahi. Lakshan ho ya bachche/buzurg/sensitive member ho, doctor se baat karein.",
     aqi: "AQI", peak: "Sabse zyada exposure", interpolated: "Kuch ghanton mein interpolation se anumaan", child: "Bachcha", adult: "Adult", elderly: "Buzurg", remove: "Hatao",
-    childLabel: "Bachcha", adultLabel: "Adult", elderlyLabel: "Buzurg"
+    childLabel: "Bachcha", adultLabel: "Adult", elderlyLabel: "Buzurg",
+    search: "Khojo", emptyState: "Form bharo aur Plan banayein dabao.",
+    citySearching: "Shahar search ho raha hai…", cityNotFound: "Shahar nahi mila. Spelling dobara check karo.",
+    cityFailed: "City search fail hua. Dobara try karo.", locationDenied: "Location permission nahi mili. Coordinates manually daalo.",
+    geolocationUnavailable: "Is browser mein geolocation available nahi hai.", copyFailed: "Copy nahi hua. Family summary manually select karo.",
+    tableAlternative: "Text/table alternative", interpolatedYes: "Haan", interpolatedNo: "Nahi",
+    nameOptional: "Naam (optional)", categoryGood: "Good se moderate", categorySensitive: "Sensitive logon ke liye unhealthy", categoryBad: "Unhealthy / severe",
+    before: "Pehle", after: "baad", estimated: "anumaan", lower: "kam", copied: "Summary copy ho gaya"
   }
 };

@@ -47,6 +47,16 @@ textarea { resize: vertical; }
 .member-row label { margin: 0; }
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid var(--border); padding: 0.5rem; text-align: left; }
+.empty-state { border: 1px dashed var(--border); border-radius: 0.5rem; padding: 1rem; color: #43564b; }
+.ai-notice { background: #fff3cd; color: #5c4300; border-left: 0.25rem solid var(--gold); padding: 0.65rem; }
+.city-results { display: grid; gap: 0.35rem; margin-top: 0.5rem; }
+.city-results button { width: 100%; text-align: left; }
 @media (min-width: 48rem) { main { padding: 2rem; } .layout { grid-template-columns: minmax(20rem, 0.85fr) minmax(25rem, 1.15fr); } .controls { grid-template-columns: repeat(3, minmax(0, 1fr)); } .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 26.25rem) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .row, .controls, .member-row { grid-template-columns: minmax(0, 1fr); }
+  .results, fieldset { padding: 0.75rem; }
+  .timeline { max-width: calc(100vw - 3.5rem); }
+}
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
 @media (prefers-color-scheme: dark) { :root { --ink: #eef7f1; --paper: #132119; --surface: #1d3025; --border: #5a7163; } input, select, textarea { background: #17271e; color: #fff; } .medical-note { background: #4a3914; } }

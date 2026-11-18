@@ -5,12 +5,12 @@ import os
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from app.config import MAX_REQUEST_BYTES
 from app.limiting import limiter
-from app.routers import health, plan
+from app.routers import geocode, health, plan
 
 load_dotenv()
 
@@ -47,6 +47,7 @@ async def security_middleware(request: Request, call_next):
 
 app.include_router(health.router, tags=["health"])
 app.include_router(plan.router, tags=["plan"])
+app.include_router(geocode.router, tags=["geocode"])
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 
@@ -54,6 +55,18 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 async def index() -> FileResponse:
     """Serve the lightweight application shell."""
     return FileResponse("app/static/index.html")
+
+
+@app.get("/favicon.ico")
+async def favicon() -> Response:
+    """Serve a tiny favicon instead of returning a 404."""
+    svg = (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">'
+        '<rect width="32" height="32" rx="8" fill="#146b43"/>'
+        '<text x="16" y="23" text-anchor="middle" font-size="22" fill="#fff" '
+        'font-family="sans-serif">S</text></svg>'
+    )
+    return Response(content=svg, media_type="image/svg+xml")
 
 
 @app.exception_handler(404)

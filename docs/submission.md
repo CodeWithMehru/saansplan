@@ -6,7 +6,7 @@ SaansPlan provides an Indian urban family exposure-budget plan using hourly Open
 
 ## Gen AI services utilized and where
 
-Groq is the only GenAI service. Call 1 uses the Groq OpenAI-compatible chat-completions endpoint with `openai/gpt-oss-20b` to parse untrusted Hinglish/English routine text into a strict Pydantic routine JSON. Call 2 uses only deterministic engine numbers to generate a short Hinglish/English explanation. Fixed system prompts, JSON mode, no tools, extra-field rejection, an engine-number guard, one retry and a template fallback keep AI output bounded and safe.
+Groq is the only GenAI service. Call 1 uses the Groq OpenAI-compatible chat-completions endpoint with `openai/openai/gpt-oss-20b` to parse untrusted Hinglish/English routine text into a strict Pydantic routine JSON. Call 2 uses only deterministic engine numbers to generate a short Hinglish/English explanation. Fixed system prompts, JSON mode, no tools, extra-field rejection, an engine-number guard, one retry and a template fallback keep AI output bounded and safe.
 
 ## 90-second demo script
 

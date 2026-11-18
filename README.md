@@ -58,7 +58,7 @@ Open `http://localhost:8000`. `.env` is ignored by git.
 Environment variables:
 
 - `GROQ_API_KEY`: required for Groq calls; never browser-visible.
-- `GROQ_MODEL`: defaults to `openai/gpt-oss-20b`; override to another official Groq model ID.
+- `GROQ_MODEL`: defaults to `openai/openai/gpt-oss-20b`; override to another official Groq model ID.
 - `CORS_ORIGINS`: comma-separated allowed browser origins.
 
 ## Tests and coverage
@@ -75,7 +75,7 @@ Environment variables:
 2. Create a Render Web Service from the repository.
 3. Render uses `render.yaml`: Python, `pip install -r requirements.txt`, and Uvicorn.
 4. Set `GROQ_API_KEY` in Render's environment settings. Do not put it in YAML or the frontend.
-5. Set `GROQ_MODEL=openai/gpt-oss-20b` if not inherited.
+5. Set `GROQ_MODEL=openai/openai/gpt-oss-20b` if not inherited.
 6. Deploy and open the generated HTTPS URL.
 
 ## Assumptions and limitations
@@ -106,4 +106,4 @@ Environment variables:
 
 ## Gen AI use
 
-Groq is the only GenAI provider. It uses `openai/gpt-oss-20b` by default. Call 1 converts routine text to strict JSON. Call 2 writes a short explanation using only engine JSON. A maximum of two calls is made per plan. Invalid/unknown-number output is retried once, then replaced by a deterministic template. The default model can be changed with `GROQ_MODEL`.
+Groq is the only GenAI provider. It uses `openai/openai/gpt-oss-20b` by default. Call 1 converts routine text to strict JSON. Call 2 writes a short explanation using only engine JSON. A maximum of two calls is made per plan. Invalid/unknown-number output is retried once, then replaced by a deterministic template. The default model can be changed with `GROQ_MODEL`.

@@ -1,7 +1,8 @@
 import { translations } from './i18n.js';
 
-let language = 'en';
+let language = localStorage.getItem('saansplan-language') || 'en';
 let family = JSON.parse(localStorage.getItem('saansplan-family') || 'null') || [{ name: '', ageGroup: 'adult', sensitive: false }];
+let lastResult = null;
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -28,7 +29,7 @@ function renderMembers() {
     const nameWrap = document.createElement('div');
     const nameLabel = document.createElement('label');
     nameLabel.htmlFor = `member-name-${index}`;
-    nameLabel.textContent = 'Name (optional)';
+    nameLabel.textContent = translations[language].nameOptional;
     const nameInput = document.createElement('input');
     nameInput.id = `member-name-${index}`;
     nameInput.value = member.name;
@@ -79,9 +80,10 @@ function saveFamily() {
 }
 
 function aqiLevel(aqi) {
-  if (aqi <= 100) return { level: 'good', text: 'Good to moderate', icon: '●' };
-  if (aqi <= 200) return { level: 'moderate', text: 'Unhealthy for sensitive groups', icon: '◆' };
-  return { level: 'bad', text: 'Unhealthy / severe', icon: '▲' };
+  const t = translations[language];
+  if (aqi <= 100) return { level: 'good', text: t.categoryGood, icon: '●' };
+  if (aqi <= 200) return { level: 'moderate', text: t.categorySensitive, icon: '◆' };
+  return { level: 'bad', text: t.categoryBad, icon: '▲' };
 }
 
 function buildRoutinePayload() {
@@ -119,7 +121,7 @@ function renderTimeline(hourly) {
     hour.append(hourText, document.createElement('br'), aqiText); timeline.append(hour);
 
     const tr = document.createElement('tr');
-    for (const value of [`${row.hour}:00`, row.pm25, row.aqi, row.exposure, row.interpolated ? 'Yes' : 'No']) {
+    for (const value of [`${row.hour}:00`, row.pm25, row.aqi, row.exposure, row.interpolated ? translations[language].interpolatedYes : translations[language].interpolatedNo]) {
       const td = document.createElement('td'); td.textContent = String(value); tr.append(td);
     }
     tbody.append(tr);
@@ -133,7 +135,10 @@ function cardGrid(container, items) {
     const card = document.createElement('article'); card.className = 'card';
     const title = document.createElement('strong'); title.textContent = item.description_key || item.key;
     const body = document.createElement('p');
-    if ('percent_reduction' in item) body.textContent = `Before ${item.exposure_before} → after ${item.exposure_after}; estimated ${item.percent_reduction}% lower. ${item.emissions_note}`;
+    if ('percent_reduction' in item) {
+      const t = translations[language];
+      body.textContent = `${t.before} ${item.exposure_before} → ${t.after} ${item.exposure_after}; ${t.estimated} ${item.percent_reduction}% ${t.lower}. ${item.emissions_note}`;
+    }
     else body.textContent = `${item.estimate || item.exposure_note || ''} ${item.emissions_note || ''}`;
     card.append(title, body); container.append(card);
   }
@@ -141,8 +146,12 @@ function cardGrid(container, items) {
 
 function shareText(data) {
   const top = data.top_swaps?.[0];
-  const swapText = top ? `Top estimate: ${top.percent_reduction}% lower exposure (${top.exposure_before} to ${top.exposure_after}).` : 'No positive swap found.';
-  return `SaansPlan family summary\nPeak exposure: about ${data.exposure.peak_hour}:00, AQI ${data.exposure.peak_aqi}.\n${swapText}\n${data.explanation.explanation}\nAll numbers are estimates, not medical advice.`;
+  const t = translations[language];
+  const swapText = top
+    ? `${t.estimated}: ${top.percent_reduction}% ${t.lower} (${t.before} ${top.exposure_before}, ${t.after} ${top.exposure_after}).`
+    : (language === 'en' ? 'No positive swap found.' : 'Koi positive swap nahi mila.');
+  const peak = language === 'en' ? 'Peak exposure' : 'Sabse zyada exposure';
+  return `SaansPlan family summary\n${peak}: about ${data.exposure.peak_hour}:00, AQI ${data.exposure.peak_aqi}.\n${swapText}\n${data.explanation.explanation}\n${t.estimates}`;
 }
 
 async function submitPlan(event) {
@@ -150,6 +159,8 @@ async function submitPlan(event) {
   const status = $('#status'); const error = $('#error');
   error.textContent = ''; status.textContent = translations[language].loading;
   document.querySelector('.results').setAttribute('aria-busy', 'true');
+  const empty = $('#empty-state');
+  if (empty) empty.hidden = true;
   try {
     const response = await fetch('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(buildRoutinePayload()) });
     const data = await response.json();
@@ -161,12 +172,16 @@ async function submitPlan(event) {
     textContent($('#aqi-category'), `${level.icon} ${level.text}`);
     textContent($('#explanation'), data.explanation.explanation);
 
+    const aiNotice = $('#ai-notice');
+    aiNotice.hidden = data.explanation.ai_available !== false;
+
     $('#timeline-section').hidden = false; renderTimeline(data.hourly);
     $('#swaps-section').hidden = false; cardGrid($('#swaps'), data.top_swaps);
     $('#indoor-section').hidden = false; cardGrid($('#indoor'), data.indoor_hacks);
     $('#alternatives-section').hidden = false; cardGrid($('#alternatives'), data.sustainable_alternatives);
     $('#share-section').hidden = false;
     const summary = shareText(data); textContent($('#family-summary'), summary); $('#family-summary').dataset.value = summary;
+    lastResult = data;
   } catch (cause) {
     status.textContent = ''; textContent(error, cause.message);
   } finally {
@@ -175,12 +190,80 @@ async function submitPlan(event) {
 }
 
 $('#plan-form').addEventListener('submit', submitPlan);
-$('#add-member').addEventListener('click', () => { if (family.length < 12) { family.push({ name: '', ageGroup: 'adult', sensitive: false }); renderMembers(); saveFamily(); } });
-$('#language-toggle').addEventListener('click', () => { language = language === 'en' ? 'hinglish' : 'en'; applyTranslations(); renderMembers(); });
-$('#geo-button').addEventListener('click', () => {
-  if (!navigator.geolocation) { textContent($('#error'), 'Geolocation is not available in this browser'); return; }
-  navigator.geolocation.getCurrentPosition((position) => { $('#latitude').value = position.coords.latitude.toFixed(4); $('#longitude').value = position.coords.longitude.toFixed(4); }, () => textContent($('#error'), 'Location permission was not granted'));
+$('#add-member').addEventListener('click', () => {
+  if (family.length < 12) {
+    family.push({ name: '', ageGroup: 'adult', sensitive: false });
+    renderMembers(); saveFamily();
+  }
 });
-$('#copy-summary').addEventListener('click', async () => { try { await navigator.clipboard.writeText($('#family-summary').dataset.value || ''); } catch { textContent($('#error'), 'Copy failed. Select the summary text manually.'); } });
+$('#language-toggle').addEventListener('click', () => {
+  language = language === 'en' ? 'hinglish' : 'en';
+  localStorage.setItem('saansplan-language', language);
+  applyTranslations(); renderMembers();
+  if (lastResult) {
+    textContent($('#peak-aqi'), lastResult.exposure.peak_aqi);
+    const level = aqiLevel(lastResult.exposure.peak_aqi);
+    textContent($('#aqi-category'), `${level.icon} ${level.text}`);
+    textContent($('#explanation'), lastResult.explanation.explanation);
+    renderTimeline(lastResult.hourly); cardGrid($('#swaps'), lastResult.top_swaps);
+    cardGrid($('#indoor'), lastResult.indoor_hacks);
+    cardGrid($('#alternatives'), lastResult.sustainable_alternatives);
+    textContent($('#family-summary'), shareText(lastResult));
+  }
+});
+
+$('#city-search').addEventListener('click', async () => {
+  const city = $('#city').value.trim();
+  const results = $('#city-results');
+  results.replaceChildren();
+  if (city.length < 2) { textContent(results, translations[language].cityNotFound); return; }
+  textContent(results, translations[language].citySearching);
+  try {
+    const response = await fetch(`/api/geocode?name=${encodeURIComponent(city)}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || translations[language].cityFailed);
+    results.replaceChildren();
+    if (!data.results?.length) { textContent(results, translations[language].cityNotFound); return; }
+    data.results.forEach((item) => {
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'secondary';
+      button.textContent = `${item.name}, ${item.admin1 || ''} ${item.country}`.trim();
+      button.addEventListener('click', () => {
+        $('#latitude').value = item.latitude.toFixed(4);
+        $('#longitude').value = item.longitude.toFixed(4);
+        results.replaceChildren(); textContent(results, button.textContent);
+      });
+      results.append(button);
+    });
+  } catch (cause) {
+    results.replaceChildren(); textContent(results, cause.message || translations[language].cityFailed);
+  }
+});
+
+$('#geo-button').addEventListener('click', () => {
+  if (!navigator.geolocation) {
+    textContent($('#error'), translations[language].geolocationUnavailable); return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      $('#latitude').value = position.coords.latitude.toFixed(4);
+      $('#longitude').value = position.coords.longitude.toFixed(4);
+      textContent($('#error'), '');
+    },
+    () => textContent($('#error'), translations[language].locationDenied)
+  );
+});
+
+$('#copy-summary').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText($('#family-summary').dataset.value || '');
+    textContent($('#status'), translations[language].copied);
+  } catch {
+    textContent($('#error'), translations[language].copyFailed);
+  }
+});
+
+$('#routine-text').setAttribute('aria-label', translations[language].routine);
+$('.skip-link').textContent = translations[language].skip;
 
 renderMembers(); applyTranslations();

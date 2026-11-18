@@ -2,6 +2,10 @@
 
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
 GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
 AIR_QUALITY_ENDPOINT = "https://air-quality-api.open-meteo.com/v1/air-quality"
@@ -9,7 +13,7 @@ AIR_QUALITY_ENDPOINT = "https://air-quality-api.open-meteo.com/v1/air-quality"
 # ASSUMPTION - approximate, see README Assumptions
 CACHE_TTL_SECONDS = 30 * 60
 # ASSUMPTION - approximate, see README Assumptions
-OUTBOUND_TIMEOUT_SECONDS = 12.0
+OUTBOUND_TIMEOUT_SECONDS = 60.0
 # ASSUMPTION - approximate, see README Assumptions
 OUTBOUND_RETRIES = 2
 # ASSUMPTION - approximate, see README Assumptions
