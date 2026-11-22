@@ -1,7 +1,11 @@
 """Deterministic per-hour family exposure simulation."""
 
+from collections.abc import Sequence
+from typing import Any
+
 from app.config import BREATHING_FACTORS, MEMBER_SENSITIVITY, VEHICLE_FACTOR
 from app.engine.indoor import indoor_concentration
+from app.models import FamilyMember, Routine
 
 
 def interpolate_hourly(values: list[float | None]) -> tuple[list[float], list[bool]]:
@@ -23,31 +27,40 @@ def interpolate_hourly(values: list[float | None]) -> tuple[list[float], list[bo
         if left and right:
             left_index, right_index = left[-1], right[0]
             span = right_index - left_index
-            left_value = float(values[left_index])
-            right_value = float(values[right_index])
+            left_value_raw = values[left_index]
+            right_value_raw = values[right_index]
+            if left_value_raw is None or right_value_raw is None:
+                continue
+            left_value = float(left_value_raw)
+            right_value = float(right_value_raw)
             result[index] = left_value + (right_value - left_value) * ((index - left_index) / span)
         elif left:
-            result[index] = float(values[left[-1]])
+            raw = values[left[-1]]
+            if raw is not None:
+                result[index] = float(raw)
         elif right:
-            result[index] = float(values[right[0]])
+            raw = values[right[0]]
+            if raw is not None:
+                result[index] = float(raw)
     return result, interpolated
 
 
 def simulate_exposure(
     pm25_hourly: list[float | None],
     aqi_hourly: list[float | None],
-    members: list[object],
-    routine: object,
-) -> dict:
+    members: Sequence[FamilyMember],
+    routine: Routine,
+) -> dict[str, Any]:
     """Return per-hour and per-member exposure totals without network or AI calls."""
     pm25, interpolated = interpolate_hourly(pm25_hourly)
-    hourly_rows: list[dict] = []
+    hourly_rows: list[dict[str, Any]] = []
     member_totals = [0.0 for _ in members]
 
     for hour in range(24):
         outdoor = pm25[hour] if hour < len(pm25) else 0.0
         indoor = indoor_concentration(outdoor, routine.home)
-        aqi = aqi_hourly[hour] if hour < len(aqi_hourly) and aqi_hourly[hour] is not None else 0.0
+        raw_aqi = aqi_hourly[hour] if hour < len(aqi_hourly) else None
+        aqi = float(raw_aqi) if raw_aqi is not None else 0.0
         exposure_this_hour = 0.0
 
         for member_index, member in enumerate(members):

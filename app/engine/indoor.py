@@ -6,9 +6,10 @@ from app.config import (
     INFILTRATION_OPEN,
     PURIFIER_FACTOR,
 )
+from app.models import HomeSetup
 
 
-def indoor_concentration(outdoor_pm25: float, home: object) -> float:
+def indoor_concentration(outdoor_pm25: float, home: HomeSetup) -> float:
     """Estimate indoor PM2.5 from infiltration and home source increments."""
     infiltration = INFILTRATION_OPEN if home.windows == "mostly_open" else INFILTRATION_CLOSED
     if home.purifier:

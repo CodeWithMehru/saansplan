@@ -1,6 +1,7 @@
 """LLM output number guard and deterministic template fallback."""
 
 import re
+from typing import Any
 
 _NUMBER = re.compile(r"(?<![A-Za-z])[-+]?(?:\d+(?:\.\d+)?|\.\d+)(?![A-Za-z])")
 
@@ -15,7 +16,7 @@ def extract_numbers(text: str) -> set[float]:
     return {float(match) for match in _NUMBER.findall(text_without_clocks)}
 
 
-def allowed_numbers(engine: dict) -> set[float]:
+def allowed_numbers(engine: dict[str, Any]) -> set[float]:
     """Build allowed summary facts and sensible rounded forms."""
     values: set[float] = set()
     swap = engine.get("top_swap")
@@ -39,18 +40,18 @@ def allowed_numbers(engine: dict) -> set[float]:
     return values
 
 
-def rejected_numbers(text: str, engine: dict) -> set[float]:
+def rejected_numbers(text: str, engine: dict[str, Any]) -> set[float]:
     """Return numbers present in text but absent from the compact engine whitelist."""
     return extract_numbers(text) - allowed_numbers(engine)
 
 
-def validate_number_guard(text: str, engine: dict) -> bool:
+def validate_number_guard(text: str, engine: dict[str, Any]) -> bool:
     """Reject text containing numbers absent from engine output."""
     extracted = extract_numbers(text)
     return extracted.issubset(allowed_numbers(engine))
 
 
-def templated_explanation(engine: dict, language: str = "hinglish") -> str:
+def templated_explanation(engine: dict[str, Any], language: str = "hinglish") -> str:
     """Return a safe deterministic explanation without an AI call."""
     peak_hour = int(engine["peak_hour"])
     peak_aqi = int(engine["peak_aqi"])

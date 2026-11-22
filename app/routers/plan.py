@@ -1,6 +1,7 @@
 """Family air-quality plan API."""
 
 import asyncio
+from typing import Any
 
 from fastapi import APIRouter, Request
 
@@ -37,7 +38,7 @@ def default_routine(request: PlanRequest) -> Routine:
 
 @router.post("/api/plan")
 @limiter.limit(RATE_LIMIT)
-async def create_plan(request: Request, payload: PlanRequest) -> dict:
+async def create_plan(request: Request, payload: PlanRequest) -> dict[str, Any]:
     """Fetch AQ, optionally parse text with Groq, run engine and return all UI data."""
 
     async def get_routine() -> Routine:

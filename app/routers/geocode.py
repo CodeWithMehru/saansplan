@@ -1,6 +1,7 @@
 """Validated city search proxy for Open-Meteo geocoding."""
 
 import asyncio
+from typing import Any
 
 import httpx
 from fastapi import APIRouter, HTTPException, Query, Request
@@ -13,9 +14,16 @@ router = APIRouter()
 
 @router.get("/api/geocode")
 @limiter.limit(RATE_LIMIT)
-async def geocode(request: Request, name: str = Query(min_length=2, max_length=80)) -> dict:
+async def geocode(
+    request: Request, name: str = Query(min_length=2, max_length=80)
+) -> dict[str, Any]:
     """Search a city and return only safe display coordinates."""
-    params = {"name": name.strip(), "count": 5, "language": "en", "format": "json"}
+    params: dict[str, str | int] = {
+        "name": name.strip(),
+        "count": 5,
+        "language": "en",
+        "format": "json",
+    }
     last_error: Exception | None = None
     async with httpx.AsyncClient(timeout=OUTBOUND_TIMEOUT_SECONDS) as client:
         for attempt in range(OUTBOUND_RETRIES + 1):

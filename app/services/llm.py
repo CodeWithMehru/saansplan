@@ -4,6 +4,7 @@ import asyncio
 import json
 import os
 import re
+from typing import Any, cast
 
 import httpx
 
@@ -17,7 +18,7 @@ async def groq_chat(
     user: str,
     temperature: float,
     max_tokens: int = 1500,
-    json_schema: dict | None = None,
+    json_schema: dict[str, Any] | None = None,
 ) -> str:
     """Make one server-side Groq chat-completions call with JSON mode."""
     api_key = os.getenv("GROQ_API_KEY")
@@ -45,7 +46,7 @@ async def groq_chat(
                 response = await client.post(GROQ_ENDPOINT, headers=headers, json=payload)
                 response.raise_for_status()
                 data = response.json()
-                return data["choices"][0]["message"]["content"]
+                return cast(str, data["choices"][0]["message"]["content"])
             except Exception as error:
                 last_error = error
                 if attempt < OUTBOUND_RETRIES:
@@ -84,7 +85,9 @@ async def parse_routine(text: str) -> Routine:
     return Routine.model_validate_json(raw)
 
 
-async def explain_with_fallback(engine: dict, language: str = "hinglish") -> dict:
+async def explain_with_fallback(
+    engine: dict[str, Any], language: str = "hinglish"
+) -> dict[str, Any]:
     """Explain engine numbers with Groq, retry once on number guard failure, else fallback."""
     top = engine.get("top_swap") or {}
     engine_payload = json.dumps(
@@ -125,6 +128,6 @@ async def explain_with_fallback(engine: dict, language: str = "hinglish") -> dic
             text = re.sub(r"<[^>]*>", "", text).strip()
             if text and validate_number_guard(text, engine):
                 return {"explanation": text, "ai_available": True}
-        except Exception:
+        except Exception:  # noqa: S112 - one intentional retry, then template fallback
             continue
     return {"explanation": templated_explanation(engine, language), "ai_available": False}

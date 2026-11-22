@@ -9,3 +9,5 @@ services:
         sync: false
       - key: GROQ_MODEL
         value: openai/gpt-oss-20b
+      - key: PYTHON_VERSION
+        value: 3.13.0

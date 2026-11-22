@@ -1,6 +1,7 @@
 """FastAPI application entry point and security configuration."""
 
 import os
+from collections.abc import Awaitable, Callable
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
@@ -26,7 +27,10 @@ app.add_middleware(
 
 
 @app.middleware("http")
-async def security_middleware(request: Request, call_next):
+async def security_middleware(
+    request: Request,
+    call_next: Callable[[Request], Awaitable[Response]],
+) -> Response:
     """Apply body limits and security headers, and hide exception traces."""
     content_length = request.headers.get("content-length")
     if content_length and int(content_length) > MAX_REQUEST_BYTES:
@@ -70,6 +74,6 @@ async def favicon() -> Response:
 
 
 @app.exception_handler(404)
-async def not_found(request: Request, exc) -> JSONResponse:
+async def not_found(request: Request, exc: Exception) -> JSONResponse:
     """Return a small JSON response for unknown API routes."""
     return JSONResponse(status_code=404, content={"detail": "Not found"})

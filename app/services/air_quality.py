@@ -28,7 +28,7 @@ async def fetch_air_quality(latitude: float, longitude: float) -> dict[str, Any]
     if cached and time.monotonic() - cached[0] < CACHE_TTL_SECONDS:
         return cached[1]
 
-    params = {
+    params: dict[str, str | int | float] = {
         "latitude": round(latitude, 4),
         "longitude": round(longitude, 4),
         "hourly": "pm2_5,us_aqi",

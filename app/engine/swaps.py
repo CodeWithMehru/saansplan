@@ -1,9 +1,12 @@
 """Candidate swap generation and ranking."""
 
+from collections.abc import Sequence
 from copy import deepcopy
+from typing import Any
 
 from app.config import TOP_SWAP_LIMIT
 from app.engine.exposure import interpolate_hourly, simulate_exposure
+from app.models import FamilyMember, Routine
 
 
 def reduce_fraction(before: float, after: float) -> float:
@@ -16,13 +19,13 @@ def reduce_fraction(before: float, after: float) -> float:
 def generate_swaps(
     pm25_hourly: list[float | None],
     aqi_hourly: list[float | None],
-    members: list[object],
-    routine: object,
-) -> list[dict]:
+    members: Sequence[FamilyMember],
+    routine: Routine,
+) -> list[dict[str, Any]]:
     """Generate and rank practical low-exposure, lower-emission swaps."""
     baseline = simulate_exposure(pm25_hourly, aqi_hourly, members, routine)
     pm25, _ = interpolate_hourly(pm25_hourly)
-    candidates: list[dict] = []
+    candidates: list[dict[str, Any]] = []
 
     outdoor_activities = [
         activity for activity in routine.activities if activity.place == "outdoor"

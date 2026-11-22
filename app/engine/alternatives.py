@@ -1,7 +1,9 @@
 """Sustainable alternatives and indoor hacks."""
 
+from typing import Any
 
-def indoor_hacks() -> list[dict]:
+
+def indoor_hacks() -> list[dict[str, Any]]:
     """Return practical indoor actions with qualitative estimated impact."""
     return [
         {
@@ -37,7 +39,7 @@ def indoor_hacks() -> list[dict]:
     ]
 
 
-def sustainable_alternatives() -> list[dict]:
+def sustainable_alternatives() -> list[dict[str, Any]]:
     """Return commute, fuel and heating alternatives."""
     return [
         {
