@@ -3,6 +3,7 @@ import { translations } from './i18n.js';
 let language = localStorage.getItem('saansplan-language') || 'en';
 let family = JSON.parse(localStorage.getItem('saansplan-family') || 'null') || [{ name: '', ageGroup: 'adult', sensitive: false }];
 let lastResult = null;
+let textScale = Number(localStorage.getItem('saansplan-text-scale') || 100);
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -305,4 +306,27 @@ const readableLabels = {
   insulation: 'Improve insulation and layering'
 };
 
-renderMembers(); applyTranslations();
+function applyTextScale() {
+  document.documentElement.style.fontSize = `${textScale}%`;
+  localStorage.setItem('saansplan-text-scale', String(textScale));
+}
+
+renderMembers(); applyTranslations(); applyTextScale();
+$('#text-smaller').addEventListener('click', () => { textScale = Math.max(75, textScale - 10); applyTextScale(); });
+$('#text-reset').addEventListener('click', () => { textScale = 100; applyTextScale(); });
+$('#text-larger').addEventListener('click', () => { textScale = Math.min(200, textScale + 10); applyTextScale(); });
+applyTextScale();
+$('#ask-button').addEventListener('click', async () => {
+  const question = $('#ask-question').value.trim();
+  const answer = $('#ask-answer');
+  if (!question) { textContent(answer, 'Enter a short air-quality question.'); return; }
+  textContent(answer, 'Finding a grounded answer…');
+  try {
+    const response = await fetch('/api/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question }) });
+    const data = await response.json();
+    if (!response.ok) throw new Error('Could not answer this question.');
+    textContent(answer, data.answer);
+  } catch (cause) {
+    textContent(answer, cause.message);
+  }
+});

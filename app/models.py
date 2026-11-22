@@ -89,7 +89,7 @@ class PlanRequest(BaseModel):
     members: list[FamilyMember] = Field(min_length=1, max_length=12)
     routine_text: str = Field(default="", max_length=1000)
     routine: Routine | None = None
-    language: Literal["en", "hinglish"] = "hinglish"
+    language: Literal["en", "hinglish", "hi"] = "hinglish"
 
     @field_validator("routine_text", "city")
     @classmethod
@@ -99,3 +99,9 @@ class PlanRequest(BaseModel):
         if any(ord(char) < 32 and char not in "\n\t" for char in value):
             raise ValueError("Control characters are not allowed")
         return value.strip()
+
+
+class AskRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    question: str = Field(min_length=1, max_length=300)

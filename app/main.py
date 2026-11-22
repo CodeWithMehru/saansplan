@@ -5,13 +5,14 @@ from collections.abc import Awaitable, Callable
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from app.config import MAX_REQUEST_BYTES
 from app.limiting import limiter
-from app.routers import geocode, health, plan
+from app.routers import ask, geocode, health, plan
 
 load_dotenv()
 
@@ -46,12 +47,19 @@ async def security_middleware(
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "geolocation=(self), camera=(), microphone=()"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+    if request.url.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "public, max-age=3600"
+    else:
+        response.headers["Cache-Control"] = "no-store"
     return response
 
 
 app.include_router(health.router, tags=["health"])
 app.include_router(plan.router, tags=["plan"])
 app.include_router(geocode.router, tags=["geocode"])
+app.include_router(ask.router, tags=["ask"])
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 
@@ -77,3 +85,19 @@ async def favicon() -> Response:
 async def not_found(request: Request, exc: Exception) -> JSONResponse:
     """Return a small JSON response for unknown API routes."""
     return JSONResponse(status_code=404, content={"detail": "Not found"})
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
+    """Return a stable validation envelope without stack traces."""
+    request_id = request.headers.get("x-request-id", "local")
+    return JSONResponse(
+        status_code=422,
+        content={
+            "error": {
+                "code": "VALIDATION_ERROR",
+                "message": "Check the submitted fields",
+                "request_id": request_id,
+            }
+        },
+    )

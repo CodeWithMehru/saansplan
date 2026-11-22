@@ -12,6 +12,11 @@
   <header class="site-header">
     <div><span class="brand-mark" aria-hidden="true">S</span><strong data-i18n="title">SaansPlan</strong></div>
     <button id="language-toggle" type="button" aria-label="Switch to Hinglish">हिं / EN</button>
+    <div class="text-controls" aria-label="Text size">
+      <button id="text-smaller" type="button" aria-label="Decrease text size">A−</button>
+      <button id="text-reset" type="button" aria-label="Reset text size">A</button>
+      <button id="text-larger" type="button" aria-label="Increase text size">A+</button>
+    </div>
   </header>
 
   <main id="main-content">
@@ -83,6 +88,14 @@
         <section id="alternatives-section" hidden><h2 data-i18n="alternatives">Sustainable alternatives</h2><div id="alternatives"></div></section>
         <section id="share-section" hidden><h2 data-i18n="summary">Family summary</h2><p id="family-summary"></p><button id="copy-summary" type="button" data-i18n="copy">Copy summary</button></section>
       </section>
+
+      <section id="ask-section" aria-labelledby="ask-heading">
+          <h2 id="ask-heading">Ask SaansPlan</h2>
+          <label for="ask-question">Question</label>
+          <textarea id="ask-question" maxlength="300" rows="3"></textarea>
+          <button id="ask-button" type="button" class="secondary">Ask</button>
+          <div id="ask-answer" role="status" aria-live="polite"></div>
+        </section>
     </div>
   </main>
   <script type="module" src="/static/app.js"></script>
