@@ -128,6 +128,6 @@ async def explain_with_fallback(
             text = re.sub(r"<[^>]*>", "", text).strip()
             if text and validate_number_guard(text, engine):
                 return {"explanation": text, "ai_available": True}
-        except Exception:  # noqa: S112 - one intentional retry, then template fallback
-            continue
+        except Exception:  # nosec B110  # noqa: S110
+            pass
     return {"explanation": templated_explanation(engine, language), "ai_available": False}

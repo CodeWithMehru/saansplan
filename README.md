@@ -107,3 +107,39 @@ Environment variables:
 ## Gen AI use
 
 Groq is the only GenAI provider. It uses `openai/gpt-oss-20b` by default. Call 1 converts routine text to strict JSON. Call 2 writes a short explanation using only engine JSON. A maximum of two calls is made per plan. Invalid/unknown-number output is retried once, then replaced by a deterministic template. The default model can be changed with `GROQ_MODEL`.
+
+## Evaluation criteria mapping
+
+| Criterion | Concrete implementation | Evidence |
+|---|---|---|
+| Code Quality | Strict Pydantic schemas, core constants, pure engine, modular routers/services/KB, strict mypy | `make lint`, `make typecheck` |
+| Security | Server-only key, strict JSON, number guard, CSP/HSTS, proxy-aware rate limits, prompt-injection corpus | `make security`, `tests/security/*` |
+| Efficiency | 8-second outbound timeouts, 30-minute AQ cache, concurrent gather, at most two plan LLM calls | `scripts/bench.py`, `docs/TEST_REPORT.md` |
+| Testing | Property, golden, API, security, a11y and JS test structure; 90% overall fail-under | `make test`, `make test-js` |
+| Accessibility | Skip link, labels, live regions, 3 locales, text-size controls, scoped table and no innerHTML | `make a11y`, `docs/ACCESSIBILITY.md` |
+| Problem Alignment | Family plans, hour-aware routines, swaps, indoor/commute/grounded assistance | Traceability table above and `tests/*` |
+
+## What's new since first submission
+
+- Replaced raw swap-key identifiers with readable titles and fallback labels.
+- Separated highest-exposure hour from highest-AQI hour.
+- Added PM2.5 microgram planning and uncertainty bands.
+- Added complete timeline table cells, scoped headers and rich WhatsApp summary.
+- Added English, Hinglish and Hindi, text sizing and 360px reflow work.
+- Split runtime/dev dependencies and pinned Python 3.13.
+- Added proxy-aware rate limiting, security headers and grounded Ask route.
+- Added strict coverage gate, property/golden tests and visible test instructions.
+
+## Live demo
+
+Live demo link: placeholder to be filled after Render deployment.
+
+## Responsible AI and limitations
+
+SaansPlan provides estimates, not diagnosis or medication advice. It redirects urgent symptoms to a doctor or emergency services. CPCB category implementation is marked pending official page verification and must not be presented as a clinical or legal AQI determination. Open-Meteo hourly forecasts are model forecasts, not 24-hour CPCB averages. Data attribution is required in the deployed UI: Open-Meteo and the CAMS ENSEMBLE data provider.
+
+See `docs/ASSUMPTIONS.md`, `docs/SECURITY.md` and `docs/ACCESSIBILITY.md`.
+
+[![CI](https://github.com/CodeWithMehru/saansplan/actions/workflows/ci.yml/badge.svg)](https://github.com/CodeWithMehru/saansplan/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.13-3776ab)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)

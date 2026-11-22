@@ -2,11 +2,11 @@
 
 ## Changes / updates made in the deployed version
 
-SaansPlan provides an Indian urban family exposure-budget plan using hourly Open-Meteo PM2.5/AQI data, a transparent deterministic engine and ranked low-emission swaps. It supports child/adult/elderly profiles, Hinglish/English routines, location or manual coordinates, indoor hacks, sustainable alternatives and a copyable WhatsApp summary. Groq can parse routine text and explain engine numbers, while a strict number guard and local template preserve full fallback if AI is unavailable.
+SaansPlan provides an Indian urban family exposure-budget plan using hourly Open-Meteo PM2.5/AQI data, physical-unit planning estimates and ranked low-emission swaps. It supports child/adult/elderly profiles, English/Hinglish/Hindi, location search or manual coordinates, indoor/commute alternatives, a rich shareable family summary and a grounded Ask SaansPlan fallback. Groq can parse routines and explain engine numbers, while strict validation and templates preserve a useful plan if AI is unavailable. The app includes text-size controls, accessible tables, proxy-aware rate limits and a 90% overall coverage gate.
 
 ## Gen AI services utilized and where
 
-Groq is the only GenAI service. Call 1 uses the Groq OpenAI-compatible chat-completions endpoint with `openai/gpt-oss-20b` to parse untrusted Hinglish/English routine text into a strict Pydantic routine JSON. Call 2 uses only deterministic engine numbers to generate a short Hinglish/English explanation. Fixed system prompts, JSON mode, no tools, extra-field rejection, an engine-number guard, one retry and a template fallback keep AI output bounded and safe.
+Groq is the only GenAI service. Call 1 parses untrusted English/Hinglish/Hindi routine text into strict Pydantic JSON through the Groq OpenAI-compatible endpoint using `openai/gpt-oss-20b`. Call 2 explains only a compact whitelist of engine facts with one retry and deterministic fallback. The grounded Ask SaansPlan route uses a verified-source knowledge base plus fixed safety prompts and refusals; it has no tools, cannot reveal keys or diagnose, and falls back to KB text when Groq is unavailable. Strict JSON, number/KB guards and template fallbacks keep output bounded.
 
 ## 90-second demo script
 
@@ -18,13 +18,13 @@ Groq is the only GenAI service. Call 1 uses the Groq OpenAI-compatible chat-comp
 
 **0:28–0:40 — Hinglish routine:** Enter the few-shot style text: “Subah 7…” and include a wood/coal heater and mostly closed windows.
 
-**0:40–0:50 — Timeline:** Submit and show the AQI summary, peak hour and scrollable timeline/table alternative.
+**0:40–0:50 — Timeline:** Submit and show the hourly table, Indian AQI interpretation caveat and separate highest-AQI/hour and exposure/hour details.
 
-**0:50–1:02 — Swaps and impact:** Read the top swap before/after estimate and percentage. Scroll through indoor hacks and alternatives.
+**0:50–1:02 — Actions and Ask:** Read top human-readable swaps and indoor options, then ask a short grounded air-quality question.
 
-**1:02–1:12 — Fallback and sharing:** Disable or remove the Groq key, submit again and show “AI explanation unavailable” plus a useful template and full engine plan. Copy the family summary.
+**1:02–1:12 — Fallback and sharing:** Disable Groq or use the template fallback, copy the richer family/WhatsApp summary and switch languages.
 
-**1:12–1:30 — Accessibility:** Tab from the skip link through controls, switch language toggle, show visible focus and mobile/dark/reduced-motion behavior.
+**1:12–1:30 — Accessibility:** Tab through controls, switch Hindi/Hinglish/English, use text-size controls and show mobile/reduced-motion behavior.
 
 ## LinkedIn post draft
 
@@ -32,5 +32,5 @@ Built SaansPlan for Hack2skill Challenge 6: an urban air-quality assistant for I
 
 ## Character counts
 
-- Changes/updates field: **489 characters**.
-- Gen AI services field: **461 characters**.
+- Changes/updates field: **619 characters**.
+- Gen AI services field: **575 characters**.

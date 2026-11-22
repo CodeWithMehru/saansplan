@@ -3,7 +3,7 @@ services:
     name: saansplan
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'
     envVars:
       - key: GROQ_API_KEY
         sync: false
@@ -11,3 +11,5 @@ services:
         value: openai/gpt-oss-20b
       - key: PYTHON_VERSION
         value: 3.13.0
+      - key: TRUST_PROXY
+        value: "true"
