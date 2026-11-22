@@ -1,0 +1,24 @@
+"""Indoor concentration branch coverage tests."""
+
+import pytest
+
+from app.engine.indoor import indoor_concentration
+from app.models import HomeSetup
+
+
+@pytest.mark.parametrize(
+    ("heating", "cooking", "purifier", "expected_min"),
+    [
+        ("wood_coal", "wood_coal", True, 50.0),
+        ("electric", "induction", False, 0.0),
+        ("gas", "lpg", True, 0.0),
+    ],
+)
+def test_indoor_source_branches(
+    heating: str, cooking: str, purifier: bool, expected_min: float
+) -> None:
+    home = HomeSetup(
+        heating=heating, cooking=cooking, windows="mostly_open", purifier=purifier, has_chimney=True
+    )
+    value = indoor_concentration(100.0, home)
+    assert value >= expected_min

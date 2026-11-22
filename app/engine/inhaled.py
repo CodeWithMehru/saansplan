@@ -24,4 +24,6 @@ def inhaled_micrograms(
 def uncertainty_band(value_ug: float) -> tuple[float, float]:
     """Return a clearly labelled planning range of roughly ±25% around an estimate."""
     estimate = max(0.0, value_ug)
-    return round(estimate * 0.75, 2), round(estimate * 1.25, 2)
+    if estimate == 0:
+        return 0.0, 0.0
+    return estimate * 0.75, estimate * 1.25

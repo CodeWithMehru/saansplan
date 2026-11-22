@@ -68,13 +68,14 @@
 
         <article id="summary-card" hidden>
           <div class="aqi-head"><div><span data-i18n="aqi">AQI</span> <strong id="peak-aqi">—</strong></div><div id="aqi-category"></div></div>
-          <p id="explanation"></p>
+          <p id="peak-exposure-text"></p>
+          <p id="highest-aqi-text"></p>
         </article>
 
         <section id="timeline-section" hidden>
           <h2 data-i18n="timeline">Hour-by-hour</h2>
           <div class="timeline" id="timeline" aria-label="Air quality timeline"></div>
-          <details><summary>Text/table alternative</summary><div class="table-wrap"><table id="timeline-table"><thead><tr><th>Hour</th><th>PM2.5 µg/m³</th><th>AQI</th><th>Exposure estimate</th><th>Interpolated</th></tr></thead><tbody></tbody></table></div></details>
+          <details><summary>Text/table alternative</summary><div class="table-wrap"><table id="timeline-table"><caption>Hour-by-hour air quality and exposure</caption><thead><tr><th scope="col">Hour</th><th scope="col">PM2.5 µg/m³</th><th scope="col">Indian AQI category</th><th scope="col">AQI</th><th scope="col">Relative exposure estimate</th><th scope="col">Interpolated</th></tr></thead><tbody></tbody></table></div></details>
         </section>
 
         <section id="swaps-section" hidden><h2 data-i18n="swaps">Top exposure swaps</h2><div id="swaps"></div></section>

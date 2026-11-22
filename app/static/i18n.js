@@ -40,5 +40,26 @@ export const translations = {
     tableAlternative: "Text/table alternative", interpolatedYes: "Haan", interpolatedNo: "Nahi",
     nameOptional: "Naam (optional)", categoryGood: "Good se moderate", categorySensitive: "Sensitive logon ke liye unhealthy", categoryBad: "Unhealthy / severe",
     before: "Pehle", after: "baad", estimated: "anumaan", lower: "kam", copied: "Summary copy ho gaya"
+  },
+  hi: {
+    skip: "मुख्य सामग्री पर जाएं", title: "SaansPlan", subtitle: "पारिवारिक वायु गुणवत्ता योजना",
+    location: "स्थान", city: "शहर", geolocate: "मेरी जगह का उपयोग करें", plan: "मेरी योजना बनाएं",
+    family: "परिवार के सदस्य", addMember: "सदस्य जोड़ें", age: "आयु समूह", sensitive: "संवेदनशील",
+    routine: "दिनचर्या", routinePlaceholder: "उदाहरण: सुबह 7 स्कूल बाइक से, शाम 6 पार्क में 40 मिनट टहलना",
+    commute: "यात्रा", outdoor: "बाहर का समय", cooking: "खाना पकाने का ईंधन", heating: "हीटिंग",
+    windows: "खिड़कियों की आदत", purifier: "प्यूरीफायर", update: "परिणाम अपडेट करें",
+    loading: "वायु गुणवत्ता और परिवार योजना तैयार हो रही है…", aiUnavailable: "AI विवरण उपलब्ध नहीं",
+    timeline: "हर घंटे का विवरण", swaps: "बेहतर विकल्प", indoor: "घर के अंदर के उपाय",
+    alternatives: "स्थायी विकल्प", summary: "परिवार सारांश", copy: "सारांश कॉपी करें",
+    estimates: "ये सभी अनुमान हैं, चिकित्सा सलाह नहीं। लक्षण हों या बच्चे/बुजुर्ग/संवेदनशील सदस्य हों तो डॉक्टर से मिलें।",
+    aqi: "AQI", peak: "सबसे अधिक जोखिम", interpolated: "कुछ घंटे अनुमानित हैं", child: "बच्चा", adult: "वयस्क", elderly: "बुजुर्ग", remove: "हटाएं",
+    childLabel: "बच्चा", adultLabel: "वयस्क", elderlyLabel: "बुजुर्ग",
+    search: "खोजें", emptyState: "फ़ॉर्म भरें और मेरी योजना बनाएं दबाएं।",
+    citySearching: "शहर खोजा जा रहा है…", cityNotFound: "शहर नहीं मिला। दूसरी वर्तनी आज़माएं।",
+    cityFailed: "शहर खोज विफल रही। फिर कोशिश करें।", locationDenied: "स्थान अनुमति नहीं मिली। निर्देशांक खुद दर्ज करें।",
+    geolocationUnavailable: "इस ब्राउज़र में स्थान उपलब्ध नहीं है।", copyFailed: "कॉपी नहीं हुआ। सारांश खुद चुनें।",
+    tableAlternative: "पाठ/तालिका विकल्प", interpolatedYes: "हाँ", interpolatedNo: "नहीं",
+    nameOptional: "नाम (वैकल्पिक)", categoryGood: "अच्छा से मध्यम", categorySensitive: "संवेदनशील लोगों के लिए अस्वच्छ", categoryBad: "अस्वच्छ / गंभीर",
+    before: "पहले", after: "बाद", estimated: "अनुमान", lower: "कम", copied: "सारांश कॉपी हो गया"
   }
 };

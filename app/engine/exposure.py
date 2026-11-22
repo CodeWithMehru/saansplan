@@ -4,6 +4,7 @@ from collections.abc import Sequence
 from typing import Any
 
 from app.config import BREATHING_FACTORS, MEMBER_SENSITIVITY, VEHICLE_FACTOR
+from app.core.aqi import indian_aqi_category
 from app.engine.indoor import indoor_concentration
 from app.models import FamilyMember, Routine
 
@@ -90,6 +91,8 @@ def simulate_exposure(
             member_totals[member_index] += member_exposure
             exposure_this_hour += member_exposure
 
+        pm25_value = max(0.0, pm25[hour] if hour < len(pm25) else 0.0)
+        indian_category, indian_slug, _, indian_aqi = indian_aqi_category(pm25_value)
         hourly_rows.append(
             {
                 "hour": hour,
@@ -97,11 +100,14 @@ def simulate_exposure(
                 "aqi": int(max(0.0, aqi)),
                 "exposure": round(exposure_this_hour, 2),
                 "interpolated": interpolated[hour] if hour < len(interpolated) else True,
+                "indian_aqi": indian_aqi,
+                "indian_category": indian_category,
             }
         )
 
     total = round(sum(member_totals), 2)
     peak = max(hourly_rows, key=lambda row: row["exposure"])
+    highest_aqi = max(hourly_rows, key=lambda row: row["pm25"])
     return {
         "total_before": total,
         "members": [
@@ -111,5 +117,7 @@ def simulate_exposure(
         "hourly": hourly_rows,
         "peak_hour": peak["hour"],
         "peak_aqi": peak["aqi"],
+        "highest_aqi_hour": highest_aqi["hour"],
+        "highest_aqi": highest_aqi["indian_aqi"],
         "estimate_label": "All values are estimates",
     }

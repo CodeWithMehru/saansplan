@@ -11,7 +11,7 @@ function textContent(element, value) {
 }
 
 function applyTranslations() {
-  document.documentElement.lang = language === 'en' ? 'en' : 'hi';
+  document.documentElement.lang = language === 'hi' ? 'hi' : language === 'hinglish' ? 'hi-Latn' : 'en';
   for (const [key, value] of Object.entries(translations[language])) {
     for (const element of document.querySelectorAll(`[data-i18n="${key}"]`)) textContent(element, value);
   }
@@ -121,9 +121,22 @@ function renderTimeline(hourly) {
     hour.append(hourText, document.createElement('br'), aqiText); timeline.append(hour);
 
     const tr = document.createElement('tr');
-    for (const value of [`${row.hour}:00`, row.pm25, row.aqi, row.exposure, row.interpolated ? translations[language].interpolatedYes : translations[language].interpolatedNo]) {
-      const td = document.createElement('td'); td.textContent = String(value); tr.append(td);
-    }
+    const values = [
+      `${row.hour}:00`,
+      row.pm25,
+      row.indian_category || 'Estimate unavailable',
+      row.indian_aqi ?? row.aqi,
+      row.exposure,
+      row.interpolated ? translations[language].interpolatedYes : translations[language].interpolatedNo,
+    ];
+    values.forEach((value, index) => {
+      if (index === 0) {
+        const th = document.createElement('th');
+        th.scope = 'row'; th.textContent = String(value); tr.append(th);
+      } else {
+        const td = document.createElement('td'); td.textContent = String(value); tr.append(td);
+      }
+    });
     tbody.append(tr);
   }
 }
@@ -133,7 +146,8 @@ function cardGrid(container, items) {
   container.className = 'card-grid';
   for (const item of items) {
     const card = document.createElement('article'); card.className = 'card';
-    const title = document.createElement('strong'); title.textContent = item.description_key || item.key;
+    const title = document.createElement('strong');
+    title.textContent = readableLabels[item.description_key || item.key] || 'Safer home or travel action';
     const body = document.createElement('p');
     if ('percent_reduction' in item) {
       const t = translations[language];
@@ -145,13 +159,15 @@ function cardGrid(container, items) {
 }
 
 function shareText(data) {
-  const top = data.top_swaps?.[0];
   const t = translations[language];
-  const swapText = top
-    ? `${t.estimated}: ${top.percent_reduction}% ${t.lower} (${t.before} ${top.exposure_before}, ${t.after} ${top.exposure_after}).`
-    : (language === 'en' ? 'No positive swap found.' : 'Koi positive swap nahi mila.');
-  const peak = language === 'en' ? 'Peak exposure' : 'Sabse zyada exposure';
-  return `SaansPlan family summary\n${peak}: about ${data.exposure.peak_hour}:00, AQI ${data.exposure.peak_aqi}.\n${swapText}\n${data.explanation.explanation}\n${t.estimates}`;
+  const topThree = (data.top_swaps || []).slice(0, 3);
+  const actions = topThree.map((item, index) => {
+    const title = readableLabels[item.description_key || item.key] || 'Safer home or travel action';
+    return `${index + 1}. ${title}: about ${item.percent_reduction}% less exposure (estimate).`;
+  }).join('\n');
+  const highestAqi = data.exposure.highest_aqi_hour;
+  const peakExposure = data.exposure.peak_hour;
+  return `SaansPlan family summary\nHighest exposure hour: ${peakExposure}:00.\nHighest AQI hour: ${highestAqi}:00, AQI ${data.exposure.highest_aqi ?? data.exposure.peak_aqi}.\nTop actions:\n${actions || 'No positive swap found.'}\n${data.explanation.explanation}\n${t.estimates}`;
 }
 
 async function submitPlan(event) {
@@ -181,6 +197,8 @@ async function submitPlan(event) {
     $('#alternatives-section').hidden = false; cardGrid($('#alternatives'), data.sustainable_alternatives);
     $('#share-section').hidden = false;
     const summary = shareText(data); textContent($('#family-summary'), summary); $('#family-summary').dataset.value = summary;
+    textContent($('#peak-exposure-text'), `Highest exposure hour: ${data.exposure.peak_hour}:00 (estimate)`);
+    textContent($('#highest-aqi-text'), `Highest AQI hour: ${data.exposure.highest_aqi_hour}:00, Indian AQI band ${data.exposure.highest_aqi}`);
     lastResult = data;
   } catch (cause) {
     status.textContent = ''; textContent(error, cause.message);
@@ -197,7 +215,8 @@ $('#add-member').addEventListener('click', () => {
   }
 });
 $('#language-toggle').addEventListener('click', () => {
-  language = language === 'en' ? 'hinglish' : 'en';
+  const nextLanguage = language === 'en' ? 'hinglish' : language === 'hinglish' ? 'hi' : 'en';
+  language = nextLanguage;
   localStorage.setItem('saansplan-language', language);
   applyTranslations(); renderMembers();
   if (lastResult) {
@@ -265,5 +284,25 @@ $('#copy-summary').addEventListener('click', async () => {
 
 $('#routine-text').setAttribute('aria-label', translations[language].routine);
 $('.skip-link').textContent = translations[language].skip;
+
+const readableLabels = {
+  swap_shift: 'Shift the outdoor activity to a cleaner hour',
+  shift_activity: 'Shift the outdoor activity to a cleaner hour',
+  swap_windows: 'Close windows during high-AQI hours',
+  close_windows: 'Close windows during high-AQI hours',
+  swap_purifier: 'Run a clean, correctly sized purifier',
+  run_purifier: 'Run a clean, correctly sized purifier',
+  swap_cooking: 'Cook with induction instead of smoky fuel',
+  cook_induction: 'Cook with induction instead of smoky fuel',
+  purifier: 'Run a purifier',
+  closed_windows: 'Close windows in severe hours',
+  box_fan_filter: 'Use a safer supplemental box-fan filter',
+  chimney: 'Vent cooking and heating smoke outdoors',
+  mask: 'Use a well-fitted certified respirator outdoors',
+  metro_bus: 'Choose metro or bus for shared travel',
+  walk_cycle: 'Walk or cycle in quieter, cleaner hours',
+  induction: 'Use induction for lower indoor combustion',
+  insulation: 'Improve insulation and layering'
+};
 
 renderMembers(); applyTranslations();
