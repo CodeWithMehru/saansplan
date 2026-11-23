@@ -18,7 +18,16 @@ export const translations = {
     geolocationUnavailable: "Geolocation is unavailable in this browser.", copyFailed: "Copy failed. Select the family summary text manually.",
     tableAlternative: "Text/table alternative", interpolatedYes: "Yes", interpolatedNo: "No",
     nameOptional: "Name (optional)", categoryGood: "Good to moderate", categorySensitive: "Unhealthy for sensitive groups", categoryBad: "Unhealthy / severe",
-    before: "Before", after: "after", estimated: "estimated", lower: "lower", copied: "Summary copied"
+    before: "Before", after: "after", estimated: "estimated", lower: "lower", copied: "Summary copied",
+    personasTitle: "Lifestyle presets", personaWorkingParents: "Working parents & kids", personaElderly: "Elderly at home", personaStudent: "Student / hostel", personaOutdoorWorker: "Outdoor / delivery worker", loadPreset: "Load preset",
+    forecastTitle: "5-day winter smog forecast", worstWindow: "Worst outdoor window", bestWindow: "Best outdoor window", safestAiring: "Safest indoor airing time", stagnationAlert: "Surface inversion: calm winds (<2 m/s) trapping smog", severeSmogAlert: "Severe smog alert: minimize strenuous outdoor exercise and keep windows sealed", stagnant: "High stagnation",
+    cleanerDayTitle: "Your cleaner day", cleanerDayDesc: "Optimized 24-hour routine preserving school and work commitments while cutting peak particulate inhalation.", savedIntake: "Estimated intake reduced by", originalRoutine: "Current routine", optimizedRoutine: "Cleaner alternative", reasonForChange: "Reason for timing change",
+    emissionsTitle: "Emissions & weekly household cost", emissionsDesc: "Compare current travel and cooking fuel impact against cleaner sustainable alternatives.", weeklyCo2e: "Weekly CO2e", weeklyCost: "Weekly cost", inrSaved: "Weekly savings", co2Saved: "CO2e avoided", budgetFilterAll: "Any budget", budgetFilterFree: "Free changes", budgetFilterLow: "Under ₹500", budgetFilterMid: "Under ₹5,000",
+    indoorModuleTitle: "Indoor air quality module", kitchenTab: "Kitchen", bedroomTab: "Bedroom", livingRoomTab: "Living room", childrenTab: "Children's room", purifierSizingTitle: "Air purifier sizing calculator (AHAM 2/3 Rule)", calcCadr: "Calculate CADR", roomAreaLabel: "Room area (sq meters)", cadrResult: "Recommended smoke CADR", diyBoxFanTitle: "DIY box-fan air cleaner guide", fanWarning: "Safety note: Use certified thermal-fuse fans; do not operate unattended.",
+    communityTitle: "Community clean air kit", whatsappShare: "Share via WhatsApp", schoolAdvisoryTitle: "School-day morning advisory", rwaChecklistTitle: "RWA & neighbourhood checklist", printPlan: "Print / Save PDF",
+    readAloud: "Read summary aloud", voiceInput: "Voice input", listening: "Listening… speak routine", speechError: "Voice input error. Try again.", speechNotSupported: "Speech not supported in this browser.",
+    askTitle: "Ask SaansPlan", askPlaceholder: "Ask an air-quality question (e.g. mask fit, purifier timing, cooking exhaust)", askButton: "Ask", askThinking: "Finding grounded guidance…",
+    errorSummaryTitle: "Please fix the following errors before proceeding", cityError: "Please enter a valid city name.", membersError: "Please add at least one family member."
   },
   hinglish: {
     skip: "Main content par jao", title: "SaansPlan", subtitle: "Family air-quality din plan",
@@ -39,7 +48,16 @@ export const translations = {
     geolocationUnavailable: "Is browser mein geolocation available nahi hai.", copyFailed: "Copy nahi hua. Family summary manually select karo.",
     tableAlternative: "Text/table alternative", interpolatedYes: "Haan", interpolatedNo: "Nahi",
     nameOptional: "Naam (optional)", categoryGood: "Good se moderate", categorySensitive: "Sensitive logon ke liye unhealthy", categoryBad: "Unhealthy / severe",
-    before: "Pehle", after: "baad", estimated: "anumaan", lower: "kam", copied: "Summary copy ho gaya"
+    before: "Pehle", after: "baad", estimated: "anumaan", lower: "kam", copied: "Summary copy ho gaya",
+    personasTitle: "Lifestyle presets", personaWorkingParents: "Working parents aur bache", personaElderly: "Ghar par buzurg", personaStudent: "Student / hostel", personaOutdoorWorker: "Outdoor / delivery worker", loadPreset: "Preset chunein",
+    forecastTitle: "5-din winter smog forecast", worstWindow: "Sabse kharab outdoor window", bestWindow: "Sabse saaf outdoor window", safestAiring: "Khidki kholne ka sabse safe samay", stagnationAlert: "Hawa ruki hui hai (<2 m/s): pradooshan zameen ke paas phasa hai", severeSmogAlert: "Severe smog alert: bhaari exercise outdoor na karein aur khidkiyan band rakhein", stagnant: "Stagnant hawa",
+    cleanerDayTitle: "Aapka cleaner day", cleanerDayDesc: "24-ghante ka behtar routine jo school aur office ke samay ko bina tode pollution intake kam karta hai.", savedIntake: "Anumaanit intake kam hua", originalRoutine: "Pehle ka routine", optimizedRoutine: "Saaf vikalp", reasonForChange: "Samay badalne ka kaaran",
+    emissionsTitle: "Emissions aur hafte ka kharcha", emissionsDesc: "Gaadi aur cooking fuel ke pradushan aur kharche ko behtar vikalpon se compare karein.", weeklyCo2e: "Hafte ka CO2e", weeklyCost: "Hafte ka kharcha", inrSaved: "Hafte ki bachat", co2Saved: "CO2e ki bachat", budgetFilterAll: "Koi bhi budget", budgetFilterFree: "Bina kharche ke badlav", budgetFilterLow: "₹500 se kam", budgetFilterMid: "₹5,000 se kam",
+    indoorModuleTitle: "Ghar ke andar ke safaai upaay", kitchenTab: "Kitchen", bedroomTab: "Bedroom", livingRoomTab: "Living room", childrenTab: "Bachchon ka kamra", purifierSizingTitle: "Air purifier sizing calculator (AHAM 2/3 Niyam)", calcCadr: "CADR calculate karein", roomAreaLabel: "Kamre ka area (sq meter)", cadrResult: "Zaroori smoke CADR", diyBoxFanTitle: "DIY box-fan air cleaner guide", fanWarning: "Safety note: Certified thermal-fuse fan use karein; chhodkar soyein nahi.",
+    communityTitle: "Community clean air kit", whatsappShare: "WhatsApp par share karein", schoolAdvisoryTitle: "School-day morning advisory", rwaChecklistTitle: "RWA aur mohalla checklist", printPlan: "Print / Save PDF",
+    readAloud: "Summary suniye", voiceInput: "Bol kar routine daalein", listening: "Sun raha hai… boliye", speechError: "Voice input me dikkat aayi. Dobara try karein.", speechNotSupported: "Is browser me speech support nahi hai.",
+    askTitle: "SaansPlan se poochhein", askPlaceholder: "Air quality ka sawal poochhein (jaise: mask fit, purifier timing, cooking dhuwan)", askButton: "Poochhein", askThinking: "Sahi jaankari dhoondh rahe hain…",
+    errorSummaryTitle: "Aage badhne se pehle ye theek karein", cityError: "Kripya sahi shahar ka naam daalein.", membersError: "Kam se kam ek family member add karein."
   },
   hi: {
     skip: "मुख्य सामग्री पर जाएं", title: "SaansPlan", subtitle: "पारिवारिक वायु गुणवत्ता योजना",
@@ -60,6 +78,15 @@ export const translations = {
     geolocationUnavailable: "इस ब्राउज़र में स्थान उपलब्ध नहीं है।", copyFailed: "कॉपी नहीं हुआ। सारांश खुद चुनें।",
     tableAlternative: "पाठ/तालिका विकल्प", interpolatedYes: "हाँ", interpolatedNo: "नहीं",
     nameOptional: "नाम (वैकल्पिक)", categoryGood: "अच्छा से मध्यम", categorySensitive: "संवेदनशील लोगों के लिए अस्वच्छ", categoryBad: "अस्वच्छ / गंभीर",
-    before: "पहले", after: "बाद", estimated: "अनुमान", lower: "कम", copied: "सारांश कॉपी हो गया"
+    before: "पहले", after: "बाद", estimated: "अनुमान", lower: "कम", copied: "सारांश कॉपी हो गया",
+    personasTitle: "जीवनशैली प्रीसेट", personaWorkingParents: "कामकाजी माता-पिता और बच्चे", personaElderly: "घर पर वरिष्ठ नागरिक", personaStudent: "छात्र / छात्रावास", personaOutdoorWorker: "बाहरी / डिलीवरी कर्मचारी", loadPreset: "प्रीसेट चुनें",
+    forecastTitle: "5-दिवसीय शीतकालीन स्मॉग पूर्वानुमान", worstWindow: "सबसे खराब बाहरी समय", bestWindow: "सबसे स्वच्छ बाहरी समय", safestAiring: "खिड़की खोलने का सबसे सुरक्षित समय", stagnationAlert: "सतह का ठहराव: शांत हवाएं (<2 m/s) स्मॉग को जमीन पर रोक रही हैं", severeSmogAlert: "गंभीर स्मॉग चेतावनी: बाहरी भारी व्यायाम से बचें और खिड़कियां बंद रखें", stagnant: "शांत/स्थिर हवा",
+    cleanerDayTitle: "आपका स्वच्छ दिन", cleanerDayDesc: "24-घंटे की सुधरी दिनचर्या जो स्कूल और कार्यालय के समय को बदले बिना प्रदूषण सांस में जाने से रोकती है।", savedIntake: "अनुमानित प्रदूषण में कमी", originalRoutine: "मौजूदा दिनचर्या", optimizedRoutine: "स्वच्छ विकल्प", reasonForChange: "समय बदलने का कारण",
+    emissionsTitle: "उत्सर्जन और साप्ताहिक घरेलू खर्च", emissionsDesc: "यात्रा और खाना पकाने के ईंधन के प्रदूषण व खर्च की तुलना स्वच्छ विकल्पों से करें।", weeklyCo2e: "साप्ताहिक CO2e", weeklyCost: "साप्ताहिक खर्च", inrSaved: "साप्ताहिक बचत", co2Saved: "बचाई गई CO2e", budgetFilterAll: "कोई भी बजट", budgetFilterFree: "निःशुल्क बदलाव", budgetFilterLow: "₹500 से कम", budgetFilterMid: "₹5,000 से कम",
+    indoorModuleTitle: "घर के अंदर वायु गुणवत्ता मॉड्यूल", kitchenTab: "रसोई", bedroomTab: "शयनकक्ष", livingRoomTab: "बैठक", childrenTab: "बच्चों का कमरा", purifierSizingTitle: "एयर प्यूरीफायर क्षमता कैलकुलेटर (AHAM 2/3 नियम)", calcCadr: "CADR की गणना करें", roomAreaLabel: "कमरे का क्षेत्रफल (वर्ग मीटर)", cadrResult: "अनुशंसित स्मोक CADR", diyBoxFanTitle: "DIY बॉक्स-फैन एयर क्लीनर गाइड", fanWarning: "सुरक्षा निर्देश: प्रमाणित थर्मल-फ्यूज पंखा उपयोग करें; सोते समय खुला न छोड़ें।",
+    communityTitle: "सामुदायिक स्वच्छ वायु किट", whatsappShare: "व्हाट्सएप पर साझा करें", schoolAdvisoryTitle: "स्कूल सुबह की सलाह", rwaChecklistTitle: "आरडब्ल्यूए और पड़ोस कार्य सूची", printPlan: "प्रिंट / पीडीएफ सहेजें",
+    readAloud: "सारांश सुनें", voiceInput: "बोलकर दिनचर्या दर्ज करें", listening: "सुन रहे हैं… बोलिए", speechError: "आवाज पहचानने में त्रुटि। फिर कोशिश करें।", speechNotSupported: "इस ब्राउज़र में ध्वनि सुविधा उपलब्ध नहीं है।",
+    askTitle: "SaansPlan से पूछें", askPlaceholder: "वायु गुणवत्ता का प्रश्न पूछें (जैसे: मास्क की सही फिटिंग, प्यूरीफायर का समय, रसोई धुआं)", askButton: "पूछें", askThinking: "सटीक जानकारी खोजी जा रही है…",
+    errorSummaryTitle: "आगे बढ़ने से पहले कृपया निम्नलिखित त्रुटियां ठीक करें", cityError: "कृपया मान्य शहर का नाम दर्ज करें।", membersError: "कृपया कम से कम एक परिवार सदस्य जोड़ें।"
   }
 };
