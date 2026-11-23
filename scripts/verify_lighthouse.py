@@ -1,7 +1,6 @@
 """Run Lighthouse accessibility audit against local SaansPlan server."""
 
 import json
-import os
 import subprocess
 import sys
 import time
@@ -10,6 +9,7 @@ from pathlib import Path
 
 PORT = 8092
 BASE_URL = f"http://127.0.0.1:{PORT}"
+
 
 def main():
     project_root = Path(__file__).resolve().parent.parent
@@ -62,18 +62,18 @@ def main():
             "--quiet",
         ]
 
-        res = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        res = subprocess.run(cmd, capture_output=True, text=True, timeout=120, check=False)
         print(f"Lighthouse exited with code: {res.returncode}")
         if res.returncode != 0:
             print("Lighthouse stderr:\n", res.stderr)
 
-        with open(report_path, "r", encoding="utf-8") as f:
+        with open(report_path, encoding="utf-8") as f:
             data = json.load(f)
 
         score = data["categories"]["accessibility"]["score"] * 100
-        print(f"\n==========================================")
+        print("\n==========================================")
         print(f"LIGHTHOUSE ACCESSIBILITY SCORE: {score:.0f} / 100")
-        print(f"==========================================")
+        print("==========================================")
 
         # Print audit results
         audits = data.get("audits", {})
@@ -84,7 +84,7 @@ def main():
 
         if failing_audits:
             print("\nFailing or warning audits:")
-            for title, desc in failing_audits:
+            for title, _desc in failing_audits:
                 print(f"- {title}")
         else:
             print("Zero failing accessibility audits!")
@@ -92,6 +92,7 @@ def main():
     finally:
         server.terminate()
         server.wait(timeout=3)
+
 
 if __name__ == "__main__":
     main()

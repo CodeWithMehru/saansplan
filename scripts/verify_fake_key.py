@@ -4,11 +4,13 @@ import os
 import subprocess
 import sys
 import time
-import httpx
 from pathlib import Path
+
+import httpx
 
 PORT = 8091
 BASE_URL = f"http://127.0.0.1:{PORT}"
+
 
 def main():
     project_root = Path(__file__).resolve().parent.parent
@@ -58,10 +60,8 @@ def main():
             "longitude": 77.2090,
             "city": "Delhi",
             "routine_text": "Morning 7am walk, 9am metro office, 6pm park.",
-            "members": [
-                {"name": "Adult", "age_group": "adult", "sensitive": False}
-            ],
-            "language": "en"
+            "members": [{"name": "Adult", "age_group": "adult", "sensitive": False}],
+            "language": "en",
         }
 
         print("Calling /api/plan with fake GROQ_API_KEY...")
@@ -87,6 +87,7 @@ def main():
     finally:
         server.terminate()
         server.wait(timeout=3)
+
 
 if __name__ == "__main__":
     main()

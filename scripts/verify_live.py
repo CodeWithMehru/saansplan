@@ -2,7 +2,6 @@
 
 import json
 import math
-import os
 import subprocess
 import sys
 import time
@@ -67,9 +66,7 @@ def call_api(endpoint: str, payload: dict) -> tuple[int, dict, float]:
 def main():
     server = start_server()
     try:
-        hinglish_routine = (
-            "Subah 7:30 bache ko school drop karte hain, 9 baje metro se office, shaam 6 baje park walk."
-        )
+        hinglish_routine = "Subah 7:30 bache ko school drop karte hain, 9 baje metro se office, shaam 6 baje park walk."
         base_payload = {
             "latitude": 28.6139,
             "longitude": 77.2090,
@@ -94,8 +91,19 @@ def main():
             exp_obj = data.get("explanation", {})
             ai_avail = exp_obj.get("ai_available", False) if isinstance(exp_obj, dict) else False
             exp = exp_obj.get("explanation", "") if isinstance(exp_obj, dict) else str(exp_obj)
-            results.append({"lang": "hinglish", "run": i, "status": status, "latency": latency, "ai": ai_avail, "exp": exp})
-            print(f"[Hinglish Run {i}] Status: {status} | Latency: {latency:.1f}ms | ai_available: {ai_avail}")
+            results.append(
+                {
+                    "lang": "hinglish",
+                    "run": i,
+                    "status": status,
+                    "latency": latency,
+                    "ai": ai_avail,
+                    "exp": exp,
+                }
+            )
+            print(
+                f"[Hinglish Run {i}] Status: {status} | Latency: {latency:.1f}ms | ai_available: {ai_avail}"
+            )
             print(f"  Explanation: {exp[:100]}...")
             time.sleep(1.2)
 
@@ -106,8 +114,19 @@ def main():
             exp_obj = data.get("explanation", {})
             ai_avail = exp_obj.get("ai_available", False) if isinstance(exp_obj, dict) else False
             exp = exp_obj.get("explanation", "") if isinstance(exp_obj, dict) else str(exp_obj)
-            results.append({"lang": "en", "run": i, "status": status, "latency": latency, "ai": ai_avail, "exp": exp})
-            print(f"[English Run {i}] Status: {status} | Latency: {latency:.1f}ms | ai_available: {ai_avail}")
+            results.append(
+                {
+                    "lang": "en",
+                    "run": i,
+                    "status": status,
+                    "latency": latency,
+                    "ai": ai_avail,
+                    "exp": exp,
+                }
+            )
+            print(
+                f"[English Run {i}] Status: {status} | Latency: {latency:.1f}ms | ai_available: {ai_avail}"
+            )
             print(f"  Explanation: {exp[:100]}...")
             time.sleep(1.2)
 
