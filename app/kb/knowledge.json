@@ -1,23 +1,122 @@
 [
- {"id":"aq-open-meteo","topic":"data","text":"Open-Meteo provides hourly PM2.5 and AQI forecast fields and can return missing values.","source":{"name":"Open-Meteo Air Quality API","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"aq-5days","topic":"forecast","text":"Open-Meteo documents air-quality forecasts up to seven forecast days, with five days as default.","source":{"name":"Open-Meteo Air Quality API","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"aq-attribution","topic":"attribution","text":"Open-Meteo requires clear attribution to Open-Meteo and the CAMS ENSEMBLE data provider.","source":{"name":"Open-Meteo Attribution","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"mask-fit","topic":"masks","text":"A certified respirator works best when it is well fitted and used correctly; children and elderly people need appropriate fit and comfort checks.","source":{"name":"Health and safety mask guidance","url":"https://www.cdc.gov/niosh/respiratory-protection/index.html","checked":"2026-11-22"}},
- {"id":"indoor-window","topic":"indoor","text":"Keep windows closed during high outdoor particle periods, unless a verified indoor safety or ventilation need requires brief opening.","source":{"name":"SaansPlan documented planning assumption","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"purifier","topic":"indoor","text":"Choose an appropriately sized purifier and follow the manufacturer's clean-air capacity and maintenance instructions.","source":{"name":"SaansPlan documented planning assumption","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"box-fan-safety","topic":"indoor","text":"A homemade box-fan filter is supplemental, must use compatible parts, and should not be left unattended or used with damaged wiring.","source":{"name":"SaansPlan safety limitation","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"cooking-vent","topic":"kitchen","text":"Use chimney or exhaust ventilation while cooking and after completion, while checking outdoor air conditions.","source":{"name":"SaansPlan documented planning assumption","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"wet-mop","topic":"indoor","text":"A damp mop can reduce the re-suspension of settled dust compared with dry sweeping; avoid wetting electrical areas.","source":{"name":"SaansPlan documented planning assumption","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"incense","topic":"indoor","text":"Avoid indoor incense, mosquito coil and biomass smoke when alternatives are available, especially around children and elderly members.","source":{"name":"SaansPlan documented planning assumption","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"walk-cycle","topic":"commute","text":"Walking or cycling avoids direct fuel use but may increase breathing exposure in heavy traffic, so use quieter lower-AQI routes.","source":{"name":"SaansPlan documented planning assumption","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"bus-metro","topic":"commute","text":"Shared metro or bus travel can avoid a private-car journey, subject to local air quality inside the vehicle.","source":{"name":"SaansPlan documented planning assumption","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"induction","topic":"cooking","text":"Induction avoids on-site biomass combustion but its emissions depend on the electricity source and may affect household costs.","source":{"name":"SaansPlan documented planning assumption","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"lpg","topic":"cooking","text":"LPG generally avoids solid-fuel smoke but still requires ventilation and safe appliance use.","source":{"name":"SaansPlan documented planning assumption","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"wood-coal","topic":"heating","text":"Wood or coal heating can add indoor PM2.5. A safer indoor space should use ventilation and any cleaner available alternative.","source":{"name":"SaansPlan documented planning assumption","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"insulation","topic":"heating","text":"Insulation and layering can reduce heating demand, but they do not replace safe ventilation or medical care.","source":{"name":"SaansPlan documented planning assumption","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"outdoor-worker","topic":"persona","text":"Outdoor or delivery workers should take breaks, fit masks correctly and follow their employer's heat and safety procedures.","source":{"name":"SaansPlan persona limitation","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"children","topic":"persona","text":"Children may breathe more relative to body size during activity; this app uses a planning multiplier, not a clinical rule.","source":{"name":"SaansPlan documented planning assumption","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"elderly","topic":"persona","text":"Elderly people should receive a visible doctor and symptom reminder; this app is not a diagnostic service.","source":{"name":"SaansPlan safety limitation","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"medical","topic":"medical","text":"This app does not diagnose disease or prescribe medicine. Symptoms or difficult breathing should be discussed with a doctor or urgent service.","source":{"name":"SaansPlan responsible-AI rule","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}},
- {"id":"doctor","topic":"medical","text":"Seek urgent medical help for severe breathing difficulty, chest pain or confusion instead of relying on an air-quality estimate.","source":{"name":"SaansPlan responsible-AI rule","url":"https://open-meteo.com/en/docs/air-quality-api","checked":"2026-11-22"}}
+  {
+    "id": "aq-open-meteo",
+    "topic": "data",
+    "text": "Open-Meteo Air Quality API provides hourly PM2.5 forecasts using global and regional atmospheric dispersion models including CAMS.",
+    "source": {
+      "name": "Open-Meteo Air Quality API Documentation",
+      "url": "https://open-meteo.com/en/docs/air-quality-api",
+      "checked": "2026-11-23"
+    }
+  },
+  {
+    "id": "cpcb-aqi-breakpoints",
+    "topic": "cpcb",
+    "text": "India Central Pollution Control Board (CPCB) defines National AQI PM2.5 categories: Good (0-30 µg/m³), Satisfactory (31-60), Moderately Polluted (61-90), Poor (91-120), Very Poor (121-250), and Severe (>250 µg/m³).",
+    "source": {
+      "name": "CPCB / MoEFCC National Air Quality Index Launch",
+      "url": "https://pib.gov.in/newsite/PrintRelease.aspx?relid=110654",
+      "checked": "2026-11-23"
+    }
+  },
+  {
+    "id": "inhalation-factors",
+    "topic": "exposure",
+    "text": "Human physiological inhalation rates vary by activity intensity: rest (~6 L/min), light (~8 L/min), moderate (~20 L/min), and heavy exertion (~40 L/min), with age-specific scaling for children and older adults.",
+    "source": {
+      "name": "US EPA Exposure Factors Handbook Chapter 6",
+      "url": "https://www.epa.gov/expobox/about-exposure-factors-handbook",
+      "checked": "2026-11-23"
+    }
+  },
+  {
+    "id": "mask-fit",
+    "topic": "masks",
+    "text": "Certified particulate respirators (such as N95 or FFP2 standards) filter fine airborne particles effectively when properly fitted to the face without air leakage around the edges.",
+    "source": {
+      "name": "World Health Organization Respiratory Protection & Masks Guidance",
+      "url": "https://iris.who.int/handle/10665/333781",
+      "checked": "2026-11-23"
+    }
+  },
+  {
+    "id": "purifier-sizing",
+    "topic": "indoor",
+    "text": "Portable air cleaners should be matched to room floor area using the AHAM 2/3 guideline: clean air delivery rate (Smoke CADR in CFM) should equal at least two-thirds of room area in square feet to achieve approximately 5 air changes per hour.",
+    "source": {
+      "name": "US EPA Air Cleaners and Air Filters in the Home",
+      "url": "https://www.epa.gov/indoor-air-quality-iaq/air-cleaners-and-air-filters-home",
+      "checked": "2026-11-23"
+    }
+  },
+  {
+    "id": "box-fan-safety",
+    "topic": "indoor",
+    "text": "Do-it-yourself box fan air cleaners using MERV 13 filters provide low-cost particle filtration during smog emergencies. Fans must carry safety certifications, thermal cutoff fuses, and should not be operated unattended.",
+    "source": {
+      "name": "US EPA Research on DIY Air Cleaners",
+      "url": "https://www.epa.gov/sciencematters/do-it-yourself-air-cleaners-making-cleaner-air-more-accessible",
+      "checked": "2026-11-23"
+    }
+  },
+  {
+    "id": "cooking-vent",
+    "topic": "kitchen",
+    "text": "Cooking produces ultrafine particles and indoor combustion byproducts. Running an exhaust fan or range hood vented to the outside during and after cooking significantly lowers indoor exposure.",
+    "source": {
+      "name": "WHO Guidelines for Indoor Air Quality: Household Fuel Combustion",
+      "url": "https://www.who.int/publications/i/item/9789241548885",
+      "checked": "2026-11-23"
+    }
+  },
+  {
+    "id": "wet-mop",
+    "topic": "indoor",
+    "text": "Damp dusting and wet mopping remove settled indoor particulate matter without resuspending dust into the air, whereas dry broom sweeping increases airborne particle concentrations.",
+    "source": {
+      "name": "US EPA Air Cleaners and Air Filters in the Home",
+      "url": "https://www.epa.gov/indoor-air-quality-iaq/air-cleaners-and-air-filters-home",
+      "checked": "2026-11-23"
+    }
+  },
+  {
+    "id": "incense-avoidance",
+    "topic": "indoor",
+    "text": "Indoor burning of incense sticks (agarbatti), mosquito coils, and solid fuel emits high concentrations of fine particulate matter, carbon monoxide, and volatile organics, and should be eliminated indoors during smog episodes.",
+    "source": {
+      "name": "WHO Guidelines for Indoor Air Quality: Household Fuel Combustion",
+      "url": "https://www.who.int/publications/i/item/9789241548885",
+      "checked": "2026-11-23"
+    }
+  },
+  {
+    "id": "cleaner-cooking",
+    "topic": "cooking",
+    "text": "Switching from solid biomass or wood fuels to piped natural gas, LPG, or electric induction significantly decreases indoor particulate generation and household air pollution.",
+    "source": {
+      "name": "WHO Guidelines for Indoor Air Quality: Household Fuel Combustion",
+      "url": "https://www.who.int/publications/i/item/9789241548885",
+      "checked": "2026-11-23"
+    }
+  },
+  {
+    "id": "transit-emissions",
+    "topic": "commute",
+    "text": "Switching from single-occupancy petrol vehicles to electric metro or shared public buses lowers individual transit carbon intensity and urban road-level particulate emissions.",
+    "source": {
+      "name": "IPCC Emission Factor Database (EFDB) for Transport & Energy",
+      "url": "https://www.ipcc-nggip.iges.or.jp/EFDB/main.php",
+      "checked": "2026-11-23"
+    }
+  },
+  {
+    "id": "medical-redirect",
+    "topic": "medical",
+    "text": "SaansPlan provides non-medical exposure planning only. Any symptoms such as severe breathlessness, chest tightness, wheezing, or confusion require prompt evaluation by a medical doctor or emergency services.",
+    "source": {
+      "name": "SaansPlan Clinical Non-Intervention Policy",
+      "url": "https://pib.gov.in/newsite/PrintRelease.aspx?relid=110654",
+      "checked": "2026-11-23"
+    }
+  }
 ]
