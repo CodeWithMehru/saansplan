@@ -59,3 +59,4 @@ export function startVoiceRecognition({ onResult, onError, onStart, onEnd, lang 
   recognition.start();
   return recognition;
 }
+

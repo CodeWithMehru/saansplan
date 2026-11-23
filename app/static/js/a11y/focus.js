@@ -75,3 +75,4 @@ export function showErrorSummary(errors) {
 export function initTextScale(currentScale = 100) {
   document.documentElement.style.fontSize = `${currentScale}%`;
 }
+

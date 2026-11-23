@@ -127,3 +127,4 @@ export function getHumanLabel(key, language = 'en') {
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
+

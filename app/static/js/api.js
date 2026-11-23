@@ -44,3 +44,4 @@ export async function askAssistant(question) {
   }
   return data.answer;
 }
+
