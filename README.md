@@ -20,9 +20,9 @@ Every evaluation criteria maps directly to concrete implementations, tests, and 
 | **Code Quality** | Clean layered architecture (`app/core/`, `app/engine/`, `app/routers/`, `app/services/`), strict Pydantic schemas (`app/models.py`), modular ES-modules (`app/static/js/`), typed public APIs | `make lint`<br>`make typecheck` | `ruff check` (0 errors)<br>`mypy --strict app` (clean in 32 files) |
 | **Security** | Zero API key exposure, no PII logging, XML prompt demarcation, 25-string multi-lingual injection corpus, SlowAPI proxy-aware rate limits, strict CSP, SSRF allowlist, Bandit & pip-audit | `make security` | [docs/SECURITY.md](docs/SECURITY.md)<br>`tests/security/` (100% pass)<br>`pip-audit` (0 vulns) |
 | **Efficiency** | In-memory `BoundedTTLCache` (30m TTL, LRU), HTTP gzip compression, weak ETags, single-flight locking, engine plan computation in 2.8ms, gzipped static bundle 30.7 KB (< 60 KB budget) | `make bench` | [docs/TEST_REPORT.md](docs/TEST_REPORT.md)<br>`scripts/bench.py`<br>`app/core/cache.py` |
-| **Testing** | 81 hermetic tests with 91.30% coverage (enforced ≥ 90% gate), property tests, golden tests, Node.js i18n test runner, Playwright multi-language E2E | `make test`<br>`make test-js`<br>`make e2e` | [TESTING.md](TESTING.md)<br>[docs/TEST_REPORT.md](docs/TEST_REPORT.md)<br>`pyproject.toml` |
+| **Testing** | 103 hermetic tests with 91.18% coverage (enforced ≥ 90% gate), property tests, golden tests, Node.js i18n test runner, Playwright multi-language E2E | `make test`<br>`make test-js`<br>`make e2e` | [TESTING.md](TESTING.md)<br>[docs/TEST_REPORT.md](docs/TEST_REPORT.md)<br>`pyproject.toml` |
 | **Accessibility** | WCAG 2.2 Level AA compliance, Lighthouse Accessibility 100/100, 0 Axe-Core violations across EN/Hinglish/HI and populated views, 360px mobile reflow (WCAG 1.4.10), keyboard skip link, A-/A/A+ text scaling | `make a11y` | [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md)<br>`scripts/a11y.py` (0 violations)<br>Lighthouse: 100/100 |
-| **Problem Statement Alignment** | Indian winter smog focus, CPCB NAQI category breakpoints, physical inhaled $\mu$g estimates (EPA factors), 5-day smog forecast, "Cleaner Day" routine optimizer, emissions/cost calculator, WhatsApp kit | `pytest tests/unit/engine/` | [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md)<br>All citations verified 100% |
+| **Problem Statement Alignment** | Indian winter smog focus, CPCB NAQI category breakpoints, physical inhaled $\mu$g estimates (EPA factors), 5-day smog forecast, "Cleaner Day" routine optimizer, emissions/cost calculator, WhatsApp kit | `pytest tests/unit/engine/` | [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md)<br>Citations & assumptions documented |
 
 ---
 
@@ -111,7 +111,7 @@ To guarantee deterministic, instantaneous deployments, Python 3.13 is strictly p
 
 | Failure Mode | Root Cause | System Response & Graceful Degradation |
 |---|---|---|
-| **Groq API Outage / Rate Limit** | Groq service downtime or quota exhaustion | System automatically catches `httpx.HTTPError` and falls back to deterministic rule-based routine parsing and template explanations. The user receives a 100% complete, fully functional plan without interruption. |
+| **Groq API Outage / Rate Limit** | Groq service downtime or quota exhaustion | System automatically catches `httpx.HTTPError` / timeouts and falls back to the baseline family routine (`default_routine`) and deterministic template explanations (`templated_explanation`). The user receives a complete, functional plan without interruption. |
 | **Open-Meteo API Down** | Upstream weather provider unreachable | Cached air quality data is returned if available. If no cache exists, the system gracefully falls back to regional seasonal baseline values with clear UI notice. |
 | **Missing Hourly PM2.5 Data** | Sensor gaps or null values from API | Linear interpolation engine (`app/engine/exposure.py`) fills missing hours; interpolated slots are explicitly marked with an asterisk in the timeline table. |
 | **Medical Query Submitted** | User asks for diagnosis, cough syrup, or medical treatment | The clinical safety guard (`app/services/guard.py`) intercepts health keywords and immediately returns a safe medical advisory directing the user to a doctor or emergency clinic. |
@@ -131,7 +131,7 @@ To guarantee deterministic, instantaneous deployments, Python 3.13 is strictly p
 
 ```bash
 # 1. Clone repository
-git clone git@github.com:CodeWithMehru/saansplan.git
+git clone https://github.com/CodeWithMehru/saansplan.git
 cd saansplan
 
 # 2. Set up virtual environment and install dependencies
@@ -155,11 +155,11 @@ Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
 
 ## 7. Verified Citations & Assumptions
 
-All scientific constants, emission factors, and health guidance in SaansPlan are verified against original publishers:
+Scientific constants, emission factors, and health guidance in SaansPlan are documented with their primary sources in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md):
 - **CPCB NAQI Breakpoints:** Gazette of India / MoEFCC notification (0-30 Good, 31-60 Satisfactory, 61-90 Moderate, 91-120 Poor, 121-250 Very Poor, >250 Severe).
 - **EPA Exposure Factors Handbook (Chapter 6):** Age-specific inhalation rates (Adult ~15.7 $\text{m}^3/\text{day}$, Child ~10.0 $\text{m}^3/\text{day}$, Elderly ~13.3 $\text{m}^3/\text{day}$).
 - **AHAM / US EPA Air Cleaners in the Home:** CADR 2/3 room-area sizing rule ($\text{CADR in CFM} \ge 2/3 \times \text{area in sq ft}$).
 - **US EPA Science Matters:** DIY Box Fan filter (Corsi-Rosenthal principle) with MERV 13 rating.
 - **WHO Household Fuel Guidelines:** Solid fuels (wood/coal/cow dung) produce severe indoor PM2.5 spikes; induction eliminates combustion emissions.
 
-See full verification audit in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md).
+See full documentation and primary links in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md).

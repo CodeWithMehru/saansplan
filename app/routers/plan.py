@@ -86,6 +86,7 @@ async def create_plan(request: Request, payload: PlanRequest) -> dict[str, Any]:
         air["pm25"], air.get("wind_speed"), forecast_days=DEFAULT_FORECAST_DAYS
     )
     cleaner_day = generate_cleaner_day(today_pm25, today_aqi, payload.members, routine)
+    engine["cleaner_day"] = cleaner_day
 
     primary_commute = "none"
     for act in routine.activities:

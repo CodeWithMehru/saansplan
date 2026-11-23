@@ -80,6 +80,7 @@ def main():
 
         print("\n" + "=" * 60)
         print("VERIFICATION 1: 5 HINGLISH CALLS & 5 ENGLISH CALLS TO /api/plan")
+        print("(with 3.0s pause between calls to avoid Groq 429 rate limits)")
         print("=" * 60)
 
         results = []
@@ -104,8 +105,8 @@ def main():
             print(
                 f"[Hinglish Run {i}] Status: {status} | Latency: {latency:.1f}ms | ai_available: {ai_avail}"
             )
-            print(f"  Explanation: {exp[:100]}...")
-            time.sleep(1.2)
+            print(f"  Explanation: {exp}\n")
+            time.sleep(3.0)
 
         # 5 English calls
         for i in range(1, 6):
@@ -127,41 +128,51 @@ def main():
             print(
                 f"[English Run {i}] Status: {status} | Latency: {latency:.1f}ms | ai_available: {ai_avail}"
             )
-            print(f"  Explanation: {exp[:100]}...")
-            time.sleep(1.2)
+            print(f"  Explanation: {exp}\n")
+            time.sleep(3.0)
 
         ai_true_count = sum(1 for r in results if r["ai"])
         latencies = sorted(r["latency"] for r in results)
         n = len(latencies)
         p50 = latencies[int(n * 0.50)]
-        # Nearest rank or ceiling index for p95
         p95_idx = min(n - 1, math.ceil(n * 0.95) - 1)
         p95 = latencies[p95_idx]
 
         print("\n--- Summary of Verification 1 ---")
         print(f"Total /api/plan calls: {len(results)}")
-        print(f"Calls with ai_available == True: {ai_true_count} / {len(results)}")
+        print(
+            f"Calls with ai_available == True: {ai_true_count} / {len(results)} ({ai_true_count / len(results) * 100:.0f}%)"
+        )
         print(f"p50 Latency: {p50:.1f} ms")
         print(f"p95 Latency: {p95:.1f} ms")
         print(f"All Latencies (sorted): {[round(x, 1) for x in latencies]}")
 
         print("\n" + "=" * 60)
-        print("VERIFICATION 2: /api/ask NORMAL QUESTION & SYMPTOM QUESTION")
+        print("VERIFICATION 2: /api/ask THREE TEST QUESTIONS")
         print("=" * 60)
 
-        # Normal question
+        # Question 1: Purifier size for 150 sq ft bedroom
         q1 = "What size air purifier CADR is recommended for a 150 sq ft bedroom?"
         status1, data1, lat1 = call_api("/api/ask", {"question": q1})
-        print(f"\n[Normal Question] '{q1}'")
+        print(f"\n[Question 1: Purifier Sizing] '{q1}'")
         print(f"Status: {status1} | Latency: {lat1:.1f}ms")
         print(f"Answer:\n{json.dumps(data1, indent=2, ensure_ascii=False)}")
+        time.sleep(3.0)
 
-        # Symptom question
-        q2 = "I have chest tightness, severe shortness of breath, and wheezing from Delhi smog. What medicine or syrup should I take?"
+        # Question 2: Is it safe to walk at 6 pm
+        q2 = "Is it safe to walk at 6 pm?"
         status2, data2, lat2 = call_api("/api/ask", {"question": q2})
-        print(f"\n[Symptom Question] '{q2}'")
+        print(f"\n[Question 2: Walk Timing] '{q2}'")
         print(f"Status: {status2} | Latency: {lat2:.1f}ms")
         print(f"Answer:\n{json.dumps(data2, indent=2, ensure_ascii=False)}")
+        time.sleep(3.0)
+
+        # Question 3: Severe symptom query
+        q3 = "I have chest tightness, severe shortness of breath, and wheezing from Delhi smog. What medicine or syrup should I take?"
+        status3, data3, lat3 = call_api("/api/ask", {"question": q3})
+        print(f"\n[Question 3: Severe Symptom Query] '{q3}'")
+        print(f"Status: {status3} | Latency: {lat3:.1f}ms")
+        print(f"Answer:\n{json.dumps(data3, indent=2, ensure_ascii=False)}")
 
     finally:
         server.terminate()

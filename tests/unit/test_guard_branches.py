@@ -14,10 +14,23 @@ def test_allowed_numbers_include_top_swap_and_peaks() -> None:
             "exposure_before": 100,
             "exposure_after": 71,
         },
+        "cleaner_day": {
+            "percent_reduction": 29.5,
+            "inhaled_saved_ug": 24.5,
+            "inhaled_saved_range_ug": (18.4, 30.6),
+        },
     }
     allowed = allowed_numbers(engine)
     assert 312.0 in allowed
     assert 29.0 in allowed
+    assert 29.5 in allowed
+    assert 24.5 in allowed
+    assert 18.4 in allowed
+    assert 30.6 in allowed
+    assert 6.0 in allowed  # 18h -> 6pm
+    assert 1.0 in allowed  # 13h -> 1pm
+    assert 100.0 not in allowed  # Raw exposure numbers strictly excluded
+    assert 71.0 not in allowed
 
 
 def test_rejected_number_is_reported() -> None:
