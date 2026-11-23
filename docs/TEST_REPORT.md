@@ -1,15 +1,15 @@
 # Test & Verification Report
 
-Generated automatically on: `2026-11-23 07:32:58 UTC`
+Generated automatically on: `2026-11-23 13:01:49 UTC`
 
 ## System Verification Summary
 
 | Category | Target / Requirement | Measured Result | Status |
 |---|---|---|---|
-| **Engine Execution Speed** | < 50 ms for 6-member family | `1.48 ms` | ✅ PASS |
-| **Interpolation Throughput** | 1000 runs < 200 ms | `35.68 ms` | ✅ PASS |
-| **Static Bundle Size** | < 60 KB gzipped | `26.54 KB` (raw: 90.06 KB) | ✅ PASS |
-| **Overall Test Coverage** | ≥ 90% enforced by pyproject | `91.30%` (81 passed) | ✅ PASS |
+| **Engine Execution Speed** | < 50 ms for 6-member family | `1.32 ms` | ✅ PASS |
+| **Interpolation Throughput** | 1000 runs < 200 ms | `31.93 ms` | ✅ PASS |
+| **Static Bundle Size** | < 60 KB gzipped | `26.63 KB` (raw: 90.48 KB) | ✅ PASS |
+| **Overall Test Coverage** | ≥ 90% enforced by pyproject | `91.18%` (124 passed) | ✅ PASS |
 | **Engine Test Coverage** | ≥ 95% target | `95%+` | ✅ PASS |
 | **Hermetic Execution** | No secrets & no network required | Hermetic tests pass cleanly | ✅ PASS |
 | **Axe Accessibility Audit** | 0 WCAG 2.2 AA violations | 0 violations (43 initial, 56 populated) | ✅ PASS |

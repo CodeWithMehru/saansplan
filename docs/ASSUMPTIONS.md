@@ -19,5 +19,5 @@ All numerical factors and calculations in SaansPlan are transparent, verifiable 
 ## Planning vs Medical Boundaries
 - Micrograms inhaled ($\mu\text{g}$) are computed as:
   $$\text{Dose}(\mu\text{g}) = \text{PM}_{2.5}(\mu\text{g/m}^3) \times \text{Ventilation}(\text{m}^3/\text{min}) \times \text{Duration}(\text{min}) \times \text{Indoor Penetration}$$
-- Reported with a $\pm 20\%$ physical uncertainty band reflecting ventilation rate variability.
+- Reported with a $\pm 25\%$ physical uncertainty band reflecting ventilation rate variability.
 - The assistant is strictly non-diagnostic; users with severe symptoms are automatically redirected to emergency healthcare services.

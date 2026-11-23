@@ -56,4 +56,3 @@ def test_kb_retrieve_no_match() -> None:
     kb = KnowledgeBase()
     res = kb.retrieve("xyz completely unrelated query 1234567")
     assert res == []
-
