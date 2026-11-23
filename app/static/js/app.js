@@ -45,7 +45,10 @@ function applyTranslations() {
     if (t[key]) el.placeholder = t[key];
   });
 
-  $('#language-toggle').textContent = language === 'hi' ? 'English' : language === 'hinglish' ? 'हिंदी' : 'Hinglish';
+  const nextLang = language === 'hi' ? 'English' : language === 'hinglish' ? 'हिंदी' : 'Hinglish';
+  const toggleBtn = $('#language-toggle');
+  toggleBtn.textContent = nextLang;
+  toggleBtn.setAttribute('aria-label', `${nextLang} - Switch language`);
 }
 
 function refreshMembers() {

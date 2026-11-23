@@ -118,4 +118,3 @@ def test_free_text_plan_falls_back_without_key(monkeypatch):
     response = client.post("/api/plan", json=payload)
     assert response.status_code == 200
     assert response.json()["explanation"]["ai_available"] is False
-

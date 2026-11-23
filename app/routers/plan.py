@@ -124,7 +124,7 @@ async def create_plan(request: Request, payload: PlanRequest) -> dict[str, Any]:
 
     try:
         explanation = await asyncio.wait_for(
-            explain_with_fallback(engine, payload.language), timeout=10.0
+            explain_with_fallback(engine, payload.language), timeout=15.0
         )
     except Exception:
         explanation = {

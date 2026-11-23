@@ -616,7 +616,11 @@ caption {
     --surface: #1b2920;
     --border: #4d6857;
     --green-light: #243a2d;
-    --green: #2fa16b;
+    --green: #177348;
+  }
+  .site-header {
+    background: #0d2b1d;
+    color: #ffffff;
   }
   input, select, textarea {
     background: #15221a;
@@ -632,6 +636,20 @@ caption {
   .medical-note {
     background: #382a0d;
     color: #ffe699;
+  }
+  .secondary {
+    color: #f0f7f3;
+    background: #243a2d;
+    border-color: #5d7e6a;
+  }
+  legend {
+    color: #52c286;
+  }
+  .eyebrow {
+    color: #52c286;
+  }
+  .site-footer {
+    color: #a3b8ac;
   }
 }
 

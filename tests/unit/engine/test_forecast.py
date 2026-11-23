@@ -42,4 +42,3 @@ def test_forecast_handles_empty_or_partial_data():
     days_partial = analyze_forecast([80.0] * 10, None, forecast_days=5)
     assert len(days_partial) == 1
     assert days_partial[0]["avg_pm25"] == 80.0
-

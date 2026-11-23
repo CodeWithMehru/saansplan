@@ -28,9 +28,9 @@ Automated static checks in pytest (`tests/a11y/test_static_markup.py`):
 
 ---
 
-## 2. Manual Keyboard Navigation Log
+## 2. Keyboard Navigation Flow Verification
 
-Every interactive feature is operable using keyboard alone (Tab, Shift+Tab, Enter, Space, Arrow keys):
+Every interactive feature is verified operable via sequential keyboard navigation (Tab, Shift+Tab, Enter, Space, Arrow keys) tested programmatically and structurally:
 
 | Step | Keystrokes | Expected Focus / Action | Observed Result | Status |
 |---|---|---|---|---|
@@ -74,8 +74,8 @@ Every interactive feature is operable using keyboard alone (Tab, Shift+Tab, Ente
 
 ---
 
-## 4. Honest Screen-Reader Assessment
+## 4. Screen-Reader & Assistive Technology Status
 
-- **Automated Accessibility Trees:** Validated with Chromium DevTools Accessibility Tree and Axe-Core. Semantic landmarks, heading hierarchy (H1 -> H2 -> H3), form labels, and live regions are correctly bound.
+- **Automated Accessibility Trees:** Validated with Chromium DevTools Accessibility Tree, Axe-Core 4.10.2, and Python HTML/AST markup tests. Semantic landmarks, heading hierarchy (H1 -> H2 -> H3), form labels, and live regions are strictly bound.
 - **Dynamic Announcements:** An offscreen `#a11y-announcer-polite` and `#a11y-announcer-assertive` announce status changes (loading, plan generated, preset loaded, city selected, errors).
-- **Physical Hardware Note:** Automated tree inspection and Axe-Core 4.10.2 passed 100%. While automated coverage verifies HTML/ARIA spec conformance, developers on macOS/Windows/Android are encouraged to perform complementary physical user checks with VoiceOver, NVDA, and TalkBack.
+- **Human Testing Clarification:** Zero human manual testing by assistive technology end-users was conducted. All compliance verification is automated via Axe-Core 4.10.2, Playwright headless Chromium audits, and static AST parsers. Physical evaluation with screen readers (NVDA, VoiceOver, JAWS, TalkBack) remains recommended for real-world user validation.

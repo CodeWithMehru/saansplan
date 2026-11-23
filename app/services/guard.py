@@ -33,7 +33,14 @@ def allowed_numbers(engine: dict[str, Any]) -> set[float]:
             value = swap.get(key)
             if isinstance(value, int | float):
                 values.update({float(value), round(float(value)), round(float(value), 1)})
-    for key in ("total_before", "total_after", "peak_hour", "peak_aqi"):
+    for key in (
+        "total_before",
+        "total_after",
+        "peak_hour",
+        "peak_aqi",
+        "highest_aqi_hour",
+        "highest_aqi",
+    ):
         value = engine.get(key)
         if isinstance(value, int | float):
             values.update({float(value), round(float(value)), round(float(value), 1)})

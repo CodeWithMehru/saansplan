@@ -29,4 +29,3 @@ def test_emissions_budget_filtering():
     low_res = calculate_emissions_and_cost(commute_mode="car", budget_filter="under_500")
     for alt in low_res["alternatives"]:
         assert alt["upfront_cost_inr"] <= 500
-
