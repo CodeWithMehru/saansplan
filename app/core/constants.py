@@ -11,8 +11,18 @@ CPCB_PM25_BREAKPOINTS = (
 )
 
 # ASSUMPTION - approximate, see docs/ASSUMPTIONS.md source: EPA Exposure Factors Handbook
-VENTILATION_L_MIN: dict[str, float] = {"rest": 6.0, "light": 8.0, "moderate": 20.0, "heavy": 40.0}
+VENTILATION_L_MIN: dict[str, float] = {
+    "rest": 6.0,
+    "light": 8.0,
+    "moderate": 20.0,
+    "heavy": 40.0,
+}
 # ASSUMPTION - approximate, see docs/ASSUMPTIONS.md
 CHILD_INHALATION_SCALE = 0.55
 # ASSUMPTION - approximate, see docs/ASSUMPTIONS.md
 ELDERLY_INHALATION_SCALE = 0.70
+
+HOURS_IN_DAY = 24
+HTTP_STATUS_OK = 200
+SEVERE_AQI_THRESHOLD = 300
+DEFAULT_FORECAST_DAYS = 5
