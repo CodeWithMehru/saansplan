@@ -103,7 +103,10 @@ def _extract_hindi_hour(text: str) -> int | None:
 
 def extract_hour(text: str) -> int | None:
     """Extract clock hour (0-23) if question asks about a specific time of day."""
-    return _extract_12h_hour(text) or _extract_hindi_hour(text)
+    h12 = _extract_12h_hour(text)
+    if h12 is not None:
+        return h12
+    return _extract_hindi_hour(text)
 
 
 def check_safety(q_lower: str) -> dict[str, Any] | None:
