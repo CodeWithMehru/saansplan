@@ -1,13 +1,13 @@
 # Test & Verification Report
 
-Generated automatically on: `2026-11-24 10:37:38 UTC`
+Generated automatically on: `2026-11-24 10:56:07 UTC`
 
 ## System Verification Summary
 
 | Category | Target / Requirement | Measured Result | Status |
 |---|---|---|---|
-| **Engine Execution Speed** | < 50 ms for 6-member family | `2.8 ms` | ✅ PASS |
-| **Interpolation Throughput** | 1000 runs < 200 ms | `72.24 ms` | ✅ PASS |
+| **Engine Execution Speed** | < 50 ms for 6-member family | `1.61 ms` | ✅ PASS |
+| **Interpolation Throughput** | 1000 runs < 200 ms | `38.21 ms` | ✅ PASS |
 | **Static Bundle Size** | < 60 KB gzipped | `32.7 KB` (raw: 100.95 KB) | ✅ PASS |
 | **Overall Test Coverage** | ≥ 95% enforced by pyproject | `96.03%` (178 passed) | ✅ PASS |
 | **Engine Test Coverage** | ≥ 95% target | `95%+` | ✅ PASS |

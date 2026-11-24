@@ -1,6 +1,6 @@
 export PATH := $(CURDIR)/.venv/bin:$(PATH)
 
-.PHONY: install lint typecheck test test-js e2e a11y security bench report verify
+.PHONY: install lint typecheck test test-js e2e a11y security bench report quality verify
 install:
 	python3 -m venv .venv || true
 	.venv/bin/pip install -r requirements.txt -r requirements-dev.txt
@@ -24,4 +24,6 @@ bench:
 	python3 scripts/bench.py
 report:
 	python3 scripts/report.py
+quality:
+	python3 scripts/quality_report.py
 verify: lint typecheck test test-js security report
