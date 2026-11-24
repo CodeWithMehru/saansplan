@@ -115,6 +115,18 @@ async def index() -> FileResponse:
     return FileResponse("app/static/index.html")
 
 
+@app.get("/accessibility")
+async def accessibility() -> FileResponse:
+    """Serve the WCAG 2.2 AA accessibility statement."""
+    return FileResponse("app/static/accessibility.html")
+
+
+@app.get("/.well-known/security.txt")
+async def security_txt() -> FileResponse:
+    """Serve RFC 9116 security contact information."""
+    return FileResponse("app/static/.well-known/security.txt", media_type="text/plain")
+
+
 @app.get("/favicon.ico")
 async def favicon() -> Response:
     """Serve a tiny inline SVG favicon."""

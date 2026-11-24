@@ -17,6 +17,58 @@
   font-size: 100%;
 }
 
+html {
+  scroll-padding-top: 5rem;
+}
+
+/* WCAG 1.4.12 Text Spacing Enhancement */
+html[data-spacing="enhanced"] body,
+html[data-spacing="enhanced"] p,
+html[data-spacing="enhanced"] li,
+html[data-spacing="enhanced"] span,
+html[data-spacing="enhanced"] label,
+html[data-spacing="enhanced"] input,
+html[data-spacing="enhanced"] textarea,
+html[data-spacing="enhanced"] button {
+  line-height: 1.6 !important;
+  letter-spacing: 0.12em !important;
+  word-spacing: 0.16em !important;
+}
+
+/* High-Contrast Mode */
+html[data-contrast="high"] {
+  --ink: #000000;
+  --paper: #ffffff;
+  --surface: #ffffff;
+  --border: #000000;
+  --green: #004d26;
+  --green-dark: #002b15;
+  --green-light: #ffffff;
+}
+html[data-contrast="high"] button,
+html[data-contrast="high"] input,
+html[data-contrast="high"] select,
+html[data-contrast="high"] textarea,
+html[data-contrast="high"] .card,
+html[data-contrast="high"] fieldset {
+  border: 2px solid #000000 !important;
+}
+
+.noscript-banner {
+  background: #ffeb3b;
+  color: #000000;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 600;
+  border-bottom: 2px solid #fbc02d;
+}
+
+.footer-link {
+  color: inherit;
+  text-decoration: underline;
+  margin: 0 0.25rem;
+}
+
 * { box-sizing: border-box; }
 
 body {

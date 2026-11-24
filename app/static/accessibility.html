@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12372a">
+  <title>Accessibility Statement — SaansPlan</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="site-header" role="banner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">S</span>
+      <strong>SaansPlan</strong>
+    </div>
+    <nav aria-label="Breadcrumb navigation">
+      <a href="/" style="color: #ffffff; text-decoration: underline;">← Back to Assistant</a>
+    </nav>
+  </header>
+
+  <main id="main-content" role="main" style="max-width: 800px; margin: 2rem auto; padding: 1rem 1.5rem;">
+    <h1>Accessibility Statement</h1>
+    <p><strong>Target Standard:</strong> Web Content Accessibility Guidelines (WCAG) 2.2 Level AA</p>
+    <p><strong>Last Updated:</strong> November 2026</p>
+
+    <section aria-labelledby="conformance-heading">
+      <h2 id="conformance-heading">Conformance Status</h2>
+      <p>
+        SaansPlan is engineered to adhere to <strong>WCAG 2.2 Level AA</strong>. Every interactive component, form control, and content visualization is built using semantic HTML5, explicit ARIA attributes, and accessible color contrast.
+      </p>
+    </section>
+
+    <section aria-labelledby="measures-heading">
+      <h2 id="measures-heading">Accessibility Measures Implemented</h2>
+      <ul>
+        <li><strong>WCAG 1.4.3 & 1.4.11 (Contrast):</strong> All text elements achieve at least 4.5:1 contrast against their backgrounds (and 3:1 for user interface components and graphical objects).</li>
+        <li><strong>WCAG 1.4.10 (Reflow):</strong> The entire interface reflows smoothly without loss of information down to 320 px width without requiring two-dimensional scrolling.</li>
+        <li><strong>WCAG 1.4.12 (Text Spacing):</strong> Evaluated against line-height (1.5x), paragraph spacing (2x), letter spacing (0.12x), and word spacing (0.16x) with zero clipping or text overflow.</li>
+        <li><strong>WCAG 2.1.1 & 2.1.2 (Keyboard Navigation):</strong> All interactive features are operable via standard keyboard (Tab, Shift+Tab, Enter, Space, Escape) with no keyboard traps.</li>
+        <li><strong>WCAG 2.4.7 & 2.4.11 (Focus Indicator & Obscuration):</strong> High-visibility 3px focus rings are enforced on all controls. <code>scroll-padding-top</code> prevents focus from being obscured by sticky headers.</li>
+        <li><strong>WCAG 3.3.1 & 3.3.3 (Error Identification & Suggestion):</strong> Form submission errors are aggregated in an ARIA-alert error summary with direct skip links to invalid fields.</li>
+        <li><strong>WCAG 4.1.3 (Status Messages):</strong> Dynamic calculations, routine optimizations, and assistant responses announce their completion via polite ARIA live regions.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="testing-heading">
+      <h2 id="testing-heading">Technical Verification & Audit Methodology</h2>
+      <p>
+        Accessibility is verified continuously using automated test suites:
+      </p>
+      <ul>
+        <li><strong>Axe-Core Automated Scans:</strong> Zero violations across initial empty states, loaded results, and active assistant queries.</li>
+        <li><strong>Static Markup Checks:</strong> Hermetic Pytest checks validating unique IDs, landmark regions, button labels, and input labels.</li>
+        <li><strong>Internationalization Checks:</strong> Native Node.js tests ensuring 100% key parity and Devanagari script integrity across Hindi and English.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="limitations-heading">
+      <h2 id="limitations-heading">Known Limitations & Honest Disclosure</h2>
+      <p>
+        While automated verification with Axe-Core and Playwright confirms 0 violations against WCAG 2.2 AA rules, <strong>no formal testing with human users who rely on assistive technologies (such as JAWS, NVDA, or VoiceOver) has been conducted to date</strong>.
+      </p>
+      <p>
+        Hourly smog forecast charts are accompanied by tabular summaries, but complex multi-pollutant visual graphs may require further screen reader optimization.
+      </p>
+    </section>
+
+    <section aria-labelledby="feedback-heading">
+      <h2 id="feedback-heading">Feedback and Reporting Accessibility Issues</h2>
+      <p>
+        If you encounter any accessibility barriers or have suggestions for improvement, please report an issue on our public repository:
+      </p>
+      <p>
+        <a href="https://github.com/CodeWithMehru/saansplan/issues" target="_blank" rel="noopener noreferrer">
+          Submit an issue on GitHub (CodeWithMehru/saansplan)
+        </a>
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <p>SaansPlan — Urban Air Quality & Winter Smog Assistant. <a href="/" style="color: inherit; text-decoration: underline;">Return to Home</a>.</p>
+  </footer>
+</body>
+</html>

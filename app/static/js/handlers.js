@@ -125,6 +125,44 @@ export function initTextScaleHandlers() {
     setTextScale(next);
     initTextScale(next);
   });
+
+  const contrastBtn = $('#contrast-toggle');
+  if (contrastBtn) {
+    if (localStorage.getItem('saansplan_contrast') === 'high') {
+      document.documentElement.setAttribute('data-contrast', 'high');
+    }
+    contrastBtn.addEventListener('click', () => {
+      const isHigh = document.documentElement.getAttribute('data-contrast') === 'high';
+      if (isHigh) {
+        document.documentElement.removeAttribute('data-contrast');
+        localStorage.removeItem('saansplan_contrast');
+        announce('High contrast disabled');
+      } else {
+        document.documentElement.setAttribute('data-contrast', 'high');
+        localStorage.setItem('saansplan_contrast', 'high');
+        announce('High contrast enabled');
+      }
+    });
+  }
+
+  const spacingBtn = $('#spacing-toggle');
+  if (spacingBtn) {
+    if (localStorage.getItem('saansplan_spacing') === 'enhanced') {
+      document.documentElement.setAttribute('data-spacing', 'enhanced');
+    }
+    spacingBtn.addEventListener('click', () => {
+      const isEnhanced = document.documentElement.getAttribute('data-spacing') === 'enhanced';
+      if (isEnhanced) {
+        document.documentElement.removeAttribute('data-spacing');
+        localStorage.removeItem('saansplan_spacing');
+        announce('Enhanced text spacing disabled');
+      } else {
+        document.documentElement.setAttribute('data-spacing', 'enhanced');
+        localStorage.setItem('saansplan_spacing', 'enhanced');
+        announce('Enhanced text spacing enabled');
+      }
+    });
+  }
 }
 
 export function initSpeechAndAssistantHandlers() {

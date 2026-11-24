@@ -10,6 +10,8 @@
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
+  <a class="skip-link" href="#results">Skip to results</a>
+  <a class="skip-link" href="#ask-section">Skip to assistant</a>
   <header class="site-header" role="banner">
     <div class="brand">
       <span class="brand-mark" aria-hidden="true">S</span>
@@ -17,13 +19,20 @@
     </div>
     <div class="header-actions">
       <button id="language-toggle" type="button" aria-label="हिं / EN Switch language">हिं / EN</button>
-      <div class="text-controls" role="group" aria-label="Text size scaling controls">
+      <div class="text-controls" role="group" aria-label="Reading comfort controls">
         <button id="text-smaller" type="button" data-text-scale="90" aria-label="A− Decrease text size">A−</button>
         <button id="text-reset" type="button" data-text-scale="100" aria-label="A Reset text size">A</button>
         <button id="text-larger" type="button" data-text-scale="110" aria-label="A+ Increase text size">A+</button>
+        <button id="contrast-toggle" type="button" aria-label="Toggle high contrast display">◐</button>
+        <button id="spacing-toggle" type="button" aria-label="Toggle enhanced text spacing">↔</button>
       </div>
     </div>
   </header>
+  <noscript>
+    <div class="noscript-banner" role="status">
+      <strong>JavaScript is required.</strong> SaansPlan uses client-side calculation for personalized family exposure modeling. Please enable JavaScript to generate routines, indoor purifier sizing, and smog forecasts.
+    </div>
+  </noscript>
 
   <main id="main-content" role="main" tabindex="-1">
     <section class="hero" aria-labelledby="page-title">
@@ -142,7 +151,7 @@
         <button class="primary" type="submit" data-i18n="plan">Create my plan</button>
       </form>
 
-      <section class="results" aria-live="polite" aria-busy="false" aria-labelledby="results-heading">
+      <section id="results" class="results" tabindex="-1" aria-live="polite" aria-busy="false" aria-labelledby="results-heading">
         <h2 id="results-heading" class="sr-only">Your Plan Results</h2>
         <div id="empty-state" class="empty-state" data-i18n="emptyState">Fill the form and press Create my plan.</div>
         <div id="status" role="status"></div>
@@ -232,7 +241,7 @@
       </section>
 
       <!-- F8: Grounded Assistant -->
-      <section id="ask-section" aria-labelledby="ask-heading">
+      <section id="ask-section" tabindex="-1" aria-labelledby="ask-heading">
         <h2 id="ask-heading" data-i18n="askTitle">Ask SaansPlan</h2>
         <label for="ask-question" data-i18n="askPlaceholder">Question</label>
         <textarea id="ask-question" maxlength="300" rows="3" placeholder="Ask about purifier sizing, mask fit, or timing windows"></textarea>
@@ -244,6 +253,10 @@
 
   <footer class="site-footer" role="contentinfo">
     <p>SaansPlan is an open-source Urban Air Quality Assistant for Indian winter smog. Deterministic EPA & CPCB models. Non-medical guidance.</p>
+    <p>
+      <a href="/accessibility" class="footer-link">Accessibility Statement (WCAG 2.2 AA)</a> · 
+      <a href="https://github.com/CodeWithMehru/saansplan" class="footer-link" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+    </p>
   </footer>
 
   <script type="module" src="/static/js/app.js"></script>
