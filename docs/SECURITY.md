@@ -1,26 +1,47 @@
-# Security Architecture & Threat Model
+# Security Architecture & STRIDE Threat Model
 
 SaansPlan processes urban air quality data and sensitive household routines. Our defense-in-depth security model ensures user privacy, zero credential exposure, strict sandboxing against prompt injections, and resilient defense against abuse.
 
 ---
 
-## 1. Threat Model Matrix
+## 1. Data-Flow Diagram (DFD)
 
-| Asset | Threat | Mitigation | Proving Test / Verification |
-|---|---|---|---|
-| **`GROQ_API_KEY`** | Secret leakage in logs, git, or client response | Pinned in server `.env` (gitignored); never sent to client; redacted from logging; verified in pre-commit and CI | `tests/test_security.py::test_api_key_not_exposed`, `git status`, `bandit -q -r app` |
-| **User Routine Text** | Privacy leak / PII persistence | Zero server persistence (stateless FastAPI); routine text is never written to disk or logs; logged payloads contain only request IDs and lat/lon rounded to 2 decimal places | `tests/security/test_prompt_injection.py`, `app/core/logging.py` |
-| **User Location (Coordinates)** | Exact home location tracking | Coordinates are rounded to 2 decimal places for cache keys (~1.1 km resolution); IP addresses are hashed for rate limiting | `tests/security/test_real_client_ip.py`, `app/services/air_quality.py` |
-| **LLM Output & Medical Advice** | Hallucinations, dangerous medical guidance, or ungrounded claims | Deterministic guard (`app/services/guard.py`) intercepts medical symptoms and triggers safe doctor redirect; all physical numbers computed by verified deterministic engines | `tests/security/test_prompt_injection.py::test_medical_advice_redirect`, `tests/test_guard.py` |
-| **Prompt Injection Attacks** | Jailbreaks, prompt leaking, or system prompt overrides | XML data demarcation (`<user_routine>`), system prompt locking, and strict Pydantic JSON schema output enforcement | `tests/security/test_prompt_injection.py` (25 multi-lingual attacks in EN, Hinglish, HI) |
-| **API Endpoints (DoS / Abuse)** | Endpoint spamming, brute-force requests | SlowAPI rate limiting (30 req/min); proxy-aware real client IP extraction (`X-Forwarded-For` with trusted proxy validation) | `tests/security/test_real_client_ip.py`, `tests/api/test_plan_endpoint.py` |
-| **Browser Execution (XSS)** | Cross-Site Scripting, DOM injection | Zero `innerHTML` for user content; all DOM insertions use `textContent` or `createElement`; strict Content Security Policy | `tests/a11y/test_static_markup.py`, `tests/test_geocode_and_csp.py`, `scripts/a11y.py` |
-| **Server-Side Request Forgery (SSRF)** | Arbitrary outbound network requests | Outbound client restricted strictly to verified endpoints (`api.open-meteo.com`, `geocoding-api.open-meteo.com`, `api.groq.com`); no redirects allowed; 10s strict timeout | `app/services/air_quality.py`, `app/routers/geocode.py`, `tests/test_air_quality.py` |
-| **Dependencies & Supply Chain** | Known CVEs in Python packages | Pinned versions, automated Dependabot alerts, regular `pip-audit` scans, and Bandit static AST analysis in CI | `make security` (`pip-audit -r requirements.txt`, `bandit -q -r app`) |
+```mermaid
+flowchart TD
+    User["User Client (Browser)"]
+    Proxy["Reverse Proxy / Render CDN"]
+    FastAPI["FastAPI Application Server"]
+    Guard["Deterministic Grounding Guard"]
+    Engine["Pure Mathematical Engine"]
+    OpenMeteo["Open-Meteo API (Outbound HTTPS)"]
+    Groq["Groq LLM (Outbound HTTPS)"]
+
+    User -- "HTTPS / TLS 1.3" --> Proxy
+    Proxy -- "Validated Headers" --> FastAPI
+    FastAPI -- "Input Sanitization (Pydantic v2)" --> Guard
+    FastAPI -- "Air Quality Query" --> OpenMeteo
+    Guard -- "Clean Routine & Micrograms" --> Engine
+    Guard -- "Prompt Demarcation" --> Groq
+    Engine -- "Deterministic Facts" --> FastAPI
+    FastAPI -- "Strict Security Headers & JSON" --> User
+```
 
 ---
 
-## 2. Production HTTP Security Headers
+## 2. STRIDE Threat Model Matrix
+
+| STRIDE Category | Asset / Surface | Threat Description | Mitigation in SaansPlan | Proving Test / Verification |
+|---|---|---|---|---|
+| **Spoofing** | Client IP & Geolocation | Spoofed `X-Forwarded-For` header attempting to bypass rate limits or track users | SlowAPI limiter uses trusted proxy resolver: client IP header is trusted only when `TRUST_PROXY=true` is explicitly set | `tests/security/test_real_client_ip.py`, `tests/unit/test_fault_injection.py` |
+| **Tampering** | API Request Payloads | Malformed or oversized JSON payloads injected into API | Pydantic v2 input schemas with `extra="forbid"`, control character stripping, and 64 KB size limit (`MAX_REQUEST_BYTES`) | `tests/test_schema_validation.py`, `tests/security/test_http_hardening.py` |
+| **Repudiation** | API Logs & Diagnostics | Lack of traceable audit logs for API issues | Unique `X-Request-ID` attached to all HTTP responses and logged with timestamps and error codes | `tests/security/test_http_hardening.py`, `app/main.py` |
+| **Information Disclosure** | `GROQ_API_KEY` & User PII | API key leakage in logs/headers; user routine PII exposure | Zero server persistence (stateless); `.env` gitignored; coordinates rounded to 2 decimals (~1.1 km resolution); key never returned | `tests/security/test_http_hardening.py`, `git status`, `tests/test_security.py` |
+| **Denial of Service** | API Routers & Outbound calls | ReDoS regex exhaustion, memory bloat, or upstream hanging | ReDoS-safe linear regexes; bounded TTL cache (128 entries max); single-flight in-flight deduplication; 10s timeout on external calls | `tests/unit/test_cache.py`, `tests/test_air_quality.py` |
+| **Elevation of Privilege** | LLM System Prompt & Assistant | Prompt injections, jailbreaks, or clinical medical prescriptions | Triple-layer defense: system prompt demarcation (`<user_routine>`), clinical keyword interception (`check_safety`), and deterministic fallback | `tests/security/test_prompt_injection.py` (48 adversarial vectors in EN, Hinglish, HI) |
+
+---
+
+## 3. Production HTTP Security Headers
 
 Every HTTP response dispatched by `app/main.py` enforces modern defensive headers:
 
@@ -31,14 +52,29 @@ Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: geolocation=(self), camera=(), microphone=()
 Strict-Transport-Security: max-age=31536000; includeSubDomains
 Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Resource-Policy: same-origin
+X-Request-ID: <unique-id>
 Cache-Control: no-store (for API responses)
 ```
 
 - **Strict CSP:** Scripts and styles are restricted strictly to `'self'`. No `unsafe-inline`, no `unsafe-eval`, and no external third-party CDN scripts.
+- **Strict Content-Type Enforcement:** POST requests to `/api/` endpoints must declare `Content-Type: application/json`; non-JSON requests are immediately rejected with `415 Unsupported Media Type`.
 - **Request Size Guard:** Payloads exceeding 64 KB (`MAX_REQUEST_BYTES`) are terminated immediately with HTTP 413.
 
 ---
 
-## 3. Vulnerability Reporting
+## 4. Supply Chain & CI Security Controls
 
-Please report security issues responsibly via GitHub Security Advisories or by creating a private report with the project maintainer. Do not publish reproducible exploit code or private credentials in public issues.
+1. **SHA-Pinned GitHub Actions:** All third-party GitHub Actions in `.github/workflows/ci.yml` are pinned to full 40-character commit SHAs verified via the GitHub API, preventing tag-mutation supply chain attacks.
+2. **Least Privilege Workflows:** Top-level permissions are locked down to `permissions: contents: read`.
+3. **Automated Vulnerability Scans:** `bandit -q -r app` and `pip-audit -r requirements.txt` execute on every commit and weekly on schedule.
+4. **RFC 9116 Security Policy:** Standardized security contact information is hosted at `/.well-known/security.txt`.
+
+---
+
+## 5. Vulnerability Reporting & Disclosure
+
+We appreciate responsible security disclosures. If you discover a potential vulnerability:
+1. Submit a private advisory via [GitHub Security Advisories](https://github.com/CodeWithMehru/saansplan/security/advisories/new).
+2. Or contact the maintainers following the instructions in `/.well-known/security.txt`.
+3. Please do not create public GitHub issues for security vulnerabilities.

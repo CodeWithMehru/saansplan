@@ -67,6 +67,15 @@ async def security_middleware(
     if content_length and int(content_length) > MAX_REQUEST_BYTES:
         return JSONResponse(status_code=413, content={"detail": "Request body is too large"})
 
+    # Strict Content-Type enforcement on JSON API endpoints
+    if request.method == "POST" and request.url.path.startswith("/api/"):
+        content_type = request.headers.get("content-type", "")
+        if "application/json" not in content_type.lower():
+            return JSONResponse(
+                status_code=415,
+                content={"detail": "Unsupported Media Type: expected application/json"},
+            )
+
     try:
         response = await call_next(request)
     except Exception:
@@ -89,6 +98,8 @@ async def security_middleware(
     response.headers["Permissions-Policy"] = "geolocation=(self), camera=(), microphone=()"
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+    response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+    response.headers["X-Request-ID"] = request.headers.get("x-request-id", "local")
 
     if request.url.path.startswith("/static/"):
         response.headers["Cache-Control"] = "public, max-age=3600, stale-while-revalidate=86400"
@@ -115,13 +126,13 @@ async def index() -> FileResponse:
     return FileResponse("app/static/index.html")
 
 
-@app.get("/accessibility")
+@app.get("/accessibility", include_in_schema=False)
 async def accessibility() -> FileResponse:
     """Serve the WCAG 2.2 AA accessibility statement."""
     return FileResponse("app/static/accessibility.html")
 
 
-@app.get("/.well-known/security.txt")
+@app.get("/.well-known/security.txt", include_in_schema=False)
 async def security_txt() -> FileResponse:
     """Serve RFC 9116 security contact information."""
     return FileResponse("app/static/.well-known/security.txt", media_type="text/plain")

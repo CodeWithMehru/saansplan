@@ -1,20 +1,20 @@
 # Test & Verification Report
 
-Generated automatically on: `2026-11-24 10:17:19 UTC`
+Generated automatically on: `2026-11-24 10:37:38 UTC`
 
 ## System Verification Summary
 
 | Category | Target / Requirement | Measured Result | Status |
 |---|---|---|---|
-| **Engine Execution Speed** | < 50 ms for 6-member family | `1.6 ms` | ✅ PASS |
-| **Interpolation Throughput** | 1000 runs < 200 ms | `45.2 ms` | ✅ PASS |
-| **Static Bundle Size** | < 60 KB gzipped | `29.7 KB` (raw: 92.43 KB) | ✅ PASS |
-| **Overall Test Coverage** | ≥ 95% enforced by pyproject | `96.06%` (151 passed) | ✅ PASS |
+| **Engine Execution Speed** | < 50 ms for 6-member family | `2.8 ms` | ✅ PASS |
+| **Interpolation Throughput** | 1000 runs < 200 ms | `72.24 ms` | ✅ PASS |
+| **Static Bundle Size** | < 60 KB gzipped | `32.7 KB` (raw: 100.95 KB) | ✅ PASS |
+| **Overall Test Coverage** | ≥ 95% enforced by pyproject | `96.03%` (178 passed) | ✅ PASS |
 | **Engine Test Coverage** | ≥ 95% target | `95%+` | ✅ PASS |
 | **Hermetic Execution** | No secrets & no network required | Hermetic tests pass cleanly | ✅ PASS |
 | **Axe Accessibility Audit** | 0 WCAG 2.2 AA violations | 0 violations (43 initial, 56 populated) | ✅ PASS |
 | **Reflow (WCAG 1.4.10)** | 360 px width without horizontal scroll | Zero horizontal overflow | ✅ PASS |
-| **Prompt Injection Defense** | Multi-lingual adversarial corpus | 25 injection strings blocked | ✅ PASS |
+| **Prompt Injection Defense** | Multi-lingual adversarial corpus | 48 injection strings blocked | ✅ PASS |
 | **Medical Safety Redirect** | 100% redirect on symptoms/meds | Verified clinical safety fallback | ✅ PASS |
 | **Security Audits** | Bandit zero issues, pip-audit zero vulns | Clean automated scan | ✅ PASS |
 
