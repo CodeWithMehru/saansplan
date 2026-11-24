@@ -1,25 +1,23 @@
 """Application constants and documented assumptions."""
 
-import os
+from app.core.settings import get_settings
 
-from dotenv import load_dotenv
+_settings = get_settings()
 
-load_dotenv()
-
-GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
-GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
-AIR_QUALITY_ENDPOINT = "https://air-quality-api.open-meteo.com/v1/air-quality"
+GROQ_MODEL = _settings.groq_model
+GROQ_ENDPOINT = _settings.groq_endpoint
+AIR_QUALITY_ENDPOINT = _settings.air_quality_endpoint
 
 # ASSUMPTION - approximate, see README Assumptions
-CACHE_TTL_SECONDS = 30 * 60
+CACHE_TTL_SECONDS = _settings.cache_ttl_seconds
 # ASSUMPTION - approximate, see README Assumptions
-OUTBOUND_TIMEOUT_SECONDS = 10.0
+OUTBOUND_TIMEOUT_SECONDS = _settings.outbound_timeout_seconds
 # ASSUMPTION - approximate, see README Assumptions
-OUTBOUND_RETRIES = 2
+OUTBOUND_RETRIES = _settings.outbound_retries
 # ASSUMPTION - approximate, see README Assumptions
-RATE_LIMIT = "30/minute"
+RATE_LIMIT = _settings.rate_limit
 # ASSUMPTION - approximate, see README Assumptions
-MAX_REQUEST_BYTES = 64 * 1024
+MAX_REQUEST_BYTES = _settings.max_request_bytes
 
 # ASSUMPTION - approximate, see README Assumptions
 BREATHING_FACTORS = {"rest": 1.0, "light": 1.2, "moderate": 1.7, "heavy": 2.2}

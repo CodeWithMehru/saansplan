@@ -3,13 +3,13 @@
 import asyncio
 import json
 import logging
-import os
 import re
 from typing import Any, cast
 
 import httpx
 
 from app.config import GROQ_ENDPOINT, GROQ_MODEL, OUTBOUND_RETRIES, OUTBOUND_TIMEOUT_SECONDS
+from app.core.settings import get_settings
 from app.models import Routine
 from app.services.guard import (
     format_hour_12h,
@@ -29,7 +29,7 @@ async def groq_chat(
     json_schema: dict[str, Any] | None = None,
 ) -> str:
     """Make one server-side Groq chat-completions call with JSON mode."""
-    api_key = os.getenv("GROQ_API_KEY")
+    api_key = get_settings().groq_api_key
     if not api_key:
         raise RuntimeError("GROQ_API_KEY is not configured")
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}

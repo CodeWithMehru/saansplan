@@ -6,7 +6,7 @@ from typing import Any
 
 from app.config import TOP_SWAP_LIMIT
 from app.engine.exposure import interpolate_hourly, simulate_exposure
-from app.models import FamilyMember, Routine
+from app.models import Activity, FamilyMember, Routine
 
 
 def reduce_fraction(before: float, after: float) -> float:
@@ -16,48 +16,67 @@ def reduce_fraction(before: float, after: float) -> float:
     return round(max(0.0, (before - after) / before * 100.0), 1)
 
 
-def generate_swaps(
+SimContext = tuple[list[float | None], list[float | None], Sequence[FamilyMember]]
+
+
+def _evaluate_outdoor_shift(
+    activity: Activity,
+    sim_ctx: SimContext,
+    routine: Routine,
+    baseline: dict[str, Any],
+    pm25: list[float],
+) -> dict[str, Any]:
+    """Evaluate shifting one outdoor activity to the lowest-pollution hour of the day."""
+    pm25_hourly, aqi_hourly, members = sim_ctx
+    valid_hours = [hour for hour in range(24) if hour != activity.start_hour]
+    cleaner = min(valid_hours, key=lambda hour: pm25[hour] if hour < len(pm25) else 0.0)
+    changed = deepcopy(routine)
+    target = next(item for item in changed.activities if item.label == activity.label)
+    target.start_hour = cleaner
+    reduced = simulate_exposure(pm25_hourly, aqi_hourly, members, changed)
+    return {
+        "key": "shift_activity",
+        "description_key": "swap_shift",
+        "from_hour": activity.start_hour,
+        "to_hour": cleaner,
+        "exposure_before": baseline["total_before"],
+        "exposure_after": reduced["total_before"],
+        "percent_reduction": reduce_fraction(baseline["total_before"], reduced["total_before"]),
+        "emissions_note": (
+            "Estimated: no added fuel use; walking or cycling may avoid vehicle emissions."
+        ),
+    }
+
+
+def _generate_outdoor_swaps(
+    sim_ctx: SimContext,
+    routine: Routine,
+    baseline: dict[str, Any],
+    pm25: list[float],
+) -> list[dict[str, Any]]:
+    """Generate shift candidates for all outdoor activities."""
+    swaps: list[dict[str, Any]] = []
+    outdoor_acts = [act for act in routine.activities if act.place == "outdoor"]
+    for act in outdoor_acts:
+        swaps.append(_evaluate_outdoor_shift(act, sim_ctx, routine, baseline, pm25))
+    return swaps
+
+
+def _generate_home_swaps(
     pm25_hourly: list[float | None],
     aqi_hourly: list[float | None],
     members: Sequence[FamilyMember],
     routine: Routine,
+    baseline: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    """Generate and rank practical low-exposure, lower-emission swaps."""
-    baseline = simulate_exposure(pm25_hourly, aqi_hourly, members, routine)
-    pm25, _ = interpolate_hourly(pm25_hourly)
-    candidates: list[dict[str, Any]] = []
+    """Generate structural home intervention swaps (windows, purifier, cooking)."""
+    swaps: list[dict[str, Any]] = []
 
-    outdoor_activities = [
-        activity for activity in routine.activities if activity.place == "outdoor"
-    ]
-    for activity in outdoor_activities:
-        valid_hours = [hour for hour in range(24) if hour != activity.start_hour]
-        cleaner = min(valid_hours, key=lambda hour: pm25[hour] if hour < len(pm25) else 0.0)
-        changed = deepcopy(routine)
-        target = next(item for item in changed.activities if item.label == activity.label)
-        target.start_hour = cleaner
-        reduced = simulate_exposure(pm25_hourly, aqi_hourly, members, changed)
-        candidates.append(
-            {
-                "key": "shift_activity",
-                "description_key": "swap_shift",
-                "from_hour": activity.start_hour,
-                "to_hour": cleaner,
-                "exposure_before": baseline["total_before"],
-                "exposure_after": reduced["total_before"],
-                "percent_reduction": reduce_fraction(
-                    baseline["total_before"], reduced["total_before"]
-                ),
-                "emissions_note": (
-                    "Estimated: no added fuel use; walking or cycling may avoid vehicle emissions."
-                ),
-            }
-        )
-
+    # Window closure
     close_changed = deepcopy(routine)
     close_changed.home.windows = "mostly_closed"
     closed = simulate_exposure(pm25_hourly, aqi_hourly, members, close_changed)
-    candidates.append(
+    swaps.append(
         {
             "key": "close_windows",
             "description_key": "swap_windows",
@@ -71,10 +90,11 @@ def generate_swaps(
         }
     )
 
+    # Purifier activation
     purifier_changed = deepcopy(routine)
     purifier_changed.home.purifier = True
     purified = simulate_exposure(pm25_hourly, aqi_hourly, members, purifier_changed)
-    candidates.append(
+    swaps.append(
         {
             "key": "run_purifier",
             "description_key": "swap_purifier",
@@ -89,10 +109,11 @@ def generate_swaps(
         }
     )
 
+    # Induction cooking
     induction_changed = deepcopy(routine)
     induction_changed.home.cooking = "induction"
     induction = simulate_exposure(pm25_hourly, aqi_hourly, members, induction_changed)
-    candidates.append(
+    swaps.append(
         {
             "key": "cook_induction",
             "description_key": "swap_cooking",
@@ -106,7 +127,24 @@ def generate_swaps(
             ),
         }
     )
+    return swaps
 
-    candidates = [item for item in candidates if item["percent_reduction"] > 0]
-    candidates.sort(key=lambda item: item["percent_reduction"], reverse=True)
-    return candidates[:TOP_SWAP_LIMIT]
+
+def generate_swaps(
+    pm25_hourly: list[float | None],
+    aqi_hourly: list[float | None],
+    members: Sequence[FamilyMember],
+    routine: Routine,
+) -> list[dict[str, Any]]:
+    """Generate and rank practical low-exposure, lower-emission swaps."""
+    baseline = simulate_exposure(pm25_hourly, aqi_hourly, members, routine)
+    pm25, _ = interpolate_hourly(pm25_hourly)
+
+    sim_ctx = (pm25_hourly, aqi_hourly, members)
+    candidates = _generate_outdoor_swaps(sim_ctx, routine, baseline, pm25) + _generate_home_swaps(
+        pm25_hourly, aqi_hourly, members, routine, baseline
+    )
+
+    positive_candidates = [item for item in candidates if item["percent_reduction"] > 0]
+    positive_candidates.sort(key=lambda item: item["percent_reduction"], reverse=True)
+    return positive_candidates[:TOP_SWAP_LIMIT]

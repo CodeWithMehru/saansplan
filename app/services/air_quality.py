@@ -41,6 +41,7 @@ async def fetch_air_quality(
     key = cache_key(latitude, longitude, forecast_days)
 
     async def _fetch() -> dict[str, Any]:
+        """Execute upstream requests with query parameters."""
         params: dict[str, str | int | float] = {
             "latitude": round(latitude, 4),
             "longitude": round(longitude, 4),
@@ -57,6 +58,7 @@ async def fetch_air_quality(
         }
 
         async def fetch_with_client(c: httpx.AsyncClient) -> dict[str, Any]:
+            """Perform HTTP calls with exponential backoff retries."""
             last_error: Exception | None = None
             total_expected_hours = forecast_days * HOURS_IN_DAY
             for attempt in range(OUTBOUND_RETRIES + 1):

@@ -13,6 +13,7 @@ class BoundedTTLCache:
     """In-memory cache with fixed maximum item capacity and time-to-live expiration."""
 
     def __init__(self, max_size: int = 128, ttl_seconds: float = 300.0) -> None:
+        """Initialize cache with capacity limit and TTL duration in seconds."""
         self.max_size = max_size
         self.ttl_seconds = ttl_seconds
         self._store: OrderedDict[str, tuple[float, Any]] = OrderedDict()
@@ -75,6 +76,7 @@ class BoundedTTLCache:
     async def _execute_compute(
         self, key: str, compute_fn: Callable[[], Awaitable[T]], future: asyncio.Future[Any]
     ) -> None:
+        """Run asynchronous computation function and resolve the waiting future."""
         try:
             res = await compute_fn()
             self.set(key, res)

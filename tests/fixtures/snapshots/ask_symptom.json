@@ -1,0 +1,7 @@
+{
+  "answer": "I cannot provide medical diagnosis, treatment, or prescribe medication. If you or a family member experience severe symptoms such as chest tightness, wheezing, or acute shortness of breath, please seek urgent medical attention from a doctor or hospital immediately.",
+  "kb_ids": [
+    "medical-redirect"
+  ],
+  "safety_redirect": true
+}

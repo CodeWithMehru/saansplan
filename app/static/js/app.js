@@ -4,7 +4,14 @@
 
 import { translations } from '../i18n.js';
 import { announce, initTextScale, moveToResults, showErrorSummary } from './a11y/focus.js';
-import { askAssistant, fetchGeocode, fetchPlan } from './api.js';
+import { fetchPlan } from './api.js';
+import {
+  initLanguageToggle,
+  initLocationHandlers,
+  initPersonaHandlers,
+  initSpeechAndAssistantHandlers,
+  initTextScaleHandlers,
+} from './handlers.js';
 import {
   renderCleanerDay,
   renderCommunity,
@@ -15,17 +22,12 @@ import {
   renderSwaps,
   renderTimeline,
 } from './render.js';
-import { isSpeechRecognitionSupported, isSpeechSynthesisSupported, speakText, startVoiceRecognition } from './speech.js';
 import {
-  DEFAULT_PERSONAS,
   addMember,
-  applyPersona,
   getState,
   removeMember,
   setBudgetFilter,
-  setLanguage,
   setLastResult,
-  setTextScale,
   updateMember,
 } from './state.js';
 import { $, $$, aqiLevel, textContent } from './utils.js';
@@ -53,17 +55,10 @@ function applyTranslations() {
 
 function refreshMembers() {
   const { family, language } = getState();
-  renderMembers(
-    family,
-    language,
-    (index, updates) => {
-      updateMember(index, updates);
-    },
-    (index) => {
-      removeMember(index);
-      refreshMembers();
-    }
-  );
+  renderMembers(family, language, (idx, up) => updateMember(idx, up), (idx) => {
+    removeMember(idx);
+    refreshMembers();
+  });
 }
 
 function buildPayload() {
@@ -72,49 +67,39 @@ function buildPayload() {
   const outdoorMinutes = Number($('#outdoor').value);
   const routineText = $('#routine-text').value.trim();
 
-  const activities = [];
-  if (outdoorMinutes > 0) {
-    activities.push({
-      label: 'Outdoor activity',
-      start_hour: 18,
-      duration_min: outdoorMinutes,
-      place: 'outdoor',
-      mode: commute === 'none' ? 'walk' : commute,
-      intensity: 'moderate',
-      member_refs: family.map((_, i) => i),
-    });
-  }
+  const activities = outdoorMinutes > 0 ? [{
+    label: 'Outdoor activity',
+    start_hour: 18,
+    duration_min: outdoorMinutes,
+    place: 'outdoor',
+    mode: commute === 'none' ? 'walk' : commute,
+    intensity: 'moderate',
+    member_refs: family.map((_, i) => i),
+  }] : [];
 
   return {
     latitude: Number($('#latitude').value),
     longitude: Number($('#longitude').value),
     city: $('#city').value.trim() || null,
-    members: family.map((m) => ({
-      name: m.name || null,
-      age_group: m.ageGroup,
-      sensitive: Boolean(m.sensitive),
-    })),
+    members: family.map((m) => ({ name: m.name || null, age_group: m.ageGroup, sensitive: Boolean(m.sensitive) })),
     routine_text: routineText,
-    routine: routineText
-      ? null
-      : {
-          activities,
-          home: {
-            heating: $('#heating').value,
-            cooking: $('#cooking').value,
-            windows: $('#windows').value,
-            purifier: $('#purifier').value === 'true',
-            has_chimney: false,
-          },
-          unclear: [],
-        },
+    routine: routineText ? null : {
+      activities,
+      home: {
+        heating: $('#heating').value,
+        cooking: $('#cooking').value,
+        windows: $('#windows').value,
+        purifier: $('#purifier').value === 'true',
+        has_chimney: false,
+      },
+      unclear: [],
+    },
     language,
   };
 }
 
 function renderResults(data) {
-  const { language, budgetFilter } = getState();
-  const t = translations[language] || translations.en;
+  const { language } = getState();
 
   $('#summary-card').hidden = false;
   textContent($('#peak-aqi'), data.exposure.peak_aqi);
@@ -145,7 +130,6 @@ function renderResults(data) {
     $('#emissions-section').hidden = false;
     renderEmissions(data.emissions, language, (newFilter) => {
       setBudgetFilter(newFilter);
-      // Re-filter locally
       const filtered = newFilter === 'any'
         ? data.emissions.all_alternatives
         : data.emissions.all_alternatives.filter((alt) => {
@@ -239,199 +223,13 @@ function initEventHandlers() {
     refreshMembers();
   });
 
-  $('#language-toggle').addEventListener('click', () => {
-    const { language, lastResult } = getState();
-    const nextLang = language === 'en' ? 'hinglish' : language === 'hinglish' ? 'hi' : 'en';
-    setLanguage(nextLang);
-    applyTranslations();
-    refreshMembers();
-    if (lastResult) {
-      renderResults(lastResult);
-    }
-  });
-
-  // Persona Presets
-  $$('.persona-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const personaKey = btn.dataset.persona;
-      const { lastResult } = getState();
-      const presets = lastResult?.personas || DEFAULT_PERSONAS;
-      const preset = presets[personaKey];
-      if (preset) {
-        applyPersona(preset);
-        refreshMembers();
-        if (preset.routine_text) $('#routine-text').value = preset.routine_text;
-        if (preset.commute) $('#commute').value = preset.commute;
-        if (preset.outdoor_minutes) $('#outdoor').value = String(preset.outdoor_minutes);
-        if (preset.cooking) $('#cooking').value = preset.cooking;
-        if (preset.heating) $('#heating').value = preset.heating;
-        if (preset.windows) $('#windows').value = preset.windows;
-        if (preset.purifier !== undefined) $('#purifier').value = String(preset.purifier);
-        announce(`Loaded preset: ${preset.name}`);
-      }
-    });
-  });
-
-  // City Search
-  $('#city-search').addEventListener('click', async () => {
-    const city = $('#city').value.trim();
-    const results = $('#city-results');
-    const { language } = getState();
-    const t = translations[language];
-    results.replaceChildren();
-
-    if (city.length < 2) {
-      textContent(results, t.cityNotFound);
-      return;
-    }
-    textContent(results, t.citySearching);
-
-    try {
-      const items = await fetchGeocode(city);
-      results.replaceChildren();
-      if (!items || items.length === 0) {
-        textContent(results, t.cityNotFound);
-        return;
-      }
-      announce(`Found ${items.length} city matches.`);
-      items.forEach((item) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'secondary city-match-btn';
-        btn.textContent = `${item.name}, ${item.admin1 || ''} ${item.country}`.trim();
-        btn.addEventListener('click', () => {
-          $('#latitude').value = item.latitude.toFixed(4);
-          $('#longitude').value = item.longitude.toFixed(4);
-          $('#city').value = item.name;
-          results.replaceChildren();
-          announce(`Selected location: ${btn.textContent}`);
-        });
-        results.append(btn);
-      });
-    } catch (err) {
-      results.replaceChildren();
-      textContent(results, err.message || t.cityFailed);
-    }
-  });
-
-  // Geolocation
-  $('#geo-button').addEventListener('click', () => {
-    const { language } = getState();
-    const t = translations[language];
-    if (!navigator.geolocation) {
-      textContent($('#error'), t.geolocationUnavailable);
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        $('#latitude').value = pos.coords.latitude.toFixed(4);
-        $('#longitude').value = pos.coords.longitude.toFixed(4);
-        textContent($('#error'), '');
-        announce('Location updated from device GPS.');
-      },
-      () => {
-        textContent($('#error'), t.locationDenied);
-      }
-    );
-  });
-
-  // Text Scaling (A-, A, A+)
-  $('#text-smaller').addEventListener('click', () => {
-    const { textScale } = getState();
-    const next = Math.max(75, textScale - 10);
-    setTextScale(next);
-    initTextScale(next);
-  });
-  $('#text-reset').addEventListener('click', () => {
-    setTextScale(100);
-    initTextScale(100);
-  });
-  $('#text-larger').addEventListener('click', () => {
-    const { textScale } = getState();
-    const next = Math.min(200, textScale + 10);
-    setTextScale(next);
-    initTextScale(next);
-  });
-
-  // Copy Summary
-  $('#copy-summary').addEventListener('click', async () => {
-    const { language } = getState();
-    const t = translations[language];
-    try {
-      await navigator.clipboard.writeText($('#family-summary').dataset.value || '');
-      textContent($('#status'), t.copied);
-      announce(t.copied);
-    } catch {
-      textContent($('#error'), t.copyFailed);
-    }
-  });
-
-  // Speech: Read Aloud
-  const readBtn = $('#read-aloud-btn');
-  if (readBtn) {
-    if (!isSpeechSynthesisSupported()) {
-      readBtn.hidden = true;
-    } else {
-      readBtn.addEventListener('click', () => {
-        const text = $('#family-summary').dataset.value || $('#explanation').textContent;
-        const { language } = getState();
-        speakText(text, language);
-      });
-    }
-  }
-
-  // Speech: Voice Input
-  const voiceBtn = $('#voice-input-btn');
-  if (voiceBtn) {
-    if (!isSpeechRecognitionSupported()) {
-      voiceBtn.hidden = true;
-    } else {
-      voiceBtn.addEventListener('click', () => {
-        const { language } = getState();
-        startVoiceRecognition({
-          lang: language,
-          onStart: () => {
-            voiceBtn.classList.add('listening');
-            textContent(voiceBtn, '🎙️ Listening…');
-          },
-          onResult: (transcript) => {
-            const current = $('#routine-text').value;
-            $('#routine-text').value = current ? `${current} ${transcript}` : transcript;
-          },
-          onError: (err) => {
-            announce(`Speech recognition error: ${err}`);
-          },
-          onEnd: () => {
-            voiceBtn.classList.remove('listening');
-            textContent(voiceBtn, '🎤 Speak routine');
-          },
-        });
-      });
-    }
-  }
-
-  // Ask Assistant
-  $('#ask-button').addEventListener('click', async () => {
-    const question = $('#ask-question').value.trim();
-    const answer = $('#ask-answer');
-    const { language } = getState();
-    const t = translations[language];
-    if (!question) {
-      textContent(answer, 'Please enter an air-quality question.');
-      return;
-    }
-    textContent(answer, t.askThinking);
-    try {
-      const reply = await askAssistant(question);
-      textContent(answer, reply);
-      announce('Answer received from grounded assistant.');
-    } catch (err) {
-      textContent(answer, err.message || 'Could not retrieve answer.');
-    }
-  });
+  initLanguageToggle(applyTranslations, refreshMembers, renderResults);
+  initPersonaHandlers(refreshMembers);
+  initLocationHandlers();
+  initTextScaleHandlers();
+  initSpeechAndAssistantHandlers();
 }
 
-// Bootstrap
 document.addEventListener('DOMContentLoaded', () => {
   const { textScale } = getState();
   initTextScale(textScale);

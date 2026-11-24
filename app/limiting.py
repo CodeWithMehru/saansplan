@@ -1,20 +1,5 @@
-"""Shared SlowAPI rate limiter instance."""
+"""Backward-compatible re-export of rate limiter."""
 
-import os
+from app.core.limiting import client_ip, limiter
 
-from fastapi import Request
-from slowapi import Limiter
-
-
-def client_ip(request: Request) -> str:
-    """Return real client IP only when proxy trust is explicitly enabled."""
-    if os.getenv("TRUST_PROXY", "false").lower() == "true":
-        forwarded = request.headers.get("x-forwarded-for", "")
-        if forwarded:
-            return forwarded.split(",", 1)[0].strip()[:45]
-    if request.client:
-        return request.client.host
-    return "unknown"
-
-
-limiter = Limiter(key_func=client_ip)
+__all__ = ["client_ip", "limiter"]

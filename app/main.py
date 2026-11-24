@@ -1,12 +1,10 @@
 """FastAPI application entry point, lifecycle, and security configuration."""
 
 import hashlib
-import os
 from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import asynccontextmanager
 
 import httpx
-from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,19 +13,19 @@ from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from app.config import MAX_REQUEST_BYTES
-from app.limiting import limiter
+from app.core.limiting import limiter
+from app.core.settings import get_settings
 from app.routers import ask, geocode, health, plan
 
-load_dotenv()
-
-ENV = os.getenv("ENVIRONMENT", "production")
+_settings = get_settings()
+ENV = _settings.environment
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     """Manage application lifespan: shared HTTP client, cache setup, and graceful cleanup."""
     app.state.http_client = httpx.AsyncClient(
-        timeout=10.0,
+        timeout=_settings.outbound_timeout_seconds,
         limits=httpx.Limits(max_keepalive_connections=20, max_connections=50),
     )
     yield
@@ -53,7 +51,7 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:8000").split(","),
+    allow_origins=list(_settings.cors_origins),
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )

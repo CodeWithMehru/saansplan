@@ -6,44 +6,149 @@ from typing import Any
 from app.config import BREATHING_FACTORS, MEMBER_SENSITIVITY, VEHICLE_FACTOR
 from app.core.aqi import indian_aqi_category
 from app.engine.indoor import indoor_concentration
-from app.models import FamilyMember, Routine
+from app.models import Activity, FamilyMember, Routine
+
+
+def _interpolate_between(
+    index: int, left_idx: int, right_idx: int, values: list[float | None]
+) -> float:
+    """Linearly interpolate value between two known indices."""
+    left_val = values[left_idx]
+    right_val = values[right_idx]
+    if left_val is None or right_val is None:
+        return 0.0
+    span = right_idx - left_idx
+    frac = (index - left_idx) / span
+    return float(left_val) + (float(right_val) - float(left_val)) * frac
+
+
+def _nearest_known(index: int, known: list[int]) -> tuple[int | None, int | None]:
+    """Find left and right known indices around a target index."""
+    left = [i for i in known if i < index]
+    right = [i for i in known if i > index]
+    return (left[-1] if left else None), (right[0] if right else None)
+
+
+def _fill_missing_value(index: int, known: list[int], values: list[float | None]) -> float:
+    """Fill a missing point from adjacent known endpoints."""
+    left_idx, right_idx = _nearest_known(index, known)
+    if left_idx is not None and right_idx is not None:
+        return _interpolate_between(index, left_idx, right_idx, values)
+    edge_idx = left_idx if left_idx is not None else right_idx
+    if edge_idx is not None:
+        val = values[edge_idx]
+        return float(val) if val is not None else 0.0
+    return 0.0
 
 
 def interpolate_hourly(values: list[float | None]) -> tuple[list[float], list[bool]]:
     """Fill missing hourly values linearly and return flags for interpolated hours."""
-    result = [float(value) if value is not None else 0.0 for value in values]
-    interpolated = [value is None for value in values]
     if not values:
-        return result, interpolated
+        return [], []
 
-    known = [index for index, value in enumerate(values) if value is not None]
+    known = [i for i, v in enumerate(values) if v is not None]
     if not known:
         return [0.0] * len(values), [True] * len(values)
 
-    for index in range(len(result)):
-        if values[index] is not None:
-            continue
-        left = [item for item in known if item < index]
-        right = [item for item in known if item > index]
-        if left and right:
-            left_index, right_index = left[-1], right[0]
-            span = right_index - left_index
-            left_value_raw = values[left_index]
-            right_value_raw = values[right_index]
-            if left_value_raw is None or right_value_raw is None:
-                continue
-            left_value = float(left_value_raw)
-            right_value = float(right_value_raw)
-            result[index] = left_value + (right_value - left_value) * ((index - left_index) / span)
-        elif left:
-            raw = values[left[-1]]
-            if raw is not None:
-                result[index] = float(raw)
-        elif right:
-            raw = values[right[0]]
-            if raw is not None:
-                result[index] = float(raw)
+    result: list[float] = []
+    interpolated: list[bool] = []
+    for i, v in enumerate(values):
+        if v is not None:
+            result.append(float(v))
+            interpolated.append(False)
+        else:
+            result.append(_fill_missing_value(i, known, values))
+            interpolated.append(True)
+
     return result, interpolated
+
+
+def _is_active_during_hour(activity: Activity, hour: int) -> bool:
+    """Check if activity spans across the designated 24h clock hour."""
+    end_hour = activity.start_hour + max(1, (activity.duration_min + 59) // 60)
+    return activity.start_hour <= hour < end_hour
+
+
+def _activity_concentration(activity: Activity, outdoor: float, indoor: float) -> float:
+    """Select exposure concentration by activity microenvironment."""
+    if activity.place == "outdoor":
+        return outdoor
+    if activity.place == "vehicle":
+        return outdoor * VEHICLE_FACTOR
+    return indoor
+
+
+def _calculate_member_activity_exposure(
+    activity: Activity, member: FamilyMember, outdoor: float, indoor: float
+) -> float:
+    """Compute inhaled dose for an active routine activity block."""
+    conc = _activity_concentration(activity, outdoor, indoor)
+    active_minutes = min(60, activity.duration_min)
+    rate = BREATHING_FACTORS[activity.intensity.value]
+    sens = MEMBER_SENSITIVITY[member.age_group.value]
+    multiplier = 1.25 if member.sensitive else 1.0
+    return conc * active_minutes * rate * sens * multiplier
+
+
+def _compute_member_exposure_for_hour(
+    member: FamilyMember,
+    member_idx: int,
+    routine: Routine,
+    hour: int,
+    concs: tuple[float, float],
+) -> float:
+    """Compute total exposure for a single member during one hour."""
+    outdoor, indoor = concs
+    base_exposure = indoor * 24 * MEMBER_SENSITIVITY[member.age_group.value]
+    activity_exposure = 0.0
+    has_activity = False
+
+    for act in routine.activities:
+        if member_idx in act.member_refs and _is_active_during_hour(act, hour):
+            activity_exposure = _calculate_member_activity_exposure(act, member, outdoor, indoor)
+            has_activity = True
+
+    return activity_exposure if has_activity else base_exposure
+
+
+def _compute_hour_exposures(
+    members: Sequence[FamilyMember],
+    routine: Routine,
+    hour: int,
+    outdoor: float,
+) -> tuple[float, list[float]]:
+    """Compute exposures for all members across one single hour."""
+    indoor = indoor_concentration(outdoor, routine.home)
+    concs = (outdoor, indoor)
+    member_hour_exps: list[float] = []
+    total_hour_exp = 0.0
+    for m_idx, member in enumerate(members):
+        m_exp = _compute_member_exposure_for_hour(member, m_idx, routine, hour, concs)
+        member_hour_exps.append(m_exp)
+        total_hour_exp += m_exp
+    return total_hour_exp, member_hour_exps
+
+
+def _build_hourly_row(
+    hour: int,
+    outdoor: float,
+    raw_aqi: float | None,
+    exposure_this_hour: float,
+    is_interpolated: bool,
+) -> dict[str, Any]:
+    """Construct a standardized hourly evaluation entry."""
+    aqi = float(raw_aqi) if raw_aqi is not None else 0.0
+    pm25_val = max(0.0, outdoor)
+    indian_cat, _, _, indian_aqi = indian_aqi_category(pm25_val)
+    return {
+        "hour": hour,
+        "pm25": round(pm25_val, 1),
+        "aqi": int(max(0.0, aqi)),
+        "exposure": round(exposure_this_hour, 2),
+        "interpolated": is_interpolated,
+        "indian_aqi": indian_aqi,
+        "indian_category": indian_cat,
+    }
 
 
 def simulate_exposure(
@@ -59,60 +164,20 @@ def simulate_exposure(
 
     for hour in range(24):
         outdoor = pm25[hour] if hour < len(pm25) else 0.0
-        indoor = indoor_concentration(outdoor, routine.home)
+        exp_hour, m_exps = _compute_hour_exposures(members, routine, hour, outdoor)
+        for i, val in enumerate(m_exps):
+            member_totals[i] += val
+
         raw_aqi = aqi_hourly[hour] if hour < len(aqi_hourly) else None
-        aqi = float(raw_aqi) if raw_aqi is not None else 0.0
-        exposure_this_hour = 0.0
+        is_interp = interpolated[hour] if hour < len(interpolated) else True
+        hourly_rows.append(_build_hourly_row(hour, outdoor, raw_aqi, exp_hour, is_interp))
 
-        for member_index, member in enumerate(members):
-            member_exposure = indoor * 24 * MEMBER_SENSITIVITY[member.age_group.value]
-            for activity in routine.activities:
-                if member_index not in activity.member_refs:
-                    continue
-                if (
-                    activity.start_hour
-                    <= hour
-                    < activity.start_hour + max(1, (activity.duration_min + 59) // 60)
-                ):
-                    if activity.place == "outdoor":
-                        concentration = outdoor
-                    elif activity.place == "vehicle":
-                        concentration = outdoor * VEHICLE_FACTOR
-                    else:
-                        concentration = indoor
-                    active_minutes = min(60, activity.duration_min)
-                    member_exposure = (
-                        concentration
-                        * active_minutes
-                        * BREATHING_FACTORS[activity.intensity.value]
-                        * MEMBER_SENSITIVITY[member.age_group.value]
-                        * (1.0 + (0.25 if member.sensitive else 0.0))
-                    )
-            member_totals[member_index] += member_exposure
-            exposure_this_hour += member_exposure
-
-        pm25_value = max(0.0, pm25[hour] if hour < len(pm25) else 0.0)
-        indian_category, indian_slug, _, indian_aqi = indian_aqi_category(pm25_value)
-        hourly_rows.append(
-            {
-                "hour": hour,
-                "pm25": round(max(0.0, pm25[hour] if hour < len(pm25) else 0.0), 1),
-                "aqi": int(max(0.0, aqi)),
-                "exposure": round(exposure_this_hour, 2),
-                "interpolated": interpolated[hour] if hour < len(interpolated) else True,
-                "indian_aqi": indian_aqi,
-                "indian_category": indian_category,
-            }
-        )
-
-    total = round(sum(member_totals), 2)
     peak = max(hourly_rows, key=lambda row: row["exposure"])
     highest_aqi = max(hourly_rows, key=lambda row: row["pm25"])
     return {
-        "total_before": total,
+        "total_before": round(sum(member_totals), 2),
         "members": [
-            {"name": member.name, "exposure": round(member_totals[index], 2)}
-            for index, member in enumerate(members)
+            {"name": m.name, "exposure": round(member_totals[i], 2)} for i, m in enumerate(members)
         ],
         "hourly": hourly_rows,
         "peak_hour": peak["hour"],

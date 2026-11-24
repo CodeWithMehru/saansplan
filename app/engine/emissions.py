@@ -83,6 +83,70 @@ def _build_commute_options(
     return options
 
 
+def _build_cooking_options(
+    cooking_fuel: str, current_co2: float, current_pm: float, current_cost: float
+) -> list[dict[str, Any]]:
+    """Build alternative options for residential cooking."""
+    options = []
+    if cooking_fuel != "induction":
+        ind_data = EMISSION_FACTORS_COOKING["induction"]
+        co2_saved = round(max(0.0, current_co2 - ind_data["co2e_kg"]), 1)
+        pm_saved = round(max(0.0, current_pm - ind_data["pm_g"]), 1)
+        options.append(
+            {
+                "mode": "induction",
+                "title": "Electric Induction Cooktop",
+                "category": "cooking",
+                "weekly_co2e_kg": ind_data["co2e_kg"],
+                "weekly_cost_inr": ind_data["cost_inr"],
+                "co2e_saved_kg": co2_saved,
+                "pm_saved_g": pm_saved,
+                "inr_saved_weekly": round(current_cost - ind_data["cost_inr"]),
+                "upfront_cost_inr": 2200,
+                "budget_tier": "under_5000",
+            }
+        )
+    return options
+
+
+def _build_heating_options(
+    heating_fuel: str, current_co2: float, current_pm: float, current_cost: float
+) -> list[dict[str, Any]]:
+    """Build alternative options for residential space heating."""
+    options = []
+    if heating_fuel in ("wood_coal", "other"):
+        options.append(
+            {
+                "mode": "insulation",
+                "title": "Thermal Layering & Draft Stoppers",
+                "category": "heating",
+                "weekly_co2e_kg": 0.0,
+                "weekly_cost_inr": 0,
+                "co2e_saved_kg": round(current_co2, 1),
+                "pm_saved_g": round(current_pm, 1),
+                "inr_saved_weekly": round(current_cost),
+                "upfront_cost_inr": 350,
+                "budget_tier": "under_500",
+            }
+        )
+    return options
+
+
+def _filter_by_budget(
+    all_options: list[dict[str, Any]], budget_filter: str
+) -> list[dict[str, Any]]:
+    """Filter sustainable alternative options by user upfront budget tier."""
+    thresholds = {
+        "free": 0,
+        "under_500": UPFRONT_THRESHOLD_LOW,
+        "under_5000": UPFRONT_THRESHOLD_MID,
+    }
+    max_cost = thresholds.get(budget_filter)
+    if max_cost is None:
+        return all_options
+    return [opt for opt in all_options if opt.get("upfront_cost_inr", 0) <= max_cost]
+
+
 def calculate_emissions_and_cost(
     commute_mode: str = "car",
     cooking_fuel: str = "lpg",
@@ -111,58 +175,15 @@ def calculate_emissions_and_cost(
     commute_options = _build_commute_options(
         commute_mode, current_commute_co2, current_commute_cost
     )
-
-    cooking_options = []
-    if cooking_fuel != "induction":
-        ind_data = EMISSION_FACTORS_COOKING["induction"]
-        co2_saved = round(max(0.0, current_cooking_co2 - ind_data["co2e_kg"]), 1)
-        pm_saved = round(max(0.0, current_cooking_pm - ind_data["pm_g"]), 1)
-        cooking_options.append(
-            {
-                "mode": "induction",
-                "title": "Electric Induction Cooktop",
-                "category": "cooking",
-                "weekly_co2e_kg": ind_data["co2e_kg"],
-                "weekly_cost_inr": ind_data["cost_inr"],
-                "co2e_saved_kg": co2_saved,
-                "pm_saved_g": pm_saved,
-                "inr_saved_weekly": round(current_cooking_cost - ind_data["cost_inr"]),
-                "upfront_cost_inr": 2200,
-                "budget_tier": "under_5000",
-            }
-        )
-
-    heating_options = []
-    if heating_fuel in ("wood_coal", "other"):
-        heating_options.append(
-            {
-                "mode": "insulation",
-                "title": "Thermal Layering & Draft Stoppers",
-                "category": "heating",
-                "weekly_co2e_kg": 0.0,
-                "weekly_cost_inr": 0,
-                "co2e_saved_kg": round(current_heating_co2, 1),
-                "pm_saved_g": round(current_heating_pm, 1),
-                "inr_saved_weekly": round(current_heating_cost),
-                "upfront_cost_inr": 350,
-                "budget_tier": "under_500",
-            }
-        )
+    cooking_options = _build_cooking_options(
+        cooking_fuel, current_cooking_co2, current_cooking_pm, current_cooking_cost
+    )
+    heating_options = _build_heating_options(
+        heating_fuel, current_heating_co2, current_heating_pm, current_heating_cost
+    )
 
     all_options = commute_options + cooking_options + heating_options
-
-    if budget_filter == "free":
-        filtered = [opt for opt in all_options if opt.get("upfront_cost_inr", 0) == 0]
-    elif budget_filter == "under_500":
-        filtered = [
-            opt for opt in all_options if opt.get("upfront_cost_inr", 0) <= UPFRONT_THRESHOLD_LOW
-        ]
-    elif budget_filter == "under_5000":
-        filtered = [
-            opt for opt in all_options if opt.get("upfront_cost_inr", 0) <= UPFRONT_THRESHOLD_MID
-        ]
-    else:
-        filtered = all_options
+    filtered = _filter_by_budget(all_options, budget_filter)
 
     return {
         "current": {

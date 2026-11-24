@@ -1,3 +1,5 @@
+export PATH := $(CURDIR)/.venv/bin:$(PATH)
+
 .PHONY: install lint typecheck test test-js e2e a11y security bench report verify
 install:
 	python3 -m venv .venv || true

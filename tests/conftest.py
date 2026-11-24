@@ -1,6 +1,15 @@
 import pytest
 
+from app.core.limiting import limiter
 from app.models import Activity, AgeGroup, FamilyMember, HomeSetup, Routine
+
+
+@pytest.fixture(autouse=True)
+def disable_rate_limits():
+    """Disable rate limiting during automated test runs to prevent test interference."""
+    limiter.enabled = False
+    yield
+    limiter.enabled = True
 
 
 @pytest.fixture

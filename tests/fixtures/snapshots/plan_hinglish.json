@@ -1,0 +1,1736 @@
+{
+  "cleaner_day": {
+    "changes": [
+      {
+        "activity": "Purifier",
+        "reason": "Activate indoor HEPA or supplemental filtration in living areas.",
+        "reason_key": "purifier_activated"
+      }
+    ],
+    "hourly_comparison": [
+      {
+        "aqi": 300,
+        "category": "Poor",
+        "category_slug": "poor",
+        "difference": 1020.6,
+        "exposure_after": 1571.4,
+        "exposure_before": 2592.0,
+        "hour": 0,
+        "pm25": 120.0
+      },
+      {
+        "aqi": 312,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1148.17,
+        "exposure_after": 1727.33,
+        "exposure_before": 2875.5,
+        "hour": 1,
+        "pm25": 135.0
+      },
+      {
+        "aqi": 323,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1275.75,
+        "exposure_after": 1883.25,
+        "exposure_before": 3159.0,
+        "hour": 2,
+        "pm25": 150.0
+      },
+      {
+        "aqi": 335,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1403.32,
+        "exposure_after": 2039.18,
+        "exposure_before": 3442.5,
+        "hour": 3,
+        "pm25": 165.0
+      },
+      {
+        "aqi": 346,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1530.9,
+        "exposure_after": 2195.1,
+        "exposure_before": 3726.0,
+        "hour": 4,
+        "pm25": 180.0
+      },
+      {
+        "aqi": 358,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1658.47,
+        "exposure_after": 2351.03,
+        "exposure_before": 4009.5,
+        "hour": 5,
+        "pm25": 195.0
+      },
+      {
+        "aqi": 300,
+        "category": "Poor",
+        "category_slug": "poor",
+        "difference": 1020.6,
+        "exposure_after": 1571.4,
+        "exposure_before": 2592.0,
+        "hour": 6,
+        "pm25": 120.0
+      },
+      {
+        "aqi": 312,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 0.0,
+        "exposure_after": 12453.75,
+        "exposure_before": 12453.75,
+        "hour": 7,
+        "pm25": 135.0
+      },
+      {
+        "aqi": 323,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1275.75,
+        "exposure_after": 1883.25,
+        "exposure_before": 3159.0,
+        "hour": 8,
+        "pm25": 150.0
+      },
+      {
+        "aqi": 335,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 779.62,
+        "exposure_after": 7815.38,
+        "exposure_before": 8595.0,
+        "hour": 9,
+        "pm25": 165.0
+      },
+      {
+        "aqi": 346,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1530.9,
+        "exposure_after": 2195.1,
+        "exposure_before": 3726.0,
+        "hour": 10,
+        "pm25": 180.0
+      },
+      {
+        "aqi": 358,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1658.47,
+        "exposure_after": 2351.03,
+        "exposure_before": 4009.5,
+        "hour": 11,
+        "pm25": 195.0
+      },
+      {
+        "aqi": 300,
+        "category": "Poor",
+        "category_slug": "poor",
+        "difference": 1020.6,
+        "exposure_after": 1571.4,
+        "exposure_before": 2592.0,
+        "hour": 12,
+        "pm25": 120.0
+      },
+      {
+        "aqi": 312,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1148.17,
+        "exposure_after": 1727.33,
+        "exposure_before": 2875.5,
+        "hour": 13,
+        "pm25": 135.0
+      },
+      {
+        "aqi": 323,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1275.75,
+        "exposure_after": 1883.25,
+        "exposure_before": 3159.0,
+        "hour": 14,
+        "pm25": 150.0
+      },
+      {
+        "aqi": 335,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1403.32,
+        "exposure_after": 2039.18,
+        "exposure_before": 3442.5,
+        "hour": 15,
+        "pm25": 165.0
+      },
+      {
+        "aqi": 346,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1530.9,
+        "exposure_after": 2195.1,
+        "exposure_before": 3726.0,
+        "hour": 16,
+        "pm25": 180.0
+      },
+      {
+        "aqi": 358,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1658.47,
+        "exposure_after": 2351.03,
+        "exposure_before": 4009.5,
+        "hour": 17,
+        "pm25": 195.0
+      },
+      {
+        "aqi": 300,
+        "category": "Poor",
+        "category_slug": "poor",
+        "difference": 567.0,
+        "exposure_after": 13113.0,
+        "exposure_before": 13680.0,
+        "hour": 18,
+        "pm25": 120.0
+      },
+      {
+        "aqi": 312,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1148.17,
+        "exposure_after": 1727.33,
+        "exposure_before": 2875.5,
+        "hour": 19,
+        "pm25": 135.0
+      },
+      {
+        "aqi": 323,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1275.75,
+        "exposure_after": 1883.25,
+        "exposure_before": 3159.0,
+        "hour": 20,
+        "pm25": 150.0
+      },
+      {
+        "aqi": 335,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1403.32,
+        "exposure_after": 2039.18,
+        "exposure_before": 3442.5,
+        "hour": 21,
+        "pm25": 165.0
+      },
+      {
+        "aqi": 346,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1530.9,
+        "exposure_after": 2195.1,
+        "exposure_before": 3726.0,
+        "hour": 22,
+        "pm25": 180.0
+      },
+      {
+        "aqi": 358,
+        "category": "Very poor",
+        "category_slug": "very-poor",
+        "difference": 1658.47,
+        "exposure_after": 2351.03,
+        "exposure_before": 4009.5,
+        "hour": 23,
+        "pm25": 195.0
+      }
+    ],
+    "inhaled_saved_range_ug": [
+      11.1,
+      18.6
+    ],
+    "inhaled_saved_ug": 14.9,
+    "percent_reduction": 28.5,
+    "routine": {
+      "activities": [
+        {
+          "duration_min": 30,
+          "intensity": "light",
+          "label": "School drop",
+          "member_refs": [
+            0,
+            1
+          ],
+          "mode": "walk",
+          "place": "outdoor",
+          "start_hour": 7
+        },
+        {
+          "duration_min": 45,
+          "intensity": "light",
+          "label": "Metro commute",
+          "member_refs": [
+            0
+          ],
+          "mode": "metro",
+          "place": "vehicle",
+          "start_hour": 9
+        },
+        {
+          "duration_min": 60,
+          "intensity": "moderate",
+          "label": "Park walk",
+          "member_refs": [
+            0
+          ],
+          "mode": "walk",
+          "place": "outdoor",
+          "start_hour": 18
+        }
+      ],
+      "home": {
+        "cooking": "lpg",
+        "has_chimney": false,
+        "heating": "none",
+        "purifier": true,
+        "windows": "mostly_closed"
+      },
+      "unclear": []
+    },
+    "total_exposure_after": 75113.32,
+    "total_exposure_before": 105036.75
+  },
+  "community": {
+    "rwa_checklist": {
+      "disclaimer": "Community suggestions for citizen action, not legal advice.",
+      "items": [
+        {
+          "action": "Water Sprinkling on Unpaved Surfaces",
+          "category": "Dust Control",
+          "guidance": "Sprinkle recycled water twice daily on construction and dirt perimeters."
+        },
+        {
+          "action": "Zero Open Waste & Leaf Burning",
+          "category": "Waste Burning",
+          "guidance": "Compost fallen leaves; report open garbage burning to green helplines."
+        },
+        {
+          "action": "Regulate Diesel Generator (DG) Sets",
+          "category": "Power & Emissions",
+          "guidance": "Restrict non-emergency DG sets in smog; switch to battery/PNG backup."
+        },
+        {
+          "action": "Neighbourhood School & Office Carpooling",
+          "category": "Transport",
+          "guidance": "Coordinate shared vans or group carpools to reduce gate traffic."
+        },
+        {
+          "action": "Dust-Trapping Vertical Greenery",
+          "category": "Green Cover",
+          "guidance": "Plant native dense canopy hedges (Neem, Bougainvillea) as dust filters."
+        }
+      ],
+      "title": "RWA & Neighbourhood Clean Air Action Plan"
+    },
+    "school_advisory": {
+      "actions": [
+        "Ensure children wear well-fitted certified N95 / KN95 masks during morning transit.",
+        "Recommend moving sports and morning assembly indoors during peak pollution hours.",
+        "Advise keeping school bus windows closed on congested traffic corridors.",
+        "Keep emergency inhalers and medications accessible with school medical staff."
+      ],
+      "category": "Poor",
+      "severity": "moderate",
+      "shareable_text": "\ud83d\udce2 *SaansPlan School Day Advisory*\nToday's peak outdoor AQI is 180 (Poor).\nKey recommendations for parents & teachers:\n\u2022 Ensure children wear well-fitted certified N95 / KN95 masks during morning transit.\n\u2022 Recommend moving sports and morning assembly indoors during peak pollution hours.\n\u2022 Advise keeping school bus windows closed on congested traffic corridors.\n\u2022 Keep emergency inhalers and medications accessible with school medical staff.\n\n_Generated via SaansPlan. Planning suggestions, not legal/medical orders._",
+      "title": "Morning School Commute Advisory \u2014 AQI 180 (Poor)"
+    },
+    "shareable_text": "SaansPlan Family Summary:\nLocation: Delhi (AQI 180 - Poor)\nTop swap: swap_purifier\nDose reduction: 28.5% cleaner routine.\nCheck full low-emission day plan on SaansPlan.",
+    "whatsapp_url": "https://wa.me/?text=SaansPlan%20Family%20Summary%3A%0ALocation%3A%20Delhi%20%28AQI%20180%20-%20Poor%29%0ATop%20swap%3A%20swap_purifier%0ADose%20reduction%3A%2028.5%25%20cleaner%20routine.%0ACheck%20full%20low-emission%20day%20plan%20on%20SaansPlan."
+  },
+  "emissions": {
+    "all_alternatives": [
+      {
+        "budget_tier": "free",
+        "category": "commute",
+        "co2e_saved_kg": 0.0,
+        "inr_saved_weekly": -150,
+        "is_free": false,
+        "mode": "metro",
+        "title": "Electric Metro Rail",
+        "upfront_cost_inr": 0,
+        "weekly_co2e_kg": 1.1,
+        "weekly_cost_inr": 150
+      },
+      {
+        "budget_tier": "free",
+        "category": "commute",
+        "co2e_saved_kg": 0.0,
+        "inr_saved_weekly": -90,
+        "is_free": false,
+        "mode": "bus",
+        "title": "Public Bus Transit",
+        "upfront_cost_inr": 0,
+        "weekly_co2e_kg": 1.5,
+        "weekly_cost_inr": 90
+      },
+      {
+        "budget_tier": "free",
+        "category": "commute",
+        "co2e_saved_kg": 0.0,
+        "inr_saved_weekly": -255,
+        "is_free": false,
+        "mode": "carpool",
+        "title": "Ride-sharing / Carpool",
+        "upfront_cost_inr": 0,
+        "weekly_co2e_kg": 5.2,
+        "weekly_cost_inr": 255
+      },
+      {
+        "budget_tier": "under_5000",
+        "category": "commute",
+        "co2e_saved_kg": 0.0,
+        "inr_saved_weekly": -15,
+        "is_free": false,
+        "mode": "cycle",
+        "title": "Bicycle Commute",
+        "upfront_cost_inr": 3500,
+        "weekly_co2e_kg": 0.0,
+        "weekly_cost_inr": 15
+      },
+      {
+        "budget_tier": "under_5000",
+        "category": "cooking",
+        "co2e_saved_kg": 1.7,
+        "inr_saved_weekly": 40,
+        "mode": "induction",
+        "pm_saved_g": 1.5,
+        "title": "Electric Induction Cooktop",
+        "upfront_cost_inr": 2200,
+        "weekly_co2e_kg": 5.8,
+        "weekly_cost_inr": 180
+      }
+    ],
+    "alternatives": [
+      {
+        "budget_tier": "free",
+        "category": "commute",
+        "co2e_saved_kg": 0.0,
+        "inr_saved_weekly": -150,
+        "is_free": false,
+        "mode": "metro",
+        "title": "Electric Metro Rail",
+        "upfront_cost_inr": 0,
+        "weekly_co2e_kg": 1.1,
+        "weekly_cost_inr": 150
+      },
+      {
+        "budget_tier": "free",
+        "category": "commute",
+        "co2e_saved_kg": 0.0,
+        "inr_saved_weekly": -90,
+        "is_free": false,
+        "mode": "bus",
+        "title": "Public Bus Transit",
+        "upfront_cost_inr": 0,
+        "weekly_co2e_kg": 1.5,
+        "weekly_cost_inr": 90
+      },
+      {
+        "budget_tier": "free",
+        "category": "commute",
+        "co2e_saved_kg": 0.0,
+        "inr_saved_weekly": -255,
+        "is_free": false,
+        "mode": "carpool",
+        "title": "Ride-sharing / Carpool",
+        "upfront_cost_inr": 0,
+        "weekly_co2e_kg": 5.2,
+        "weekly_cost_inr": 255
+      },
+      {
+        "budget_tier": "under_5000",
+        "category": "commute",
+        "co2e_saved_kg": 0.0,
+        "inr_saved_weekly": -15,
+        "is_free": false,
+        "mode": "cycle",
+        "title": "Bicycle Commute",
+        "upfront_cost_inr": 3500,
+        "weekly_co2e_kg": 0.0,
+        "weekly_cost_inr": 15
+      },
+      {
+        "budget_tier": "under_5000",
+        "category": "cooking",
+        "co2e_saved_kg": 1.7,
+        "inr_saved_weekly": 40,
+        "mode": "induction",
+        "pm_saved_g": 1.5,
+        "title": "Electric Induction Cooktop",
+        "upfront_cost_inr": 2200,
+        "weekly_co2e_kg": 5.8,
+        "weekly_cost_inr": 180
+      }
+    ],
+    "budget_filter": "any",
+    "current": {
+      "commute_mode": "walk",
+      "weekly_co2e_kg": 7.5,
+      "weekly_cost_inr": 220,
+      "weekly_pm_g": 1.5
+    }
+  },
+  "estimate_label": "All values are estimates",
+  "explanation": {
+    "ai_available": true,
+    "explanation": "At 6 pm AQI is 190, could reduce about 29% (estimate)."
+  },
+  "exposure": {
+    "cleaner_day": {
+      "changes": [
+        {
+          "activity": "Purifier",
+          "reason": "Activate indoor HEPA or supplemental filtration in living areas.",
+          "reason_key": "purifier_activated"
+        }
+      ],
+      "hourly_comparison": [
+        {
+          "aqi": 300,
+          "category": "Poor",
+          "category_slug": "poor",
+          "difference": 1020.6,
+          "exposure_after": 1571.4,
+          "exposure_before": 2592.0,
+          "hour": 0,
+          "pm25": 120.0
+        },
+        {
+          "aqi": 312,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1148.17,
+          "exposure_after": 1727.33,
+          "exposure_before": 2875.5,
+          "hour": 1,
+          "pm25": 135.0
+        },
+        {
+          "aqi": 323,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1275.75,
+          "exposure_after": 1883.25,
+          "exposure_before": 3159.0,
+          "hour": 2,
+          "pm25": 150.0
+        },
+        {
+          "aqi": 335,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1403.32,
+          "exposure_after": 2039.18,
+          "exposure_before": 3442.5,
+          "hour": 3,
+          "pm25": 165.0
+        },
+        {
+          "aqi": 346,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1530.9,
+          "exposure_after": 2195.1,
+          "exposure_before": 3726.0,
+          "hour": 4,
+          "pm25": 180.0
+        },
+        {
+          "aqi": 358,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1658.47,
+          "exposure_after": 2351.03,
+          "exposure_before": 4009.5,
+          "hour": 5,
+          "pm25": 195.0
+        },
+        {
+          "aqi": 300,
+          "category": "Poor",
+          "category_slug": "poor",
+          "difference": 1020.6,
+          "exposure_after": 1571.4,
+          "exposure_before": 2592.0,
+          "hour": 6,
+          "pm25": 120.0
+        },
+        {
+          "aqi": 312,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 0.0,
+          "exposure_after": 12453.75,
+          "exposure_before": 12453.75,
+          "hour": 7,
+          "pm25": 135.0
+        },
+        {
+          "aqi": 323,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1275.75,
+          "exposure_after": 1883.25,
+          "exposure_before": 3159.0,
+          "hour": 8,
+          "pm25": 150.0
+        },
+        {
+          "aqi": 335,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 779.62,
+          "exposure_after": 7815.38,
+          "exposure_before": 8595.0,
+          "hour": 9,
+          "pm25": 165.0
+        },
+        {
+          "aqi": 346,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1530.9,
+          "exposure_after": 2195.1,
+          "exposure_before": 3726.0,
+          "hour": 10,
+          "pm25": 180.0
+        },
+        {
+          "aqi": 358,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1658.47,
+          "exposure_after": 2351.03,
+          "exposure_before": 4009.5,
+          "hour": 11,
+          "pm25": 195.0
+        },
+        {
+          "aqi": 300,
+          "category": "Poor",
+          "category_slug": "poor",
+          "difference": 1020.6,
+          "exposure_after": 1571.4,
+          "exposure_before": 2592.0,
+          "hour": 12,
+          "pm25": 120.0
+        },
+        {
+          "aqi": 312,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1148.17,
+          "exposure_after": 1727.33,
+          "exposure_before": 2875.5,
+          "hour": 13,
+          "pm25": 135.0
+        },
+        {
+          "aqi": 323,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1275.75,
+          "exposure_after": 1883.25,
+          "exposure_before": 3159.0,
+          "hour": 14,
+          "pm25": 150.0
+        },
+        {
+          "aqi": 335,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1403.32,
+          "exposure_after": 2039.18,
+          "exposure_before": 3442.5,
+          "hour": 15,
+          "pm25": 165.0
+        },
+        {
+          "aqi": 346,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1530.9,
+          "exposure_after": 2195.1,
+          "exposure_before": 3726.0,
+          "hour": 16,
+          "pm25": 180.0
+        },
+        {
+          "aqi": 358,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1658.47,
+          "exposure_after": 2351.03,
+          "exposure_before": 4009.5,
+          "hour": 17,
+          "pm25": 195.0
+        },
+        {
+          "aqi": 300,
+          "category": "Poor",
+          "category_slug": "poor",
+          "difference": 567.0,
+          "exposure_after": 13113.0,
+          "exposure_before": 13680.0,
+          "hour": 18,
+          "pm25": 120.0
+        },
+        {
+          "aqi": 312,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1148.17,
+          "exposure_after": 1727.33,
+          "exposure_before": 2875.5,
+          "hour": 19,
+          "pm25": 135.0
+        },
+        {
+          "aqi": 323,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1275.75,
+          "exposure_after": 1883.25,
+          "exposure_before": 3159.0,
+          "hour": 20,
+          "pm25": 150.0
+        },
+        {
+          "aqi": 335,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1403.32,
+          "exposure_after": 2039.18,
+          "exposure_before": 3442.5,
+          "hour": 21,
+          "pm25": 165.0
+        },
+        {
+          "aqi": 346,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1530.9,
+          "exposure_after": 2195.1,
+          "exposure_before": 3726.0,
+          "hour": 22,
+          "pm25": 180.0
+        },
+        {
+          "aqi": 358,
+          "category": "Very poor",
+          "category_slug": "very-poor",
+          "difference": 1658.47,
+          "exposure_after": 2351.03,
+          "exposure_before": 4009.5,
+          "hour": 23,
+          "pm25": 195.0
+        }
+      ],
+      "inhaled_saved_range_ug": [
+        11.1,
+        18.6
+      ],
+      "inhaled_saved_ug": 14.9,
+      "percent_reduction": 28.5,
+      "routine": {
+        "activities": [
+          {
+            "duration_min": 30,
+            "intensity": "light",
+            "label": "School drop",
+            "member_refs": [
+              0,
+              1
+            ],
+            "mode": "walk",
+            "place": "outdoor",
+            "start_hour": 7
+          },
+          {
+            "duration_min": 45,
+            "intensity": "light",
+            "label": "Metro commute",
+            "member_refs": [
+              0
+            ],
+            "mode": "metro",
+            "place": "vehicle",
+            "start_hour": 9
+          },
+          {
+            "duration_min": 60,
+            "intensity": "moderate",
+            "label": "Park walk",
+            "member_refs": [
+              0
+            ],
+            "mode": "walk",
+            "place": "outdoor",
+            "start_hour": 18
+          }
+        ],
+        "home": {
+          "cooking": "lpg",
+          "has_chimney": false,
+          "heating": "none",
+          "purifier": true,
+          "windows": "mostly_closed"
+        },
+        "unclear": []
+      },
+      "total_exposure_after": 75113.32,
+      "total_exposure_before": 105036.75
+    },
+    "estimate_label": "All values are estimates",
+    "highest_aqi": 358,
+    "highest_aqi_hour": 5,
+    "hourly": [
+      {
+        "aqi": 180,
+        "exposure": 2592.0,
+        "hour": 0,
+        "indian_aqi": 300,
+        "indian_category": "Poor",
+        "interpolated": false,
+        "pm25": 120.0
+      },
+      {
+        "aqi": 190,
+        "exposure": 2875.5,
+        "hour": 1,
+        "indian_aqi": 312,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 135.0
+      },
+      {
+        "aqi": 200,
+        "exposure": 3159.0,
+        "hour": 2,
+        "indian_aqi": 323,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 150.0
+      },
+      {
+        "aqi": 210,
+        "exposure": 3442.5,
+        "hour": 3,
+        "indian_aqi": 335,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 165.0
+      },
+      {
+        "aqi": 220,
+        "exposure": 3726.0,
+        "hour": 4,
+        "indian_aqi": 346,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 180.0
+      },
+      {
+        "aqi": 230,
+        "exposure": 4009.5,
+        "hour": 5,
+        "indian_aqi": 358,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 195.0
+      },
+      {
+        "aqi": 180,
+        "exposure": 2592.0,
+        "hour": 6,
+        "indian_aqi": 300,
+        "indian_category": "Poor",
+        "interpolated": false,
+        "pm25": 120.0
+      },
+      {
+        "aqi": 190,
+        "exposure": 12453.75,
+        "hour": 7,
+        "indian_aqi": 312,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 135.0
+      },
+      {
+        "aqi": 200,
+        "exposure": 3159.0,
+        "hour": 8,
+        "indian_aqi": 323,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 150.0
+      },
+      {
+        "aqi": 210,
+        "exposure": 8595.0,
+        "hour": 9,
+        "indian_aqi": 335,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 165.0
+      },
+      {
+        "aqi": 220,
+        "exposure": 3726.0,
+        "hour": 10,
+        "indian_aqi": 346,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 180.0
+      },
+      {
+        "aqi": 230,
+        "exposure": 4009.5,
+        "hour": 11,
+        "indian_aqi": 358,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 195.0
+      },
+      {
+        "aqi": 180,
+        "exposure": 2592.0,
+        "hour": 12,
+        "indian_aqi": 300,
+        "indian_category": "Poor",
+        "interpolated": false,
+        "pm25": 120.0
+      },
+      {
+        "aqi": 190,
+        "exposure": 2875.5,
+        "hour": 13,
+        "indian_aqi": 312,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 135.0
+      },
+      {
+        "aqi": 200,
+        "exposure": 3159.0,
+        "hour": 14,
+        "indian_aqi": 323,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 150.0
+      },
+      {
+        "aqi": 210,
+        "exposure": 3442.5,
+        "hour": 15,
+        "indian_aqi": 335,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 165.0
+      },
+      {
+        "aqi": 220,
+        "exposure": 3726.0,
+        "hour": 16,
+        "indian_aqi": 346,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 180.0
+      },
+      {
+        "aqi": 230,
+        "exposure": 4009.5,
+        "hour": 17,
+        "indian_aqi": 358,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 195.0
+      },
+      {
+        "aqi": 180,
+        "exposure": 13680.0,
+        "hour": 18,
+        "indian_aqi": 300,
+        "indian_category": "Poor",
+        "interpolated": false,
+        "pm25": 120.0
+      },
+      {
+        "aqi": 190,
+        "exposure": 2875.5,
+        "hour": 19,
+        "indian_aqi": 312,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 135.0
+      },
+      {
+        "aqi": 200,
+        "exposure": 3159.0,
+        "hour": 20,
+        "indian_aqi": 323,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 150.0
+      },
+      {
+        "aqi": 210,
+        "exposure": 3442.5,
+        "hour": 21,
+        "indian_aqi": 335,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 165.0
+      },
+      {
+        "aqi": 220,
+        "exposure": 3726.0,
+        "hour": 22,
+        "indian_aqi": 346,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 180.0
+      },
+      {
+        "aqi": 230,
+        "exposure": 4009.5,
+        "hour": 23,
+        "indian_aqi": 358,
+        "indian_category": "Very poor",
+        "interpolated": false,
+        "pm25": 195.0
+      }
+    ],
+    "indoor_hacks": [
+      {
+        "estimate": "May reduce indoor PM2.5 substantially when correctly sized.",
+        "impact": "high",
+        "key": "purifier"
+      },
+      {
+        "estimate": "May reduce outdoor infiltration during high-AQI hours.",
+        "impact": "medium",
+        "key": "closed_windows"
+      },
+      {
+        "estimate": "A properly built filter may reduce particles; use only as a supplemental setup.",
+        "impact": "medium",
+        "key": "box_fan_filter"
+      },
+      {
+        "estimate": "May reduce cooking and heating smoke when vented outdoors.",
+        "impact": "high",
+        "key": "chimney"
+      },
+      {
+        "estimate": "A well-fitted certified respirator may reduce unavoidable outdoor particle inhalation.",
+        "impact": "medium",
+        "key": "mask"
+      }
+    ],
+    "members": [
+      {
+        "exposure": 55030.5,
+        "name": "Parent"
+      },
+      {
+        "exposure": 50006.25,
+        "name": "Child"
+      }
+    ],
+    "peak_aqi": 180,
+    "peak_hour": 18,
+    "sustainable_alternatives": [
+      {
+        "emissions_note": "May lower emissions versus a private car when shared.",
+        "exposure_note": "May reduce outdoor duration; verify AQ inside vehicle.",
+        "key": "metro_bus"
+      },
+      {
+        "emissions_note": "Near-zero direct fuel emissions.",
+        "exposure_note": "Only choose quieter, lower-AQI hours and avoid heavy traffic.",
+        "key": "walk_cycle"
+      },
+      {
+        "emissions_note": "Avoids on-site combustion; grid impact varies.",
+        "exposure_note": "May lower indoor combustion particles.",
+        "key": "induction"
+      },
+      {
+        "emissions_note": "May lower heating energy use.",
+        "exposure_note": "May reduce need for smoky supplemental heating.",
+        "key": "insulation"
+      }
+    ],
+    "top_swap": {
+      "description_key": "swap_purifier",
+      "emissions_note": "Estimated: electricity use varies; use a clean, correctly sized purifier.",
+      "exposure_after": 75113.32,
+      "exposure_before": 105036.75,
+      "key": "run_purifier",
+      "percent_reduction": 28.5
+    },
+    "top_swaps": [
+      {
+        "description_key": "swap_purifier",
+        "emissions_note": "Estimated: electricity use varies; use a clean, correctly sized purifier.",
+        "exposure_after": 75113.32,
+        "exposure_before": 105036.75,
+        "key": "run_purifier",
+        "percent_reduction": 28.5
+      },
+      {
+        "description_key": "swap_cooking",
+        "emissions_note": "Estimated: induction avoids direct biomass combustion, subject to local grid mix.",
+        "exposure_after": 99066.75,
+        "exposure_before": 105036.75,
+        "key": "cook_induction",
+        "percent_reduction": 5.7
+      },
+      {
+        "description_key": "swap_shift",
+        "emissions_note": "Estimated: no added fuel use; walking or cycling may avoid vehicle emissions.",
+        "exposure_after": 103936.5,
+        "exposure_before": 105036.75,
+        "from_hour": 7,
+        "key": "shift_activity",
+        "percent_reduction": 1.0,
+        "to_hour": 0
+      }
+    ],
+    "total_before": 105036.75
+  },
+  "forecast": [
+    {
+      "avg_pm25": 157.5,
+      "avg_wind_speed_mps": 2.5,
+      "best_window": {
+        "end_hour": 2,
+        "start_hour": 0
+      },
+      "category_slug": "very-poor",
+      "day_index": 0,
+      "indian_category": "Very poor",
+      "is_severe": true,
+      "is_stagnant": false,
+      "max_pm25": 195.0,
+      "min_pm25": 120.0,
+      "peak_aqi": 358,
+      "safest_airing_hour": 12,
+      "worst_window": {
+        "end_hour": 6,
+        "start_hour": 4
+      }
+    },
+    {
+      "avg_pm25": 157.5,
+      "avg_wind_speed_mps": 2.5,
+      "best_window": {
+        "end_hour": 2,
+        "start_hour": 0
+      },
+      "category_slug": "very-poor",
+      "day_index": 1,
+      "indian_category": "Very poor",
+      "is_severe": true,
+      "is_stagnant": false,
+      "max_pm25": 195.0,
+      "min_pm25": 120.0,
+      "peak_aqi": 358,
+      "safest_airing_hour": 12,
+      "worst_window": {
+        "end_hour": 6,
+        "start_hour": 4
+      }
+    },
+    {
+      "avg_pm25": 157.5,
+      "avg_wind_speed_mps": 2.5,
+      "best_window": {
+        "end_hour": 2,
+        "start_hour": 0
+      },
+      "category_slug": "very-poor",
+      "day_index": 2,
+      "indian_category": "Very poor",
+      "is_severe": true,
+      "is_stagnant": false,
+      "max_pm25": 195.0,
+      "min_pm25": 120.0,
+      "peak_aqi": 358,
+      "safest_airing_hour": 12,
+      "worst_window": {
+        "end_hour": 6,
+        "start_hour": 4
+      }
+    },
+    {
+      "avg_pm25": 157.5,
+      "avg_wind_speed_mps": 2.5,
+      "best_window": {
+        "end_hour": 2,
+        "start_hour": 0
+      },
+      "category_slug": "very-poor",
+      "day_index": 3,
+      "indian_category": "Very poor",
+      "is_severe": true,
+      "is_stagnant": false,
+      "max_pm25": 195.0,
+      "min_pm25": 120.0,
+      "peak_aqi": 358,
+      "safest_airing_hour": 12,
+      "worst_window": {
+        "end_hour": 6,
+        "start_hour": 4
+      }
+    },
+    {
+      "avg_pm25": 157.5,
+      "avg_wind_speed_mps": 2.5,
+      "best_window": {
+        "end_hour": 2,
+        "start_hour": 0
+      },
+      "category_slug": "very-poor",
+      "day_index": 4,
+      "indian_category": "Very poor",
+      "is_severe": true,
+      "is_stagnant": false,
+      "max_pm25": 195.0,
+      "min_pm25": 120.0,
+      "peak_aqi": 358,
+      "safest_airing_hour": 12,
+      "worst_window": {
+        "end_hour": 6,
+        "start_hour": 4
+      }
+    }
+  ],
+  "hourly": [
+    {
+      "aqi": 180,
+      "exposure": 2592.0,
+      "hour": 0,
+      "indian_aqi": 300,
+      "indian_category": "Poor",
+      "interpolated": false,
+      "pm25": 120.0
+    },
+    {
+      "aqi": 190,
+      "exposure": 2875.5,
+      "hour": 1,
+      "indian_aqi": 312,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 135.0
+    },
+    {
+      "aqi": 200,
+      "exposure": 3159.0,
+      "hour": 2,
+      "indian_aqi": 323,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 150.0
+    },
+    {
+      "aqi": 210,
+      "exposure": 3442.5,
+      "hour": 3,
+      "indian_aqi": 335,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 165.0
+    },
+    {
+      "aqi": 220,
+      "exposure": 3726.0,
+      "hour": 4,
+      "indian_aqi": 346,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 180.0
+    },
+    {
+      "aqi": 230,
+      "exposure": 4009.5,
+      "hour": 5,
+      "indian_aqi": 358,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 195.0
+    },
+    {
+      "aqi": 180,
+      "exposure": 2592.0,
+      "hour": 6,
+      "indian_aqi": 300,
+      "indian_category": "Poor",
+      "interpolated": false,
+      "pm25": 120.0
+    },
+    {
+      "aqi": 190,
+      "exposure": 12453.75,
+      "hour": 7,
+      "indian_aqi": 312,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 135.0
+    },
+    {
+      "aqi": 200,
+      "exposure": 3159.0,
+      "hour": 8,
+      "indian_aqi": 323,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 150.0
+    },
+    {
+      "aqi": 210,
+      "exposure": 8595.0,
+      "hour": 9,
+      "indian_aqi": 335,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 165.0
+    },
+    {
+      "aqi": 220,
+      "exposure": 3726.0,
+      "hour": 10,
+      "indian_aqi": 346,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 180.0
+    },
+    {
+      "aqi": 230,
+      "exposure": 4009.5,
+      "hour": 11,
+      "indian_aqi": 358,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 195.0
+    },
+    {
+      "aqi": 180,
+      "exposure": 2592.0,
+      "hour": 12,
+      "indian_aqi": 300,
+      "indian_category": "Poor",
+      "interpolated": false,
+      "pm25": 120.0
+    },
+    {
+      "aqi": 190,
+      "exposure": 2875.5,
+      "hour": 13,
+      "indian_aqi": 312,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 135.0
+    },
+    {
+      "aqi": 200,
+      "exposure": 3159.0,
+      "hour": 14,
+      "indian_aqi": 323,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 150.0
+    },
+    {
+      "aqi": 210,
+      "exposure": 3442.5,
+      "hour": 15,
+      "indian_aqi": 335,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 165.0
+    },
+    {
+      "aqi": 220,
+      "exposure": 3726.0,
+      "hour": 16,
+      "indian_aqi": 346,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 180.0
+    },
+    {
+      "aqi": 230,
+      "exposure": 4009.5,
+      "hour": 17,
+      "indian_aqi": 358,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 195.0
+    },
+    {
+      "aqi": 180,
+      "exposure": 13680.0,
+      "hour": 18,
+      "indian_aqi": 300,
+      "indian_category": "Poor",
+      "interpolated": false,
+      "pm25": 120.0
+    },
+    {
+      "aqi": 190,
+      "exposure": 2875.5,
+      "hour": 19,
+      "indian_aqi": 312,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 135.0
+    },
+    {
+      "aqi": 200,
+      "exposure": 3159.0,
+      "hour": 20,
+      "indian_aqi": 323,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 150.0
+    },
+    {
+      "aqi": 210,
+      "exposure": 3442.5,
+      "hour": 21,
+      "indian_aqi": 335,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 165.0
+    },
+    {
+      "aqi": 220,
+      "exposure": 3726.0,
+      "hour": 22,
+      "indian_aqi": 346,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 180.0
+    },
+    {
+      "aqi": 230,
+      "exposure": 4009.5,
+      "hour": 23,
+      "indian_aqi": 358,
+      "indian_category": "Very poor",
+      "interpolated": false,
+      "pm25": 195.0
+    }
+  ],
+  "indoor_hacks": [
+    {
+      "estimate": "May reduce indoor PM2.5 substantially when correctly sized.",
+      "impact": "high",
+      "key": "purifier"
+    },
+    {
+      "estimate": "May reduce outdoor infiltration during high-AQI hours.",
+      "impact": "medium",
+      "key": "closed_windows"
+    },
+    {
+      "estimate": "A properly built filter may reduce particles; use only as a supplemental setup.",
+      "impact": "medium",
+      "key": "box_fan_filter"
+    },
+    {
+      "estimate": "May reduce cooking and heating smoke when vented outdoors.",
+      "impact": "high",
+      "key": "chimney"
+    },
+    {
+      "estimate": "A well-fitted certified respirator may reduce unavoidable outdoor particle inhalation.",
+      "impact": "medium",
+      "key": "mask"
+    }
+  ],
+  "indoor_module": {
+    "diy_box_fan_guide": {
+      "assembly_steps": [
+        "Check fan airflow direction (arrow on fan casing pointing forward).",
+        "Place MERV 13 filter against fan intake with filter arrow pointing into fan.",
+        "Seal all four edges completely with tape to ensure zero bypass leakage.",
+        "Attach a 15-inch circular cardboard shroud to the front to boost center flow.",
+        "Place unit centrally, elevated slightly off floor, away from curtains."
+      ],
+      "estimated_cost_inr": "\u20b92,500 \u2013 \u20b93,500",
+      "filter_efficiency": "EPA tests show ~70-85% single-pass PM2.5 reduction at medium speed.",
+      "materials": [
+        "1x Certified 20-inch Box Fan with thermal fuse (approx \u20b91,500 \u2013 \u20b92,000)",
+        "1x or 2x MERV 13 Furnace Filter 20x20x1 or 20x20x2 inch (approx \u20b9800 \u2013 \u20b91,200)",
+        "1x Roll Painter's or Duct Tape (approx \u20b9100)",
+        "Cardboard shroud cut to 15-inch circular diameter to boost center air velocity"
+      ],
+      "safety_warnings": [
+        "Never use damaged or uncertified fans; ensure thermal cutoff protection.",
+        "Do not leave the DIY fan operating unattended or while asleep.",
+        "Inspect filter periodically; replace when visibly dark or flow drops.",
+        "Keep away from water, moisture, and bathroom environments."
+      ],
+      "title": "DIY Box-Fan Filter (Corsi-Rosenthal Minimal Setup)"
+    },
+    "purifier_sizing_default": {
+      "ceiling_height_m": 2.4,
+      "recommended_smoke_cadr_cfm": 106,
+      "recommended_smoke_cadr_m3h": 180,
+      "room_area_m2": 15.0,
+      "room_area_sqft": 161.5,
+      "rule_basis": "AHAM 2/3 Rule (Smoke CADR in CFM >= 2/3 of room sq ft)",
+      "target_ach": 5,
+      "volume_m3": 36.0
+    },
+    "room_checklists": {
+      "bedroom": [
+        {
+          "action": "Create an Overnight Clean Air Zone",
+          "details": "Keep bedroom doors and windows closed; run purifier on quiet speed.",
+          "id": "b1",
+          "reduction_estimate": "Maintains PM2.5 below 25 \u00b5g/m\u00b3 during sleep",
+          "source": "AHAM Air Cleaner Certification Standard"
+        },
+        {
+          "action": "Wet Mopping Instead of Dry Sweeping",
+          "details": "Use a damp mop daily; dry brooms resuspend fine dust into breathing zones.",
+          "id": "b2",
+          "reduction_estimate": "Prevents 40\u201370% dust re-suspension in breathing zone",
+          "source": "US EPA Indoor Air Quality Handbook"
+        },
+        {
+          "action": "Zero Incense and Mosquito Coils",
+          "details": "Avoid agarbatti and coils indoors; use liquid vaporizers or sealed traps.",
+          "id": "b3",
+          "reduction_estimate": "Eliminates episodic PM2.5 spikes of 300+ \u00b5g/m\u00b3",
+          "source": "WHO Guidelines on Household Fuel & Indoor Combustion"
+        }
+      ],
+      "children_room": [
+        {
+          "action": "Dedicated HEPA Filtration for Study & Play",
+          "details": "Children have higher breathing rates; ensure continuous filtration.",
+          "id": "c1",
+          "reduction_estimate": "Protects developing paediatric lungs from alveolar deposition",
+          "source": "EPA Exposure Factors Handbook (Paediatric Physiology)"
+        },
+        {
+          "action": "Proper Respirator / Mask Sizing",
+          "details": "Ensure child-sized certified KN95 masks have snug chin and nose fit.",
+          "id": "c2",
+          "reduction_estimate": "Achieves >85% particle exclusion with tight seal",
+          "source": "WHO Mask Guidance & NIOSH Respirator Standards"
+        }
+      ],
+      "kitchen": [
+        {
+          "action": "Ventilate Cooking Exhaust",
+          "details": "Turn on exhaust fan 2 minutes before cooking, and run 15 minutes after.",
+          "id": "k1",
+          "reduction_estimate": "30\u201350% reduction in indoor cooking particulate buildup",
+          "source": "WHO Guidelines: Household Fuel Combustion"
+        },
+        {
+          "action": "Close Kitchen Doors",
+          "details": "Keep kitchen doors closed to living areas while frying to isolate smoke.",
+          "id": "k2",
+          "reduction_estimate": "Isolates up to 60% of cooking aerosol from bedrooms",
+          "source": "EPA Indoor Air Quality Guide"
+        },
+        {
+          "action": "Transition from Solid Fuels",
+          "details": "Eliminate wood or coal; use electric induction or clean piped gas.",
+          "id": "k3",
+          "reduction_estimate": "Over 90% reduction in primary indoor PM2.5 generation",
+          "source": "WHO Household Energy Database"
+        }
+      ],
+      "living_room": [
+        {
+          "action": "Seal Windows and Door Gaps",
+          "details": "Apply foam weatherstripping and door draft stoppers to exterior sliders.",
+          "id": "l1",
+          "reduction_estimate": "Lowers outdoor infiltration rate by ~50%",
+          "source": "EPA Infiltration and Air Exchange Studies"
+        },
+        {
+          "action": "Midday Airing Window Timing",
+          "details": "Open windows for 15 minutes between 12:00 and 14:00 when mixing is high.",
+          "id": "l2",
+          "reduction_estimate": "Minimizes outdoor pollution ingress while venting CO2",
+          "source": "CPCB & IMD Winter Inversion Patterns"
+        }
+      ]
+    }
+  },
+  "location": {
+    "city": "Delhi",
+    "latitude": 28.6139,
+    "longitude": 77.209,
+    "source": "Open-Meteo Air Quality & Weather API (CAMS Ensemble)",
+    "timezone": "Asia/Kolkata"
+  },
+  "peak_pm25_hour": 5,
+  "personas": {
+    "elderly_home": {
+      "budget": "under_5000",
+      "commute": "none",
+      "cooking": "induction",
+      "description": "Retired grandparents with respiratory sensitivity and high indoor hours.",
+      "heating": "electric",
+      "id": "elderly_home",
+      "members": [
+        {
+          "ageGroup": "elderly",
+          "name": "Grandparent",
+          "sensitive": true
+        },
+        {
+          "ageGroup": "adult",
+          "name": "Caregiver",
+          "sensitive": false
+        }
+      ],
+      "name": "Senior Citizen / Elderly at Home",
+      "outdoor_minutes": 30,
+      "purifier": true,
+      "routine_text": "Dada ji din bhar ghar pe rehte hain, subah balcony me baithte hain, thand me heating zaroori hai.",
+      "windows": "mostly_closed"
+    },
+    "outdoor_worker": {
+      "budget": "under_500",
+      "commute": "bike",
+      "cooking": "lpg",
+      "description": "Gig delivery partner or outdoor worker with 6+ hours street exposure.",
+      "heating": "none",
+      "id": "outdoor_worker",
+      "members": [
+        {
+          "ageGroup": "adult",
+          "name": "Rider",
+          "sensitive": false
+        }
+      ],
+      "name": "Outdoor Worker / Delivery Rider",
+      "outdoor_minutes": 120,
+      "purifier": false,
+      "routine_text": "Subah 10 baje se shaam 6 baje tak bike pe deliveries karta hoon busy roads pe.",
+      "windows": "mostly_closed"
+    },
+    "student_hostel": {
+      "budget": "under_500",
+      "commute": "walk",
+      "cooking": "induction",
+      "description": "University student walking between hostel, library, and campus mess.",
+      "heating": "none",
+      "id": "student_hostel",
+      "members": [
+        {
+          "ageGroup": "adult",
+          "name": "Student",
+          "sensitive": false
+        }
+      ],
+      "name": "Student / Hostel Resident",
+      "outdoor_minutes": 60,
+      "purifier": false,
+      "routine_text": "College campus me subah 8 baje class ke liye walk karta hoon, shaam ko library se hostel.",
+      "windows": "mostly_closed"
+    },
+    "working_parents": {
+      "budget": "under_5000",
+      "commute": "metro",
+      "cooking": "lpg",
+      "description": "Busy family with morning school drop-off and daily office transit.",
+      "heating": "none",
+      "id": "working_parents",
+      "members": [
+        {
+          "ageGroup": "adult",
+          "name": "Parent 1",
+          "sensitive": false
+        },
+        {
+          "ageGroup": "child",
+          "name": "Child",
+          "sensitive": true
+        }
+      ],
+      "name": "Working Parents & School Children",
+      "outdoor_minutes": 60,
+      "purifier": false,
+      "routine_text": "Subah 7:30 bache ko school drop karte hain, 9 baje metro se office, shaam 6 baje park walk.",
+      "windows": "mostly_closed"
+    }
+  },
+  "sustainable_alternatives": [
+    {
+      "emissions_note": "May lower emissions versus a private car when shared.",
+      "exposure_note": "May reduce outdoor duration; verify AQ inside vehicle.",
+      "key": "metro_bus"
+    },
+    {
+      "emissions_note": "Near-zero direct fuel emissions.",
+      "exposure_note": "Only choose quieter, lower-AQI hours and avoid heavy traffic.",
+      "key": "walk_cycle"
+    },
+    {
+      "emissions_note": "Avoids on-site combustion; grid impact varies.",
+      "exposure_note": "May lower indoor combustion particles.",
+      "key": "induction"
+    },
+    {
+      "emissions_note": "May lower heating energy use.",
+      "exposure_note": "May reduce need for smoky supplemental heating.",
+      "key": "insulation"
+    }
+  ],
+  "top_swaps": [
+    {
+      "description_key": "swap_purifier",
+      "emissions_note": "Estimated: electricity use varies; use a clean, correctly sized purifier.",
+      "exposure_after": 75113.32,
+      "exposure_before": 105036.75,
+      "key": "run_purifier",
+      "percent_reduction": 28.5
+    },
+    {
+      "description_key": "swap_cooking",
+      "emissions_note": "Estimated: induction avoids direct biomass combustion, subject to local grid mix.",
+      "exposure_after": 99066.75,
+      "exposure_before": 105036.75,
+      "key": "cook_induction",
+      "percent_reduction": 5.7
+    },
+    {
+      "description_key": "swap_shift",
+      "emissions_note": "Estimated: no added fuel use; walking or cycling may avoid vehicle emissions.",
+      "exposure_after": 103936.5,
+      "exposure_before": 105036.75,
+      "from_hour": 7,
+      "key": "shift_activity",
+      "percent_reduction": 1.0,
+      "to_hour": 0
+    }
+  ]
+}
