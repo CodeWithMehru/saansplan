@@ -13,6 +13,7 @@ permissions:
 
 jobs:
   python-quality:
+    name: Python Quality & Verification
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -23,24 +24,47 @@ jobs:
       - run: ruff format --check app tests scripts
       - run: ruff check app tests scripts
       - run: mypy app
+      - run: python3 scripts/verify/check_docs_consistency.py
       - run: pytest --cov=app --cov-report=term-missing -q
 
   javascript:
+    name: JavaScript Checks & Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
           node-version: "22"
+      - run: npx --yes eslint@10.15.0 app/static/js/
+      - run: npx --yes prettier@3.5.2 --check app/static/
+      - run: npx --yes --package=typescript@5.7.3 tsc --noEmit
       - run: node --test app/static/tests/*.test.js
 
   security:
+    name: Security & Supply Chain
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
         with:
           python-version: "3.13"
       - run: pip install -r requirements.txt -r requirements-dev.txt
-      - run: bandit -q -r app
-      - run: pip-audit -r requirements.txt
+      - name: Bandit static security audit
+        run: bandit -q -r app
+      - name: Pip-audit vulnerability scan
+        run: pip-audit -r requirements.txt
+      - name: Generate CycloneDX SBOM
+        run: pip-audit -r requirements.txt -f cyclonedx-json -o cyclonedx-sbom.json
+      - name: Upload CycloneDX SBOM artifact
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        with:
+          name: cyclonedx-sbom
+          path: cyclonedx-sbom.json
+      - name: Verify hashed lockfile installation
+        run: pip install --require-hashes -r requirements.lock.txt
+      - name: Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@f4db69f0b182877a5b6f3ff8089ae1262d475ef0 # v2.3.8
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -31,21 +31,34 @@ SYMPTOM_TERMS = (
     "chhati",
     "saans phool",
 )
-INJECTION_TERMS = ("api key", "system prompt", "ignore instructions", "reveal secrets")
+INJECTION_TERMS = (
+    "api key",
+    "system prompt",
+    "ignore instructions",
+    "reveal secrets",
+    "override instructions",
+    "bypass guardrails",
+    "developer mode",
+    "disregard previous",
+    "leak secrets",
+    "dump config",
+    "environment variables",
+)
 
 
 def extract_room_size_sqft(text: str) -> float | None:
     """Extract room area from query in square feet or square meters."""
+    bounded = text[:1000]
     m_sqft = re.search(
-        r"(\d+(?:\.\d+)?)\s*(?:sq\.?\s*ft|sqft|square\s*feet|square\s*foot)",
-        text,
+        r"\b(\d+(?:\.\d+)?)\s*(?:sq\.?\s*ft|sqft|square\s*feet|square\s*foot)\b",
+        bounded,
         re.IGNORECASE,
     )
     if m_sqft:
         return float(m_sqft.group(1))
     m_sqm = re.search(
-        r"(\d+(?:\.\d+)?)\s*(?:sq\.?\s*m|sqm|square\s*meters|m2|m²)",
-        text,
+        r"\b(\d+(?:\.\d+)?)\s*(?:sq\.?\s*m|sqm|square\s*meters|m2|m²)\b",
+        bounded,
         re.IGNORECASE,
     )
     if m_sqm:

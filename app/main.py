@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
+from slowapi.errors import RateLimitExceeded
 
 from app.config import MAX_REQUEST_BYTES
 from app.core.limiting import limiter
@@ -161,6 +162,16 @@ async def favicon() -> Response:
         'font-family="sans-serif">S</text></svg>'
     )
     return Response(content=svg, media_type="image/svg+xml")
+
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded) -> JSONResponse:
+    """Return 429 response with RFC 6585 Retry-After header."""
+    return JSONResponse(
+        status_code=429,
+        content={"detail": f"Rate limit exceeded: {exc.detail}"},
+        headers={"Retry-After": "60"},
+    )
 
 
 @app.exception_handler(404)

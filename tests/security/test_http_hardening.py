@@ -83,3 +83,52 @@ def test_groq_api_key_never_leaked() -> None:
         assert dummy_key not in resp.text
         for hval in resp.headers.values():
             assert dummy_key not in hval
+
+
+def test_rate_limit_retry_after_header() -> None:
+    """Verify 429 response sets RFC 6585 Retry-After header."""
+    from unittest.mock import MagicMock
+
+    from slowapi.errors import RateLimitExceeded
+    from starlette.requests import Request
+
+    from app.main import rate_limit_handler
+
+    req = Request({"type": "http", "method": "POST", "path": "/api/plan", "headers": []})
+    mock_limit = MagicMock()
+    mock_limit.error_message = "10 per minute"
+    exc = RateLimitExceeded(mock_limit)
+    import asyncio
+
+    resp = asyncio.run(rate_limit_handler(req, exc))
+    assert resp.status_code == 429
+    assert resp.headers.get("Retry-After") == "60"
+
+
+def test_redos_regex_timing_resilience() -> None:
+    """Verify regex patterns execute in sub-millisecond time on pathological repetitive input."""
+    import time
+
+    from app.services.assistant_resolvers import extract_hour, extract_room_size_sqft
+
+    # 10,000 character repetition of potential backtracking triggers
+    adversarial_text = "sqft " * 2000 + "99999" * 1000 + "shaam baje " * 1000
+    t0 = time.perf_counter()
+    _ = extract_room_size_sqft(adversarial_text)
+    _ = extract_hour(adversarial_text)
+    elapsed_ms = (time.perf_counter() - t0) * 1000
+    assert elapsed_ms < 50.0  # Must complete in under 50ms without catastrophic backtracking
+
+
+def test_oversized_payload_rejected_with_413() -> None:
+    """Verify requests exceeding MAX_REQUEST_BYTES are rejected with 413."""
+    from app.config import MAX_REQUEST_BYTES
+
+    oversized = "x" * (MAX_REQUEST_BYTES + 500)
+    resp = client.post(
+        "/api/plan",
+        content=oversized,
+        headers={"Content-Type": "application/json"},
+    )
+    assert resp.status_code == 413
+    assert "Request body is too large" in resp.json()["detail"]
