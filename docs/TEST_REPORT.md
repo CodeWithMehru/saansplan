@@ -1,20 +1,20 @@
 # Test & Verification Report
 
-Generated automatically on: `2026-11-25 17:01:05 UTC`
+Generated automatically on: `2026-11-25 17:45:45 UTC`
 
 ## System Verification Summary
 
 | Category | Target / Requirement | Measured Result | Status |
 |---|---|---|---|
-| **Engine Execution Speed** | < 50 ms for 6-member family | `2.79 ms` | ✅ PASS |
-| **Interpolation Throughput** | 1000 runs < 200 ms | `38.84 ms` | ✅ PASS |
-| **Static Bundle Size** | < 60 KB gzipped | `33.52 KB` (raw: 106.95 KB) | ✅ PASS |
-| **Overall Test Coverage** | ≥ 95% enforced by pyproject | `99.55%` (178 passed) | ✅ PASS |
+| **Engine Execution Speed** | < 50 ms for 6-member family | `2.41 ms` | ✅ PASS |
+| **Interpolation Throughput** | 1000 runs < 200 ms | `38.72 ms` | ✅ PASS |
+| **Static Bundle Size** | < 60 KB gzipped | `33.48 KB` (raw: 106.85 KB) | ✅ PASS |
+| **Overall Test Coverage** | ≥ 95% enforced by pyproject | `99.55%` (251 passed) | ✅ PASS |
 | **Engine Test Coverage** | ≥ 95% target | `99.49%` | ✅ PASS |
 | **Hermetic Execution** | No secrets & no network required | Hermetic tests pass cleanly | ✅ PASS |
 | **Axe Accessibility Audit** | 0 WCAG 2.2 AA violations | 0 violations (43 initial, 56 populated) | ✅ PASS |
 | **Reflow (WCAG 1.4.10)** | 360 px width without horizontal scroll | Zero horizontal overflow | ✅ PASS |
-| **Prompt Injection Defense** | Multi-lingual adversarial corpus | 48 injection strings tested and blocked | ✅ PASS |
+| **Prompt Injection Defense** | Multi-lingual adversarial corpus | 57 injection strings tested and blocked | ✅ PASS |
 | **Medical Safety Redirect** | Immediate redirect on symptoms/meds | Tested clinical safety fallback | ✅ PASS |
 | **Security Audits** | Bandit zero issues, pip-audit zero vulns | Clean automated scan | ✅ PASS |
 
@@ -36,7 +36,7 @@ Generated automatically on: `2026-11-25 17:01:05 UTC`
   - `/api/geocode`: Open-Meteo city search proxy with strict parameter validation.
 
 - **Security & A11y Tests (`tests/security/`, `tests/a11y/`, `scripts/`):**
-  - Prompt injection corpus in English, Hinglish, and Hindi (48 vectors).
+  - Prompt injection corpus in English, Hinglish, and Hindi (57 vectors).
   - Real client IP resolution with reverse-proxy trust guards.
   - Strict Content Security Policy (`default-src 'self'`, no unsafe-inline, no unsafe-eval).
   - Playwright and Axe-Core automated WCAG 2.2 AA validation (`scripts/a11y.py`).

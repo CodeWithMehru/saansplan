@@ -2,7 +2,7 @@
 
 ## Changes / updates made in the deployed version
 
-SaansPlan upgrades the Indian air-quality assistant across all evaluation criteria. Code quality: layered architecture, thin routers, modular guards, domain schemas, componentized ES modules, Radon CC Rank A (3.22 avg), docstrings (187/187), zero files >250 lines. Security: 415 Content-Type check, RFC 9116 security.txt, SHA-pinned CI actions, 48-vector injection corpus, CORP same-origin, SlowAPI rate limits (30/min). Efficiency: BoundedTTLCache (30m TTL, LRU), gzip, 1.52ms engine plan calculation, 32.70 KB gzipped bundle. Testing: 178 hermetic tests (96.07% coverage, >=95% gate), fault injection, Hypothesis invariants, 7 characterization snapshots, Node.js i18n runner. Accessibility: WCAG 2.2 AA (0 Axe violations on 56 rules), Lighthouse Accessibility 100/100, Reading Comfort panel (High Contrast, Text Spacing WCAG 1.4.12), standalone /accessibility page. Features: 5-day smog forecast, Cleaner Day optimizer (±25% range), CADR sizing, emissions/cost engine, WhatsApp kit, and grounded Q&A.
+SaansPlan upgrades the Indian air-quality assistant across all evaluation criteria. Code quality: frozen domain models, CC<=7 across all functions (max 7 in groq_chat, avg 2.67 Rank A), 100% docstrings (255/255), thin routers, AST boundary tests. Security: SHA-256 hashed lockfile, CodeQL, Scorecard, Trivy workflows, Gitleaks, ReDoS-safe regexes, 57-vector injection corpus, RFC 6585 Retry-After, RFC 9116 security.txt. Efficiency: BoundedTTLCache (30m TTL, LRU), gzip, 6.49ms plan calculation, 33.48 KB gzipped bundle. Testing: 262 automated tests (251 pytest + 11 node), 99.55% coverage, mutation testing (mutmut), random-order testing (pytest-randomly), API contract tests, ARIA snapshots. Accessibility: WCAG 2.2 AA (0 Axe violations on 56 rules), Lighthouse 100/100, Reading Comfort panel (High Contrast, Text Spacing WCAG 1.4.12), touch targets >=24px, 320px reflow, /accessibility page. Features: 5-day smog forecast, Cleaner Day optimizer, CADR sizing, emissions/cost engine, WhatsApp kit, and grounded Q&A.
 
 ## Gen AI services utilized and where
 
@@ -43,12 +43,12 @@ Key Highlights:
 • Your Cleaner Day: Shifts flexible outdoor tasks to cleaner afternoon windows (11 AM–3 PM); flags wind stagnation (< 2 m/s).
 • Indoor IAQ & Cost: AHAM 2/3 room CADR calculator, EPA DIY box-fan filter guide, and weekly carbon (kg CO2e) and INR cost comparisons.
 • Grounded GenAI (Groq gpt-oss-20b): Parses Hinglish/English/Hindi routines; deterministic number guard stops hallucinations; template fallback on failure. Outbound dispatch verified: 1 call for general queries, 0 calls for clinical symptom redirects.
-• Production Rigor: WCAG 2.2 AA (0 Axe violations), Lighthouse Accessibility 100, strict CSP, sub-2ms engine execution, and 178 tests with 96.07% coverage.
+• Production Rigor: WCAG 2.2 AA (0 Axe violations), Lighthouse Accessibility 100, CodeQL/Trivy, sub-7ms engine speed, and 262 tests with 99.55% coverage.
 
 #Hack2skill #CleanAir #AIForGood
 
 ## Character counts
 
-- Changes/updates field: **1002 characters** (limit: < 1024 characters).
+- Changes/updates field: **1016 characters** (limit: < 1024 characters).
 - Gen AI services field: **1002 characters** (limit: < 1024 characters).
-- LinkedIn post draft: **1184 characters** (limit: < 1300 characters).
+- LinkedIn post draft: **1182 characters** (limit: < 1300 characters).
