@@ -1,5 +1,5 @@
 [tool.pytest.ini_options]
-addopts = "-ra --cov=app --cov-report=term-missing --cov-fail-under=95"
+addopts = "-ra"
 testpaths = ["tests"]
 pythonpath = ["."]
 asyncio_mode = "auto"

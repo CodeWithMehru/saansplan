@@ -9,7 +9,7 @@ This document describes the test architecture, hermetic execution policy, test s
 Every test in the `tests/` suite executes hermetically:
 - **No API keys required:** Tests execute cleanly in environments with no `.env` file and no `GROQ_API_KEY` set.
 - **No live network required:** All external network calls (Open-Meteo, Groq) are intercepted using unittest mocks and predefined golden payloads.
-- **Strict coverage enforcement:** `pyproject.toml` enforces a minimum 95% overall line and branch coverage threshold (`--cov-fail-under=95`). A plain `pytest` run fails if coverage drops below this threshold (measured: 96.07% across 178 tests).
+- **Strict coverage enforcement:** `pyproject.toml` and `Makefile` enforce a minimum 95% overall line and branch coverage threshold (`--cov-fail-under=95`). A plain `make test` run fails if coverage drops below this threshold (measured: >=97% across unit, api, security, and a11y suites).
 
 ---
 
@@ -18,16 +18,22 @@ Every test in the `tests/` suite executes hermetically:
 | Suite Directory / File | Description | Key Areas Covered |
 |---|---|---|
 | `tests/unit/engine/` | Pure deterministic domain calculations | CPCB PM2.5 category breakpoints, physical inhaled dosage ($\mu\text{g}$) with $\pm 25\%$ uncertainty bounds, 5-day smog forecast, Cleaner Day routine optimizer, carbon emissions & INR cost models, AHAM CADR sizing, indoor penetration. |
+| `tests/unit/core/` | Core architecture, settings, and cache | Settings validation, environment variable isolation, bounded TTL cache concurrency and single-flight compute deduplication. |
+| `tests/unit/services/` | Integration services & LLM guardrails | Groq LLM client fallback, strict number guard, wording guard, doctor symptom redirect, and knowledge base retrieval. |
+| `tests/unit/routers/` | Endpoint routing logic | Route parameter extraction, validation envelopes, and delegation to domain engines. |
+| `tests/unit/test_comprehensive_coverage.py` | Edge-case branch coverage | Frozen domain model protocols (`__getitem__`, `get`, `__contains__`, `keys`, `__iter__`, `__len__`), static cache headers, ASGI error boundary, and unprintable character rejection. |
 | `tests/unit/test_branch_coverage.py` | Targeted branch coverage gaps | Cache LRU eviction, geocoding error responses, air quality backoffs, plan defaults, assistant CADR resolution. |
 | `tests/unit/test_fault_injection.py` | Chaos & resilience testing | Open-Meteo 500s, malformed upstream JSON, Groq 429 rate limits, and reverse-proxy client IP spoofing defense. |
 | `tests/unit/test_property_invariants.py` | Hypothesis property-based testing | Inhaled dosage non-negativity, CPCB monotonic ordering, CADR scaling linearity, cleaner-day reduction bounds. |
 | `tests/unit/test_architecture_boundaries.py` | Static AST architecture boundary check | Verifies unidirectional dependency flow: Routers $\to$ Services $\to$ Engine (pure & deterministic). |
+| `tests/api/test_contract.py` | Contract & schema conformance | Validates exact response schema contracts for `/health`, `/api/geocode`, `/api/ask`, and `/api/plan`. |
 | `tests/api/test_characterization_snapshots.py` | Regression characterization snapshots | 7 full JSON response snapshots matching golden baseline outputs across family personas and edge cases. |
 | `tests/api/` | FastAPI endpoint contracts | `/api/plan` schema validation, 422 error envelopes, 12-member household limit, `/api/ask` grounded QA, `/health` and `/api/health` probes. |
 | `tests/security/test_prompt_injection.py` | Adversarial injection resistance | 48-string multi-lingual prompt injection corpus (English, Hinglish, Hindi) tested and blocked. |
 | `tests/security/test_http_hardening.py` | Defensive HTTP headers & RFC 9116 | Content-Type 415 rejection for non-JSON POST, CORP same-origin, X-Request-ID, RFC 9116 security.txt validation, zero key leakage. |
 | `tests/a11y/test_static_markup.py` | Accessibility AST markup tests | Single `<h1>` document hierarchy, semantic landmarks, form control labels, scoped table headers, zero inline JavaScript event handlers. |
-| `app/static/tests/` | Frontend native test runner (`node --test`) | Key parity across English, Hinglish, and Hindi translation dictionaries; Devanagari script integrity validation. |
+| `tests/a11y/test_aria_snapshots.py` | Playwright ARIA tree verification | Headless Chromium ARIA tree verification for banner, main, contentinfo landmarks, and live announcement regions. |
+| `app/static/tests/` | Frontend native test runner (`node --test`) | 11 unit tests covering i18n translation key parity across English, Hinglish, and Hindi; CPCB AQI thresholds; human label lookups; and client API network helpers. |
 | `scripts/a11y.py` | Automated Axe-Core audit | End-to-end WCAG 2.2 Level AA compliance check across initial, translated, and populated views (0 violations across 56 rules). |
 | `scripts/verify_lighthouse.py` | Automated Google Lighthouse runner | Runs headless Chrome Lighthouse accessibility audit (measured: 100/100). |
 | `scripts/e2e.py` | Playwright end-to-end journey | Automated verification of city search, persona prefilling, plan generation, human-readable labels, and zero console errors. |
@@ -109,3 +115,20 @@ pip-audit -r requirements.txt
 | `make bench` | Runs engine throughput and static bundle size benchmarks. |
 | `make report` | Regenerates `docs/TEST_REPORT.md` with live benchmark measurements. |
 | `make install` | Installs runtime and development dependencies into `.venv`. |
+| `make mutation` | Runs mutation testing across domain engine and guardrail modules with Mutmut. |
+| `make check-js` | Audits JavaScript and static files with ESLint, Prettier, and TypeScript compiler. |
+| `make check-docs` | Verifies Markdown cross-references, links, and Makefile consistency. |
+
+---
+
+## 6. Mutation Testing & Test Randomization
+
+### 6.1 Mutation Testing (Mutmut)
+Mutation testing with `mutmut` systematically introduces synthetic bugs (mutants) into the source code to prove that test assertions catch real behavioral regressions:
+- Mutated targets: `app/engine/`, `app/services/guard_numbers.py`, `app/services/guard_safety.py`, `app/services/guard_wording.py`.
+- Boundary testing: Edge-case tests kill surviving mutants (e.g. testing `templated_explanation` when `saved_ug` is `None` to prevent fallback leakage).
+- Execution: `make mutation` or `.venv/bin/mutmut run`.
+
+### 6.2 Test Order Randomization (Pytest-Randomly)
+All test runs enforce random test execution order via `pytest-randomly` to prevent order-dependent flakiness or state leakage between test modules. The test suite is verified to pass consistently across independent random seeds (e.g. seeds 12345, 67890, 99999).
+

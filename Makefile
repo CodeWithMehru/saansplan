@@ -18,7 +18,7 @@ typecheck: ## Run strict static type checking with mypy
 	mypy app
 
 test: ## Run unit and integration test suite with coverage
-	pytest
+	pytest --cov=app --cov-report=term-missing --cov-fail-under=95
 
 test-js: ## Run Node.js tests for frontend modules
 	node --test app/static/tests/*.test.js

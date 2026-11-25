@@ -28,3 +28,13 @@ def test_templated_explanation_contains_required_fields() -> None:
     hing = templated_explanation(engine, language="hinglish")
     assert "240" in hing
     assert "30" in hing
+
+    # Test when saved_ug is None
+    engine_no_saved = {
+        "peak_hour": 18,
+        "peak_aqi": 250,
+        "cleaner_day": {"percent_reduction": 30.0},
+    }
+    en_no_saved = templated_explanation(engine_no_saved, language="en")
+    assert "None" not in en_no_saved
+    assert "save approximately" not in en_no_saved
