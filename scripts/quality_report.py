@@ -1,6 +1,7 @@
 """Generate verified code-quality report using radon, interrogate, and AST analysis."""
 
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -11,15 +12,20 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 def run_cmd(cmd: list[str]) -> str:
     """Run shell command and return stdout."""
-    res = subprocess.run(cmd, cwd=PROJECT_ROOT, capture_output=True, text=True, check=False)
-    return res.stdout.strip()
+    try:
+        res = subprocess.run(cmd, cwd=PROJECT_ROOT, capture_output=True, text=True, check=False)
+        return res.stdout.strip()
+    except FileNotFoundError:
+        return ""
 
 
 def main() -> None:
     """Audit codebase with radon, interrogate, and AST analysis; write docs/CODE_QUALITY.md."""
     # 1. Radon Complexity
     radon_bin = (
-        "/tmp/tools_venv/bin/radon" if os.path.exists("/tmp/tools_venv/bin/radon") else "radon"
+        "/tmp/tools_venv/bin/radon"
+        if os.path.exists("/tmp/tools_venv/bin/radon")
+        else (shutil.which("radon") or "radon")
     )
     radon_out = run_cmd([radon_bin, "cc", "app/", "-s", "-a"])
     avg_line = [line for line in radon_out.splitlines() if "Average complexity:" in line]
@@ -36,7 +42,7 @@ def main() -> None:
     interrogate_bin = (
         "/tmp/tools_venv/bin/interrogate"
         if os.path.exists("/tmp/tools_venv/bin/interrogate")
-        else "interrogate"
+        else (shutil.which("interrogate") or "interrogate")
     )
     interrogate_out = run_cmd([interrogate_bin, "-v", "app/"])
     doc_cov = "100.0% (186/186 items documented)"
@@ -87,16 +93,16 @@ def main() -> None:
   - `app/routers/plan.py` handler modularized into focused helper pipelines.
 
 - **Modular Guard Architecture:**
-  - Split monolithic guard into `guard_numbers.py` (numeric grounding), `guard_safety.py` (clinical safety & fallbacks), and `guard_wording.py` (12-hour formatting & past-tense checks).
+  - Split monolithic guard into `app/services/guard_numbers.py` (numeric grounding), `app/services/guard_safety.py` (clinical safety & fallbacks), and `app/services/guard_wording.py` (12-hour formatting & past-tense checks).
   - Maintained backward-compatible facade `app/services/guard.py`.
 
 - **Domain Schemas & Pydantic v2 Models:**
-  - Split `app/models.py` into cohesive domain schemas in `app/schemas/` (`family.py`, `routine.py`, `plan.py`, `ask.py`).
+  - Split `app/models.py` into cohesive domain schemas in `app/schemas/` (`app/schemas/family.py`, `app/schemas/routine.py`, `app/schemas/plan.py`, `app/schemas/ask.py`).
   - Added control character validation, string stripping, and `extra="forbid"` defenses.
 
 - **Frontend Componentization:**
-  - Split monolithic `render.js` (521 lines) into focused ES modules in `app/static/js/render/`:
-    `members.js`, `timeline.js`, `swaps.js`, `forecast.js`, `cleaner_day.js`, `emissions.js`, `indoor.js`, `community.js`.
+  - Split monolithic renderer into focused ES modules in `app/static/js/render/`:
+    `app/static/js/render/members.js`, `app/static/js/render/timeline.js`, `app/static/js/render/swaps.js`, `app/static/js/render/forecast.js`, `app/static/js/render/cleaner_day.js`, `app/static/js/render/emissions.js`, `app/static/js/render/indoor.js`, `app/static/js/render/community.js`.
   - Every frontend JavaScript file is strictly ≤ 240 lines.
 """
     Path("docs/CODE_QUALITY.md").write_text(report, encoding="utf-8")

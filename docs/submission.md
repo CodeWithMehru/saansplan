@@ -2,14 +2,14 @@
 
 ## Changes / updates made in the deployed version
 
-SaansPlan upgrades the Indian air-quality assistant across all evaluation criteria. Code quality: layered architecture, thin routers, modular guards, domain schemas, componentized ES modules, Radon CC Rank A (3.24), 100% docstrings, zero files >250 lines. Security: 415 Content-Type check, RFC 9116 security.txt, SHA-pinned CI actions, 48-vector injection corpus, CORP same-origin, SlowAPI rate limits (30/min). Efficiency: BoundedTTLCache (30m TTL, LRU), gzip, 1.73ms engine plan calculation, 32.7 KB gzipped bundle (<60 KB). Testing: 178 hermetic tests (96.07% coverage, >=95% gate), fault injection, Hypothesis property invariants, 7 characterization snapshots, Node.js i18n runner. Accessibility: WCAG 2.2 AA (0 Axe violations on 56 rules), Lighthouse 100/100, Reading Comfort panel (High Contrast, Text Spacing WCAG 1.4.12), standalone /accessibility page. Features: 5-day smog forecast, Cleaner Day optimizer (±25% range), CADR sizing, emissions/cost engine, WhatsApp kit, and grounded Q&A.
+SaansPlan upgrades the Indian air-quality assistant across all evaluation criteria. Code quality: layered architecture, thin routers, modular guards, domain schemas, componentized ES modules, Radon CC Rank A (3.22 avg), docstrings (187/187), zero files >250 lines. Security: 415 Content-Type check, RFC 9116 security.txt, SHA-pinned CI actions, 48-vector injection corpus, CORP same-origin, SlowAPI rate limits (30/min). Efficiency: BoundedTTLCache (30m TTL, LRU), gzip, 1.52ms engine plan calculation, 32.70 KB gzipped bundle. Testing: 178 hermetic tests (96.07% coverage, >=95% gate), fault injection, Hypothesis invariants, 7 characterization snapshots, Node.js i18n runner. Accessibility: WCAG 2.2 AA (0 Axe violations on 56 rules), Lighthouse Accessibility 100/100, Reading Comfort panel (High Contrast, Text Spacing WCAG 1.4.12), standalone /accessibility page. Features: 5-day smog forecast, Cleaner Day optimizer (±25% range), CADR sizing, emissions/cost engine, WhatsApp kit, and grounded Q&A.
 
 ## Gen AI services utilized and where
 
 Groq Cloud API (openai/gpt-oss-20b) is the sole GenAI service, applied strictly in 3 bounded areas with deterministic safety guards:
 1. Routine Parsing (POST /api/plan): Parses free-text routines in English, Hinglish, or Hindi into validated Pydantic JSON (Routine). Input sanitized with XML tags; network timeouts (>6s) or schema parsing errors fall back gracefully to default_routine.
 2. Plan Explanation (POST /api/plan): Explains engine facts in user language using 12-hour clock times and physical inhaled units (µg saved, percent). A deterministic Number Guard validates every numeral against engine facts; ungrounded numbers or past-tense claims fall back to templated_explanation.
-3. Grounded Q&A Assistant (POST /api/ask): Answers queries using deterministic engine facts and verified knowledge base snippets. Automatically calculates AHAM 2/3 CADR sizing and immediately redirects acute respiratory symptoms to emergency medical care.
+3. Grounded Q&A Assistant (POST /api/ask): Verified via outbound call inspection to make exactly 1 outbound Groq request for general air quality/purifier queries (grounded in KB facts). Symptom queries make 0 outbound Groq requests: deterministically intercepted by check_safety for immediate medical redirection.
 
 ## 90-second demo script
 
@@ -35,18 +35,20 @@ Groq Cloud API (openai/gpt-oss-20b) is the sole GenAI service, applied strictly 
 
 Smog season in North India exposes millions of urban families to hazardous PM2.5 levels. I built SaansPlan for Hack2skill Challenge 6 ("Urban Air Quality Assistant") to turn hourly atmospheric data into clear, practical daily actions.
 
-Live Demo: https://saansplan.onrender.com
-GitHub: https://github.com/CodeWithMehru/saansplan
+Live: https://saansplan.onrender.com
+Code: https://github.com/CodeWithMehru/saansplan
 
 Key Highlights:
-• Transparent Physics First: Hourly CPCB National AQI categories, physical inhaled PM2.5 dosage in micrograms (µg) using EPA inhalation rates with transparent ±25% uncertainty bands.
-• Your Cleaner Day & 5-Day Forecast: Shifts flexible outdoor tasks to cleaner afternoon windows (11 AM–3 PM) while preserving work/school routines; flags surface wind stagnation (< 2 m/s).
-• Indoor IAQ & Cost Engine: AHAM 2/3 room-sizing CADR calculator, verified EPA DIY box-fan filter guide, and weekly carbon (kg CO2e) and INR cost comparisons across budget tiers.
-• Grounded GenAI with Groq (openai/gpt-oss-20b): Parses Hinglish/English/Hindi routines; deterministic number guards enforce that the LLM never invents numbers; template fallbacks guarantee zero downtime.
-• Production Rigor: WCAG 2.2 AA compliant (0 Axe violations across EN/Hinglish/HI), Lighthouse 100/100, strict CSP, sub-2ms engine execution, and 178 tests with 96.07% coverage.
+• Transparent Physics: Hourly CPCB AQI categories, physical inhaled PM2.5 dosage (µg) using EPA inhalation rates with ±25% uncertainty bands.
+• Your Cleaner Day: Shifts flexible outdoor tasks to cleaner afternoon windows (11 AM–3 PM); flags wind stagnation (< 2 m/s).
+• Indoor IAQ & Cost: AHAM 2/3 room CADR calculator, EPA DIY box-fan filter guide, and weekly carbon (kg CO2e) and INR cost comparisons.
+• Grounded GenAI (Groq gpt-oss-20b): Parses Hinglish/English/Hindi routines; deterministic number guard stops hallucinations; template fallback on failure. Outbound dispatch verified: 1 call for general queries, 0 calls for clinical symptom redirects.
+• Production Rigor: WCAG 2.2 AA (0 Axe violations), Lighthouse Accessibility 100, strict CSP, sub-2ms engine execution, and 178 tests with 96.07% coverage.
+
+#Hack2skill #CleanAir #AIForGood
 
 ## Character counts
 
-- Changes/updates field: **996 characters** (limit: < 1024 characters).
-- Gen AI services field: **944 characters** (limit: < 1024 characters).
-- LinkedIn post draft: **1279 characters** (limit: < 1300 characters).
+- Changes/updates field: **1002 characters** (limit: < 1024 characters).
+- Gen AI services field: **1002 characters** (limit: < 1024 characters).
+- LinkedIn post draft: **1184 characters** (limit: < 1300 characters).

@@ -23,6 +23,7 @@ flowchart TD
 
     subgraph Services["Service Tier"]
         SVC_ASSIST["app/services/assistant.py"]
+        SVC_RESOLV["app/services/assistant_resolvers.py"]
         SVC_AQ["app/services/air_quality.py"]
         SVC_GUARD["app/services/guard*.py"]
         SVC_LLM["app/services/llm.py"]

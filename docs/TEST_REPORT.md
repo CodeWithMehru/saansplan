@@ -1,21 +1,21 @@
 # Test & Verification Report
 
-Generated automatically on: `2026-11-24 10:56:07 UTC`
+Generated automatically on: `2026-11-25 05:57:30 UTC`
 
 ## System Verification Summary
 
 | Category | Target / Requirement | Measured Result | Status |
 |---|---|---|---|
-| **Engine Execution Speed** | < 50 ms for 6-member family | `1.61 ms` | ✅ PASS |
-| **Interpolation Throughput** | 1000 runs < 200 ms | `38.21 ms` | ✅ PASS |
+| **Engine Execution Speed** | < 50 ms for 6-member family | `1.52 ms` | ✅ PASS |
+| **Interpolation Throughput** | 1000 runs < 200 ms | `31.77 ms` | ✅ PASS |
 | **Static Bundle Size** | < 60 KB gzipped | `32.7 KB` (raw: 100.95 KB) | ✅ PASS |
-| **Overall Test Coverage** | ≥ 95% enforced by pyproject | `96.03%` (178 passed) | ✅ PASS |
-| **Engine Test Coverage** | ≥ 95% target | `95%+` | ✅ PASS |
+| **Overall Test Coverage** | ≥ 95% enforced by pyproject | `96.07%` (178 passed) | ✅ PASS |
+| **Engine Test Coverage** | ≥ 95% target | `97.22%` | ✅ PASS |
 | **Hermetic Execution** | No secrets & no network required | Hermetic tests pass cleanly | ✅ PASS |
 | **Axe Accessibility Audit** | 0 WCAG 2.2 AA violations | 0 violations (43 initial, 56 populated) | ✅ PASS |
 | **Reflow (WCAG 1.4.10)** | 360 px width without horizontal scroll | Zero horizontal overflow | ✅ PASS |
-| **Prompt Injection Defense** | Multi-lingual adversarial corpus | 48 injection strings blocked | ✅ PASS |
-| **Medical Safety Redirect** | 100% redirect on symptoms/meds | Verified clinical safety fallback | ✅ PASS |
+| **Prompt Injection Defense** | Multi-lingual adversarial corpus | 48 injection strings tested and blocked | ✅ PASS |
+| **Medical Safety Redirect** | Immediate redirect on symptoms/meds | Tested clinical safety fallback | ✅ PASS |
 | **Security Audits** | Bandit zero issues, pip-audit zero vulns | Clean automated scan | ✅ PASS |
 
 ## Test Suite Breakdown
@@ -36,17 +36,18 @@ Generated automatically on: `2026-11-24 10:56:07 UTC`
   - `/api/geocode`: Open-Meteo city search proxy with strict parameter validation.
 
 - **Security & A11y Tests (`tests/security/`, `tests/a11y/`, `scripts/`):**
-  - Prompt injection corpus in English, Hinglish, and Hindi.
+  - Prompt injection corpus in English, Hinglish, and Hindi (48 vectors).
   - Real client IP resolution with reverse-proxy trust guards.
   - Strict Content Security Policy (`default-src 'self'`, no unsafe-inline, no unsafe-eval).
   - Playwright and Axe-Core automated WCAG 2.2 AA validation (`scripts/a11y.py`).
   - End-to-end multi-language user journey (`scripts/e2e.py`).
-  - Node.js native test runner for 100% i18n key parity and Devanagari script integrity (`app/static/tests/`).
+  - Node.js native test runner for i18n key parity and Devanagari script integrity (`app/static/tests/`).
 
 ## Verification Commands
 
 ```bash
 make verify      # Runs lint, typecheck, pytest with coverage, JS unit tests, security, and report
+make quality     # Runs Radon complexity and Interrogate docstring coverage audit
 make test        # Runs hermetic pytest suite with coverage enforcement
 make test-js     # Runs frontend i18n unit tests
 make typecheck   # Runs strict mypy

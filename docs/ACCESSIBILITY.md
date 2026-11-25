@@ -42,7 +42,7 @@ Automated static checks in pytest (`tests/a11y/test_static_markup.py`):
 | **1.4.10** | Reflow | AA | CSS Flexbox/Grid responsive down to 320 px without horizontal scroll. | `scripts/a11y.py` (360px reflow test) |
 | **1.4.11** | Non-text Contrast | AA | Form borders, focus rings, and UI components have $\ge 3:1$ contrast. | `scripts/a11y.py` |
 | **1.4.12** | Text Spacing | AA | Evaluated with line-height 1.6x, letter-spacing 0.12em, word-spacing 0.16em with zero clipping. | `app/static/styles.css` & `scripts/a11y.py` |
-| **2.1.1** | Keyboard | A | All buttons, inputs, tabs, and persona presets are 100% keyboard operable. | `scripts/a11y.py` |
+| **2.1.1** | Keyboard | A | All buttons, inputs, tabs, and persona presets are verified keyboard operable. | `scripts/a11y.py` |
 | **2.1.2** | No Keyboard Trap | A | No modal focus traps; focus flows sequentially through DOM order. | `scripts/a11y.py` |
 | **2.4.1** | Bypass Blocks | A | Visible skip links to `#main-content`, `#results`, and `#ask-section`. | `scripts/a11y.py` (skip link check) |
 | **2.4.7** | Focus Visible | AA | High-visibility 3px blue outline (`outline: 3px solid #1a56db`) with 3px offset. | `app/static/styles.css` |
