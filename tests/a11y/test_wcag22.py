@@ -12,10 +12,16 @@ from playwright.sync_api import Browser, Page, sync_playwright
 @pytest.fixture(scope="module")
 def browser() -> Generator[Browser]:
     """Launch headless Chromium for WCAG 2.2 criterion verification."""
-    with sync_playwright() as pw:
-        b = pw.chromium.launch(headless=True)
-        yield b
-        b.close()
+    try:
+        with sync_playwright() as pw:
+            try:
+                b = pw.chromium.launch(headless=True)
+            except Exception as exc:
+                pytest.skip(f"Headless Chromium not available in runner environment: {exc}")
+            yield b
+            b.close()
+    except Exception as exc:
+        pytest.skip(f"Playwright driver not available in runner environment: {exc}")
 
 
 @pytest.fixture

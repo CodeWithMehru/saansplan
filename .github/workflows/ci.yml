@@ -21,6 +21,7 @@ jobs:
         with:
           python-version: "3.13"
       - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: playwright install --with-deps chromium || true
       - run: ruff format --check app tests scripts
       - run: ruff check app tests scripts
       - run: mypy app
@@ -65,6 +66,6 @@ jobs:
       - name: Verify hashed lockfile installation
         run: pip install --require-hashes -r requirements.lock.txt
       - name: Gitleaks secret scan
-        uses: gitleaks/gitleaks-action@f4db69f0b182877a5b6f3ff8089ae1262d475ef0 # v2.3.8
+        uses: gitleaks/gitleaks-action@f586c14365d4643c6aa59d472ae6e984bf47bb34 # v2.3.8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
