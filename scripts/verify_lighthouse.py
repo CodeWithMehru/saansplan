@@ -49,18 +49,20 @@ def main():
             raise RuntimeError("Server failed to start for Lighthouse.")
 
         print("Server ready. Running Lighthouse...")
-        lh_bin = "/tmp/lh/node_modules/.bin/lighthouse"
         report_path = "/tmp/lighthouse_accessibility.json"
+        lh_bin = "/tmp/lh/node_modules/.bin/lighthouse"
+        cmd = [lh_bin] if Path(lh_bin).exists() else ["npx", "--yes", "lighthouse@12.8.2"]
 
-        cmd = [
-            lh_bin,
-            f"{BASE_URL}/",
-            "--only-categories=accessibility",
-            "--output=json",
-            f"--output-path={report_path}",
-            "--chrome-flags=--headless --no-sandbox --disable-gpu",
-            "--quiet",
-        ]
+        cmd.extend(
+            [
+                f"{BASE_URL}/",
+                "--only-categories=accessibility",
+                "--output=json",
+                f"--output-path={report_path}",
+                "--chrome-flags=--headless --no-sandbox --disable-gpu",
+                "--quiet",
+            ]
+        )
 
         res = subprocess.run(cmd, capture_output=True, text=True, timeout=120, check=False)
         print(f"Lighthouse exited with code: {res.returncode}")
