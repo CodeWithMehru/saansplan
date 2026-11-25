@@ -1,10 +1,12 @@
 """Deterministic per-hour family exposure simulation."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
-from typing import Any
 
 from app.config import BREATHING_FACTORS, MEMBER_SENSITIVITY, VEHICLE_FACTOR
 from app.core.aqi import indian_aqi_category
+from app.engine.domain_models import ExposureResult, HourlyExposureRow, MemberExposure
 from app.engine.indoor import indoor_concentration
 from app.models import Activity, FamilyMember, Routine
 
@@ -135,31 +137,31 @@ def _build_hourly_row(
     raw_aqi: float | None,
     exposure_this_hour: float,
     is_interpolated: bool,
-) -> dict[str, Any]:
+) -> HourlyExposureRow:
     """Construct a standardized hourly evaluation entry."""
     aqi = float(raw_aqi) if raw_aqi is not None else 0.0
     pm25_val = max(0.0, outdoor)
     indian_cat, _, _, indian_aqi = indian_aqi_category(pm25_val)
-    return {
-        "hour": hour,
-        "pm25": round(pm25_val, 1),
-        "aqi": int(max(0.0, aqi)),
-        "exposure": round(exposure_this_hour, 2),
-        "interpolated": is_interpolated,
-        "indian_aqi": indian_aqi,
-        "indian_category": indian_cat,
-    }
+    return HourlyExposureRow(
+        hour=hour,
+        pm25=round(pm25_val, 1),
+        aqi=int(max(0.0, aqi)),
+        exposure=round(exposure_this_hour, 2),
+        interpolated=is_interpolated,
+        indian_aqi=indian_aqi,
+        indian_category=indian_cat,
+    )
 
 
-def simulate_exposure(
-    pm25_hourly: list[float | None],
+def _simulate_day_hours(
+    pm25: list[float],
+    interpolated: list[bool],
     aqi_hourly: list[float | None],
     members: Sequence[FamilyMember],
     routine: Routine,
-) -> dict[str, Any]:
-    """Return per-hour and per-member exposure totals without network or AI calls."""
-    pm25, interpolated = interpolate_hourly(pm25_hourly)
-    hourly_rows: list[dict[str, Any]] = []
+) -> tuple[list[HourlyExposureRow], list[float]]:
+    """Simulate exposures across all 24 hours of the day."""
+    hourly_rows: list[HourlyExposureRow] = []
     member_totals = [0.0 for _ in members]
 
     for hour in range(24):
@@ -172,17 +174,32 @@ def simulate_exposure(
         is_interp = interpolated[hour] if hour < len(interpolated) else True
         hourly_rows.append(_build_hourly_row(hour, outdoor, raw_aqi, exp_hour, is_interp))
 
-    peak = max(hourly_rows, key=lambda row: row["exposure"])
-    highest_aqi = max(hourly_rows, key=lambda row: row["pm25"])
-    return {
-        "total_before": round(sum(member_totals), 2),
-        "members": [
-            {"name": m.name, "exposure": round(member_totals[i], 2)} for i, m in enumerate(members)
+    return hourly_rows, member_totals
+
+
+def simulate_exposure(
+    pm25_hourly: list[float | None],
+    aqi_hourly: list[float | None],
+    members: Sequence[FamilyMember],
+    routine: Routine,
+) -> ExposureResult:
+    """Return per-hour and per-member exposure totals without network or AI calls."""
+    pm25, interpolated = interpolate_hourly(pm25_hourly)
+    hourly_rows, member_totals = _simulate_day_hours(
+        pm25, interpolated, aqi_hourly, members, routine
+    )
+    peak = max(hourly_rows, key=lambda row: row.exposure)
+    highest_aqi = max(hourly_rows, key=lambda row: row.pm25)
+    return ExposureResult(
+        total_before=round(sum(member_totals), 2),
+        members=[
+            MemberExposure(name=m.name or f"Member {i + 1}", exposure=round(member_totals[i], 2))
+            for i, m in enumerate(members)
         ],
-        "hourly": hourly_rows,
-        "peak_hour": peak["hour"],
-        "peak_aqi": peak["aqi"],
-        "highest_aqi_hour": highest_aqi["hour"],
-        "highest_aqi": highest_aqi["indian_aqi"],
-        "estimate_label": "All values are estimates",
-    }
+        hourly=hourly_rows,
+        peak_hour=peak.hour,
+        peak_aqi=peak.aqi,
+        highest_aqi_hour=highest_aqi.hour,
+        highest_aqi=highest_aqi.indian_aqi,
+        estimate_label="All values are estimates",
+    )

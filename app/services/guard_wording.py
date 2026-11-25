@@ -28,20 +28,24 @@ PAST_TENSE_PATTERNS = [
 ]
 
 
+def _get_hinglish_period(hour_24: int) -> str:
+    """Determine time period descriptor for Hinglish hour formatting."""
+    if hour_24 < EARLY_MORNING or hour_24 >= EVENING:
+        return "raat"
+    if hour_24 < NOON:
+        return "subah"
+    if hour_24 < AFTERNOON:
+        return "dopahar"
+    return "shaam"
+
+
 def format_hinglish_hour(hour_24: int) -> str:
     """Format hour for Hinglish text (e.g., 'shaam 6 baje', 'subah 8 baje')."""
     if hour_24 == MIDNIGHT:
         return "raat 12 baje"
     if hour_24 == NOON:
         return "dopahar 12 baje"
-    if hour_24 < EARLY_MORNING or hour_24 >= EVENING:
-        period = "raat"
-    elif hour_24 < NOON:
-        period = "subah"
-    elif hour_24 < AFTERNOON:
-        period = "dopahar"
-    else:
-        period = "shaam"
+    period = _get_hinglish_period(hour_24)
     display_h = hour_24 if hour_24 <= NOON else hour_24 - NOON
     return f"{period} {display_h} baje"
 

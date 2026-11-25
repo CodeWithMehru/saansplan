@@ -1,13 +1,15 @@
 """Winter smog multi-day forecast engine."""
 
-from typing import Any
+from __future__ import annotations
 
 from app.core.aqi import indian_aqi_category
+from app.engine.domain_models import ForecastDay, ForecastWindow
 
 DAYTIME_AIRING_START_HOUR = 11
 DAYTIME_AIRING_END_HOUR = 15
 STAGNATION_WIND_THRESHOLD_MPS = 2.0
 HOURS_PER_DAY = 24
+DEFAULT_WIND_MPS = 3.0
 
 
 def _find_extrema_windows(day_pm25: list[float]) -> tuple[int, int]:
@@ -46,9 +48,7 @@ def _calculate_stagnation(day_winds: list[float]) -> tuple[bool, float]:
     return is_stagnant, avg_wind
 
 
-def _analyze_single_day(
-    day_idx: int, day_pm25: list[float], day_winds: list[float]
-) -> dict[str, Any]:
+def _analyze_single_day(day_idx: int, day_pm25: list[float], day_winds: list[float]) -> ForecastDay:
     """Evaluate smog patterns, ventilation windows, and severity for a single day."""
     avg_pm25 = sum(day_pm25) / len(day_pm25)
     max_pm25 = max(day_pm25)
@@ -59,21 +59,30 @@ def _analyze_single_day(
     is_stagnant, avg_wind = _calculate_stagnation(day_winds)
     category_label, category_slug, _, approx_aqi = indian_aqi_category(max_pm25)
 
-    return {
-        "day_index": day_idx,
-        "avg_pm25": round(avg_pm25, 1),
-        "max_pm25": round(max_pm25, 1),
-        "min_pm25": round(min_pm25, 1),
-        "peak_aqi": approx_aqi,
-        "indian_category": category_label,
-        "category_slug": category_slug,
-        "is_severe": category_slug in ("severe", "very-poor"),
-        "worst_window": {"start_hour": worst_start, "end_hour": worst_start + 2},
-        "best_window": {"start_hour": best_start, "end_hour": best_start + 2},
-        "safest_airing_hour": safest_hour,
-        "is_stagnant": is_stagnant,
-        "avg_wind_speed_mps": round(avg_wind, 1),
-    }
+    return ForecastDay(
+        day_index=day_idx,
+        avg_pm25=round(avg_pm25, 1),
+        max_pm25=round(max_pm25, 1),
+        min_pm25=round(min_pm25, 1),
+        peak_aqi=approx_aqi,
+        indian_category=category_label,
+        category_slug=category_slug,
+        is_severe=category_slug in ("severe", "very-poor"),
+        worst_window=ForecastWindow(start_hour=worst_start, end_hour=worst_start + 2),
+        best_window=ForecastWindow(start_hour=best_start, end_hour=best_start + 2),
+        safest_airing_hour=safest_hour,
+        is_stagnant=is_stagnant,
+        avg_wind_speed_mps=round(avg_wind, 1),
+    )
+
+
+def _extract_wind_slice(
+    start: int, end: int, wind_speed_hourly: list[float | None] | None
+) -> list[float]:
+    """Extract wind speed slice or default values."""
+    if not wind_speed_hourly or len(wind_speed_hourly) < end:
+        return []
+    return [w if w is not None else DEFAULT_WIND_MPS for w in wind_speed_hourly[start:end]]
 
 
 def _extract_day_data(
@@ -88,9 +97,7 @@ def _extract_day_data(
     if not raw_pm25:
         return None
     day_pm25 = [v if v is not None else 0.0 for v in raw_pm25]
-    day_winds = []
-    if wind_speed_hourly and len(wind_speed_hourly) >= end:
-        day_winds = [w if w is not None else 3.0 for w in wind_speed_hourly[start:end]]
+    day_winds = _extract_wind_slice(start, end, wind_speed_hourly)
     return day_pm25, day_winds
 
 
@@ -98,9 +105,9 @@ def analyze_forecast(
     pm25_hourly: list[float | None],
     wind_speed_hourly: list[float | None] | None = None,
     forecast_days: int = 5,
-) -> list[dict[str, Any]]:
+) -> list[ForecastDay]:
     """Analyze multi-day hourly forecast for smog windows, airing times, and stagnation."""
-    days: list[dict[str, Any]] = []
+    days: list[ForecastDay] = []
     total_hours = len(pm25_hourly)
     max_days = min(forecast_days, (total_hours + HOURS_PER_DAY - 1) // HOURS_PER_DAY)
 

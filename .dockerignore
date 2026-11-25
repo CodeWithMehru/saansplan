@@ -1,0 +1,30 @@
+# Git and build artifacts
+.git/
+.github/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Environment and secrets
+.env
+.env.*
+*.key
+*.pem
+.handoff.md
+
+# Node and tooling
+node_modules/
+.eslintcache
+/tmp/
+
+# Documentation and tests (not needed inside production container)
+tests/
+docs/
+*.md

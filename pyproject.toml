@@ -20,10 +20,50 @@ line-length = 100
 target-version = "py313"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "B", "UP", "SIM", "C4", "PL", "S"]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "N",
+    "UP",
+    "B",
+    "A",
+    "C4",
+    "C90",
+    "SIM",
+    "PL",
+    "RUF",
+    "S",
+    "ARG",
+    "PTH",
+    "PERF",
+    "RET",
+    "PIE",
+    "PT",
+    "DTZ",
+    "BLE",
+    "ISC",
+    "TID",
+    "SLF",
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 7
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = [
+    "fastapi.Depends",
+    "fastapi.Query",
+    "fastapi.Path",
+    "fastapi.Body",
+    "fastapi.Header",
+    "Depends",
+    "Query",
+]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101", "PLR2004"]
+"tests/**" = ["S101", "PLR2004", "ARG", "SLF001", "PLR0913", "PT011", "PT018", "BLE001"]
 "scripts/**" = [
     "S101",
     "PLR2004",
@@ -37,8 +77,16 @@ select = ["E", "F", "I", "B", "UP", "SIM", "C4", "PL", "S"]
     "S110",
     "S112",
     "E501",
+    "ARG",
+    "BLE001",
+    "T201",
+    "PTH",
+    "C901",  # Standalone CLI runner scripts with environment branching
 ]
 "app/models.py" = ["PLR2004"]
+"app/routers/**" = ["ARG001"]
+"app/main.py" = ["ARG001"]
+"app/engine/indoor_guidance.py" = ["RUF001"]
 
 [tool.mypy]
 python_version = "3.13"

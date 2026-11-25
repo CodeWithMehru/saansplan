@@ -69,7 +69,7 @@ async def _fetch_today_pm25(lat: float, lon: float, client: Any, fetch_aq: Any) 
         if isinstance(pm25, list):
             return [float(v) for v in pm25[:HOURS_IN_DAY] if v is not None]
         return []
-    except Exception:
+    except Exception:  # noqa: BLE001  # Safe air quality slice fallback
         return []
 
 
@@ -104,7 +104,7 @@ async def _call_groq_assistant(
         cited_ids = parsed.get("kb_ids") or [e["id"] for e in entries]
         if ans_text:
             return {"answer": ans_text, "kb_ids": cited_ids, "safety_redirect": False}
-    except Exception as err:
+    except Exception as err:  # noqa: BLE001  # Safe assistant generation fallback
         logger.warning("Groq ask generation fallback: %s", err)
     return None
 
@@ -121,6 +121,29 @@ def _build_engine_facts(
     if walk_info:
         facts["requested_hour_conditions"] = walk_info
     return facts
+
+
+async def _assemble_assistant_context(
+    q_clean: str,
+    location: tuple[float | None, float | None, str | None],
+    client: Any,
+    fetch_aq: Any,
+    entries: list[dict[str, Any]],
+) -> tuple[dict[str, Any], float | None, int | None, int | None, dict[str, Any] | None, str]:
+    """Assemble atmospheric context, CADR sizing, and walk conditions."""
+    req_lat, req_lon, req_city = location
+    lat = req_lat or DEFAULT_LATITUDE
+    lon = req_lon or DEFAULT_LONGITUDE
+    loc_city = req_city or DEFAULT_CITY
+
+    today_pm25 = await _fetch_today_pm25(lat, lon, client, fetch_aq)
+    room_sqft = extract_room_size_sqft(q_clean)
+    cadr_info, cadr_cfm = resolve_cadr(room_sqft, entries)
+
+    asked_hour = extract_hour(q_clean)
+    walk_info = resolve_walk(asked_hour, today_pm25, entries)
+    engine_facts = _build_engine_facts(loc_city, cadr_info, walk_info)
+    return engine_facts, room_sqft, cadr_cfm, asked_hour, walk_info, loc_city
 
 
 async def answer_question(
@@ -147,25 +170,16 @@ async def answer_question(
         return safety_response
 
     entries = _kb_instance.retrieve(q_clean, limit=2, threshold=3)
-    req_lat, req_lon, req_city = location
-    lat = req_lat or DEFAULT_LATITUDE
-    lon = req_lon or DEFAULT_LONGITUDE
-    loc_city = req_city or DEFAULT_CITY
+    facts, room_sqft, cadr_cfm, asked_h, walk_info, loc_city = await _assemble_assistant_context(
+        q_clean, location, client, fetch_aq, entries
+    )
 
-    today_pm25 = await _fetch_today_pm25(lat, lon, client, fetch_aq)
-    room_sqft = extract_room_size_sqft(q_clean)
-    cadr_info, cadr_cfm = resolve_cadr(room_sqft, entries)
-
-    asked_hour = extract_hour(q_clean)
-    walk_info = resolve_walk(asked_hour, today_pm25, entries)
-
-    engine_facts = _build_engine_facts(loc_city, cadr_info, walk_info)
-    llm_res = await _call_groq_assistant(q_clean, engine_facts, entries, chat)
+    llm_res = await _call_groq_assistant(q_clean, facts, entries, chat)
     if llm_res:
         return llm_res
 
     return build_deterministic_fallback(
-        (room_sqft, cadr_cfm), (asked_hour, walk_info, loc_city), entries
+        (room_sqft, cadr_cfm), (asked_h, walk_info, loc_city), entries
     )
 
 

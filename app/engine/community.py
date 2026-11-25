@@ -1,9 +1,11 @@
 """Community kit: WhatsApp share links, class parent group advisories, and RWA action checklists."""
 
+from __future__ import annotations
+
 import urllib.parse
-from typing import Any
 
 from app.core.constants import SEVERE_AQI_THRESHOLD
+from app.engine.domain_models import RwaChecklist, RwaChecklistItem, SchoolAdvisory
 
 
 def generate_whatsapp_share_url(summary_text: str) -> str:
@@ -12,7 +14,7 @@ def generate_whatsapp_share_url(summary_text: str) -> str:
     return f"https://wa.me/?text={encoded_text}"
 
 
-def get_school_day_advisory(max_aqi: int, indian_category: str) -> dict[str, Any]:
+def get_school_day_advisory(max_aqi: int, indian_category: str) -> SchoolAdvisory:
     """Generate school morning air quality advisory for class parent WhatsApp groups."""
     is_severe = max_aqi > SEVERE_AQI_THRESHOLD or indian_category in ("Very Poor", "Severe")
     advisory_actions = [
@@ -35,51 +37,49 @@ def get_school_day_advisory(max_aqi: int, indian_category: str) -> dict[str, Any
         + "\n\n_Generated via SaansPlan. Planning suggestions, not legal/medical orders._"
     )
 
-    return {
-        "title": f"Morning School Commute Advisory — AQI {max_aqi} ({indian_category})",
-        "severity": "high" if is_severe else "moderate",
-        "category": indian_category,
-        "actions": advisory_actions,
-        "shareable_text": share_text,
-    }
+    return SchoolAdvisory(
+        title=f"Morning School Commute Advisory — AQI {max_aqi} ({indian_category})",
+        severity="high" if is_severe else "moderate",
+        category=indian_category,
+        actions=advisory_actions,
+        shareable_text=share_text,
+    )
 
 
-def get_rwa_checklist() -> dict[str, Any]:
+def get_rwa_checklist() -> RwaChecklist:
     """Return Resident Welfare Association (RWA) and neighbourhood clean air checklist."""
-    return {
-        "title": "RWA & Neighbourhood Clean Air Action Plan",
-        "disclaimer": "Community suggestions for citizen action, not legal advice.",
-        "items": [
-            {
-                "category": "Dust Control",
-                "action": "Water Sprinkling on Unpaved Surfaces",
-                "guidance": (
+    return RwaChecklist(
+        title="RWA & Neighbourhood Clean Air Action Plan",
+        disclaimer="Community suggestions for citizen action, not legal advice.",
+        items=[
+            RwaChecklistItem(
+                category="Dust Control",
+                action="Water Sprinkling on Unpaved Surfaces",
+                guidance=(
                     "Sprinkle recycled water twice daily on construction and dirt perimeters."
                 ),
-            },
-            {
-                "category": "Waste Burning",
-                "action": "Zero Open Waste & Leaf Burning",
-                "guidance": (
-                    "Compost fallen leaves; report open garbage burning to green helplines."
-                ),
-            },
-            {
-                "category": "Power & Emissions",
-                "action": "Regulate Diesel Generator (DG) Sets",
-                "guidance": "Restrict non-emergency DG sets in smog; switch to battery/PNG backup.",
-            },
-            {
-                "category": "Transport",
-                "action": "Neighbourhood School & Office Carpooling",
-                "guidance": "Coordinate shared vans or group carpools to reduce gate traffic.",
-            },
-            {
-                "category": "Green Cover",
-                "action": "Dust-Trapping Vertical Greenery",
-                "guidance": (
+            ),
+            RwaChecklistItem(
+                category="Waste Burning",
+                action="Zero Open Waste & Leaf Burning",
+                guidance=("Compost fallen leaves; report open garbage burning to green helplines."),
+            ),
+            RwaChecklistItem(
+                category="Power & Emissions",
+                action="Regulate Diesel Generator (DG) Sets",
+                guidance="Restrict non-emergency DG sets in smog; switch to battery/PNG backup.",
+            ),
+            RwaChecklistItem(
+                category="Transport",
+                action="Neighbourhood School & Office Carpooling",
+                guidance="Coordinate shared vans or group carpools to reduce gate traffic.",
+            ),
+            RwaChecklistItem(
+                category="Green Cover",
+                action="Dust-Trapping Vertical Greenery",
+                guidance=(
                     "Plant native dense canopy hedges (Neem, Bougainvillea) as dust filters."
                 ),
-            },
+            ),
         ],
-    }
+    )

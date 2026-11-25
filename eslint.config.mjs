@@ -1,0 +1,37 @@
+export default [
+  {
+    files: ["app/static/js/**/*.js"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: {
+        window: "readonly",
+        document: "readonly",
+        navigator: "readonly",
+        console: "readonly",
+        fetch: "readonly",
+        setTimeout: "readonly",
+        clearTimeout: "readonly",
+        setInterval: "readonly",
+        clearInterval: "readonly",
+        URL: "readonly",
+        HTMLElement: "readonly",
+        CustomEvent: "readonly",
+        speechSynthesis: "readonly",
+        SpeechSynthesisUtterance: "readonly",
+        webkitSpeechRecognition: "readonly",
+        SpeechRecognition: "readonly",
+      },
+    },
+    rules: {
+      "complexity": ["error", 8],
+      "max-lines-per-function": ["error", { max: 55, skipBlankLines: true, skipComments: true }],
+      "max-depth": ["error", 3],
+      "max-params": ["error", 5],
+      "eqeqeq": "error",
+      "prefer-const": "error",
+      "no-var": "error",
+      "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    },
+  },
+];

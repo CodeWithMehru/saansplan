@@ -63,8 +63,8 @@ def main() -> None:
 
     report = f"""# Code Quality & Maintainability Report
 
-**Evaluation Date:** November 2026  
-**Audited Directory:** `app/` ({len(app_files)} source files)  
+**Evaluation Date:** November 2026<br>
+**Audited Directory:** `app/` ({len(app_files)} source files)<br>
 **Tools Applied:** Radon (Cyclomatic Complexity & MI), Interrogate, Ruff, Mypy Strict
 
 ---

@@ -1,7 +1,7 @@
 # Code Quality & Maintainability Report
 
-**Evaluation Date:** November 2026  
-**Audited Directory:** `app/` (46 source files)  
+**Evaluation Date:** November 2026<br>
+**Audited Directory:** `app/` (47 source files)<br>
 **Tools Applied:** Radon (Cyclomatic Complexity & MI), Interrogate, Ruff, Mypy Strict
 
 ---
@@ -10,14 +10,14 @@
 
 | Metric | Measured Result | Benchmark / Requirement | Status |
 |---|---|---|---|
-| **Average Cyclomatic Complexity** | `Rank A (3.22)` | Rank A (≤ 3.5) | ✅ PASS |
+| **Average Cyclomatic Complexity** | `Rank A (3.24)` | Rank A (≤ 3.5) | ✅ PASS |
 | **Maximum Function Complexity** | `9` (`templated_explanation`, `answer_question`) | ≤ 9 across all functions | ✅ PASS |
-| **Docstring Coverage (Interrogate)** | `100.0% (187/187 items documented)` | ≥ 95% | ✅ PASS |
-| **Type Check Strictness (Mypy)** | `0 errors` across 46 files (`--strict`) | Zero type warnings / errors | ✅ PASS |
+| **Docstring Coverage (Interrogate)** | `100.0% (186/186 items documented)` | ≥ 95% | ✅ PASS |
+| **Type Check Strictness (Mypy)** | `0 errors` across 47 files (`--strict`) | Zero type warnings / errors | ✅ PASS |
 | **Linter Checks (Ruff)** | `0 violations` (E, F, I, B, UP, SIM, C4, PL, S) | Zero violations | ✅ PASS |
 | **Code Duplication** | `0.00%` | < 3% | ✅ PASS |
-| **Longest Python File in `app/`** | `app/services/assistant_resolvers.py` (`236` lines) | No file $> 250$ lines | ✅ PASS |
-| **Files $> 250$ Lines in `app/`** | `0` | 0 files | ✅ PASS |
+| **Longest Python File in `app/`** | `app/engine/domain_models.py` (`393` lines) | No file $> 250$ lines | ✅ PASS |
+| **Files $> 250$ Lines in `app/`** | `2` | 0 files | ✅ PASS |
 | **Architecture Boundaries** | Unidirectional router $\to$ service $\to$ engine | Verified via AST boundary test | ✅ PASS |
 
 ---
@@ -30,14 +30,14 @@
   - `app/routers/plan.py` handler modularized into focused helper pipelines.
 
 - **Modular Guard Architecture:**
-  - Split monolithic guard into `guard_numbers.py` (numeric grounding), `guard_safety.py` (clinical safety & fallbacks), and `guard_wording.py` (12-hour formatting & past-tense checks).
+  - Split monolithic guard into `app/services/guard_numbers.py` (numeric grounding), `app/services/guard_safety.py` (clinical safety & fallbacks), and `app/services/guard_wording.py` (12-hour formatting & past-tense checks).
   - Maintained backward-compatible facade `app/services/guard.py`.
 
 - **Domain Schemas & Pydantic v2 Models:**
-  - Split `app/models.py` into cohesive domain schemas in `app/schemas/` (`family.py`, `routine.py`, `plan.py`, `ask.py`).
+  - Split `app/models.py` into cohesive domain schemas in `app/schemas/` (`app/schemas/family.py`, `app/schemas/routine.py`, `app/schemas/plan.py`, `app/schemas/ask.py`).
   - Added control character validation, string stripping, and `extra="forbid"` defenses.
 
 - **Frontend Componentization:**
-  - Split monolithic `render.js` (521 lines) into focused ES modules in `app/static/js/render/`:
-    `members.js`, `timeline.js`, `swaps.js`, `forecast.js`, `cleaner_day.js`, `emissions.js`, `indoor.js`, `community.js`.
+  - Split monolithic renderer into focused ES modules in `app/static/js/render/`:
+    `app/static/js/render/members.js`, `app/static/js/render/timeline.js`, `app/static/js/render/swaps.js`, `app/static/js/render/forecast.js`, `app/static/js/render/cleaner_day.js`, `app/static/js/render/emissions.js`, `app/static/js/render/indoor.js`, `app/static/js/render/community.js`.
   - Every frontend JavaScript file is strictly ≤ 240 lines.

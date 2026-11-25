@@ -57,17 +57,12 @@ app.add_middleware(
 )
 
 
-@app.middleware("http")
-async def security_middleware(
-    request: Request,
-    call_next: Callable[[Request], Awaitable[Response]],
-) -> Response:
-    """Apply strict body size limits, strict CSP, and defense-in-depth headers."""
+def _validate_request_limits(request: Request) -> JSONResponse | None:
+    """Validate request size and Content-Type."""
     content_length = request.headers.get("content-length")
     if content_length and int(content_length) > MAX_REQUEST_BYTES:
         return JSONResponse(status_code=413, content={"detail": "Request body is too large"})
 
-    # Strict Content-Type enforcement on JSON API endpoints
     if request.method == "POST" and request.url.path.startswith("/api/"):
         content_type = request.headers.get("content-type", "")
         if "application/json" not in content_type.lower():
@@ -75,13 +70,11 @@ async def security_middleware(
                 status_code=415,
                 content={"detail": "Unsupported Media Type: expected application/json"},
             )
+    return None
 
-    try:
-        response = await call_next(request)
-    except Exception:
-        return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
-    # Strict Content Security Policy with no unsafe-inline or unsafe-eval
+def _apply_security_headers(response: Response, request: Request) -> None:
+    """Apply strict security and tracking headers to response."""
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; "
         "script-src 'self'; "
@@ -101,15 +94,35 @@ async def security_middleware(
     response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
     response.headers["X-Request-ID"] = request.headers.get("x-request-id", "local")
 
-    if request.url.path.startswith("/static/"):
+
+def _apply_cache_headers(response: Response, path: str) -> None:
+    """Apply caching policy and weak ETags for static assets."""
+    if path.startswith("/static/"):
         response.headers["Cache-Control"] = "public, max-age=3600, stale-while-revalidate=86400"
-        # Generate weak ETag for static assets if body is available
         if hasattr(response, "body") and response.body:
             etag = f'W/"{hashlib.md5(response.body, usedforsecurity=False).hexdigest()[:16]}"'
             response.headers["ETag"] = etag
     else:
         response.headers["Cache-Control"] = "no-store"
 
+
+@app.middleware("http")
+async def security_middleware(
+    request: Request,
+    call_next: Callable[[Request], Awaitable[Response]],
+) -> Response:
+    """Apply strict body size limits, strict CSP, and defense-in-depth headers."""
+    rejection = _validate_request_limits(request)
+    if rejection is not None:
+        return rejection
+
+    try:
+        response = await call_next(request)
+    except Exception:  # noqa: BLE001  # Top-level ASGI error boundary
+        return JSONResponse(status_code=500, content={"detail": "Internal server error"})
+
+    _apply_security_headers(response, request)
+    _apply_cache_headers(response, request.url.path)
     return response
 
 

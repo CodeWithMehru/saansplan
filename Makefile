@@ -1,29 +1,58 @@
 export PATH := $(CURDIR)/.venv/bin:$(PATH)
 
-.PHONY: install lint typecheck test test-js e2e a11y security bench report quality verify
-install:
+.PHONY: help install lint typecheck test test-js check-js check-docs check e2e a11y security bench report quality mutation verify
+
+help: ## Show available Makefile targets and descriptions
+	@echo "Available targets:"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
+
+install: ## Install Python dependencies into local virtual environment
 	python3 -m venv .venv || true
 	.venv/bin/pip install -r requirements.txt -r requirements-dev.txt
-lint:
+
+lint: ## Run Python formatting and style linters
 	ruff format --check app tests scripts
 	ruff check app tests scripts
-typecheck:
+
+typecheck: ## Run strict static type checking with mypy
 	mypy app
-test:
+
+test: ## Run unit and integration test suite with coverage
 	pytest
-test-js:
+
+test-js: ## Run Node.js tests for frontend modules
 	node --test app/static/tests/*.test.js
-e2e:
+
+check-js: ## Run ESLint, Prettier, and TypeScript checks on frontend assets
+	npx --yes eslint@10.15.0 app/static/js/
+	npx --yes prettier@3.5.2 --check app/static/
+	npx --yes --package=typescript@5.7.3 tsc --noEmit
+
+check-docs: ## Check Markdown consistency, links, paths, and Makefile targets
+	python3 scripts/verify/check_docs_consistency.py
+
+check: lint typecheck check-js check-docs ## Run all static analysis, linters, and consistency checks
+
+e2e: ## Run end-to-end multi-locale journey verification
 	python3 scripts/e2e.py
-a11y:
+
+a11y: ## Run automated accessibility verification
 	python3 scripts/a11y.py
-security:
+
+security: ## Run static application security testing and dependency vulnerability scan
 	bandit -q -r app
 	pip-audit -r requirements.txt
-bench:
+
+bench: ## Run performance latency benchmarks
 	python3 scripts/bench.py
-report:
+
+report: ## Generate docs/TEST_REPORT.md from current test and benchmark results
 	python3 scripts/report.py
-quality:
+
+quality: ## Generate docs/CODE_QUALITY.md metrics report
 	python3 scripts/quality_report.py
-verify: lint typecheck test test-js security report
+
+mutation: ## Run mutation testing on engine and guard modules
+	mutmut run --paths-to-mutate=app/engine,app/services/guard_numbers.py,app/services/guard_safety.py,app/services/guard_wording.py
+
+verify: check test test-js security report ## Run complete validation pipeline

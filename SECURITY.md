@@ -1,5 +1,11 @@
 # Security Policy
 
-Report suspected vulnerabilities privately through GitHub Security Advisories when available, or open an issue with no secrets or personal data. Do not include API keys, coordinates or routine text in reports.
+For the complete threat model (STRIDE), data flow diagrams, supply chain verification, vulnerability disclosure process, and security test evidence, see:
 
-Supported scope: API validation, prompt handling, browser security, dependency supply chain and privacy.
+👉 **[docs/SECURITY.md](docs/SECURITY.md)**
+
+## Summary & Reporting
+
+Report suspected vulnerabilities privately through GitHub Security Advisories, or contact the maintainers directly. Do not include API keys, real personal coordinates, or private routines in public reports.
+
+Supported scope: API validation, prompt handling, deterministic grounding guards, browser security, dependency supply chain, and privacy.

@@ -2,8 +2,9 @@
 
 from typing import Any
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 
+from app.core.settings import Settings, get_settings
 from app.limiting import limiter
 from app.models import AskRequest
 from app.services.air_quality import fetch_air_quality
@@ -45,7 +46,11 @@ __all__ = [
 
 @router.post("/api/ask")
 @limiter.limit("15/minute")
-async def ask(request: Request, payload: AskRequest) -> dict[str, Any]:
+async def ask(
+    request: Request,
+    payload: AskRequest,
+    settings: Settings = Depends(get_settings),
+) -> dict[str, Any]:
     """Provide grounded answers using server-side engine facts, KB entries, and Groq."""
     client = getattr(request.app.state, "http_client", None)
     return await answer_question(

@@ -1,10 +1,12 @@
 """Your Cleaner Day: Full alternative daily routine generator."""
 
+from __future__ import annotations
+
 from copy import deepcopy
-from typing import Any
 
 from app.core.aqi import indian_aqi_category
 from app.core.constants import HOURS_IN_DAY
+from app.engine.domain_models import CleanerDayHourlyRow, CleanerDayResult, ExposureResult
 from app.engine.exposure import interpolate_hourly, simulate_exposure
 from app.engine.inhaled import inhaled_micrograms, uncertainty_band
 from app.models import Activity, FamilyMember, Routine
@@ -19,9 +21,9 @@ def is_fixed_commitment(activity: Activity) -> bool:
 
 def _optimize_activities(
     routine: Routine, pm25: list[float], cleanest_hour: int
-) -> list[dict[str, Any]]:
+) -> list[dict[str, str | int | float]]:
     """Shift flexible outdoor activities to cleaner daytime hours."""
-    changes: list[dict[str, Any]] = []
+    changes: list[dict[str, str | int | float]] = []
     for act in routine.activities:
         if act.place == "outdoor" and not is_fixed_commitment(act):
             orig_h = act.start_hour
@@ -43,9 +45,9 @@ def _optimize_activities(
     return changes
 
 
-def _optimize_home(routine: Routine) -> list[dict[str, Any]]:
+def _optimize_home(routine: Routine) -> list[dict[str, str | int | float]]:
     """Apply indoor interventions (window closure, purifier, induction)."""
-    changes: list[dict[str, Any]] = []
+    changes: list[dict[str, str | int | float]] = []
     if routine.home.windows == "mostly_open":
         routine.home.windows = "mostly_closed"
         changes.append(
@@ -96,12 +98,36 @@ def _compute_inhaled_dose(
     return total_ug
 
 
+def _build_hourly_comparison(
+    pm25: list[float], baseline: ExposureResult, optimized: ExposureResult
+) -> list[CleanerDayHourlyRow]:
+    """Build side-by-side hourly comparison rows."""
+    comparison: list[CleanerDayHourlyRow] = []
+    for h in range(HOURS_IN_DAY):
+        b_exp = baseline.hourly[h].exposure
+        o_exp = optimized.hourly[h].exposure
+        cat_label, cat_slug, _, aqi = indian_aqi_category(pm25[h])
+        comparison.append(
+            CleanerDayHourlyRow(
+                hour=h,
+                pm25=pm25[h],
+                aqi=aqi,
+                category=cat_label,
+                category_slug=cat_slug,
+                exposure_before=b_exp,
+                exposure_after=o_exp,
+                difference=round(b_exp - o_exp, 2),
+            )
+        )
+    return comparison
+
+
 def generate_cleaner_day(
     pm25_hourly: list[float | None],
     aqi_hourly: list[float | None],
     members: list[FamilyMember],
     routine: Routine,
-) -> dict[str, Any]:
+) -> CleanerDayResult:
     """Generate an optimized 24-hour routine shifting flexible activities to cleaner hours."""
     pm25, _ = interpolate_hourly(pm25_hourly)
     baseline = simulate_exposure(pm25_hourly, aqi_hourly, members, routine)
@@ -117,38 +143,22 @@ def generate_cleaner_day(
     base_dose = _compute_inhaled_dose(routine, members, pm25)
     opt_dose = _compute_inhaled_dose(opt_routine, members, pm25)
 
-    base_total = baseline["total_before"]
-    opt_total = optimized["total_before"]
+    base_total = baseline.total_before
+    opt_total = optimized.total_before
     reduction_pct = round((base_total - opt_total) / base_total * 100, 1) if base_total > 0 else 0.0
 
     inhaled_saved = max(0.0, base_dose - opt_dose)
     low_ug, high_ug = uncertainty_band(inhaled_saved)
 
-    hourly_comparison = []
-    for h in range(HOURS_IN_DAY):
-        b_exp = baseline["hourly"][h]["exposure"]
-        o_exp = optimized["hourly"][h]["exposure"]
-        cat_label, cat_slug, _, aqi = indian_aqi_category(pm25[h])
-        hourly_comparison.append(
-            {
-                "hour": h,
-                "pm25": pm25[h],
-                "aqi": aqi,
-                "category": cat_label,
-                "category_slug": cat_slug,
-                "exposure_before": b_exp,
-                "exposure_after": o_exp,
-                "difference": round(b_exp - o_exp, 2),
-            }
-        )
+    hourly_comparison = _build_hourly_comparison(pm25, baseline, optimized)
 
-    return {
-        "changes": changes,
-        "total_exposure_before": base_total,
-        "total_exposure_after": opt_total,
-        "percent_reduction": reduction_pct,
-        "inhaled_saved_ug": round(inhaled_saved, 1),
-        "inhaled_saved_range_ug": (round(low_ug, 1), round(high_ug, 1)),
-        "hourly_comparison": hourly_comparison,
-        "routine": opt_routine,
-    }
+    return CleanerDayResult(
+        changes=changes,
+        total_exposure_before=base_total,
+        total_exposure_after=opt_total,
+        percent_reduction=reduction_pct,
+        inhaled_saved_ug=round(inhaled_saved, 1),
+        inhaled_saved_range_ug=(round(low_ug, 1), round(high_ug, 1)),
+        hourly_comparison=hourly_comparison,
+        routine=opt_routine,
+    )

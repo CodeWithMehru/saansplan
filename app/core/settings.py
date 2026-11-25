@@ -56,3 +56,11 @@ def load_settings() -> Settings:
 def get_settings() -> Settings:
     """Return the cached singleton Settings instance."""
     return load_settings()
+
+
+def is_proxy_trusted() -> bool:
+    """Check if proxy trust is enabled dynamically or in cached settings."""
+    env_val = os.getenv("TRUST_PROXY", "").lower()
+    if env_val:
+        return env_val in ("true", "1", "yes")
+    return get_settings().trust_proxy

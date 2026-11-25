@@ -1,264 +1,416 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#12372a">
-  <meta name="description" content="SaansPlan: Urban Air Quality & Winter Smog Assistant for Families and Communities. Low-emission daily routines, indoor air quality hacks, and verified alternatives.">
-  <title>SaansPlan — Family Air Quality & Winter Smog Assistant</title>
-  <link rel="stylesheet" href="/static/styles.css">
-</head>
-<body>
-  <a class="skip-link" href="#main-content">Skip to content</a>
-  <a class="skip-link" href="#results">Skip to results</a>
-  <a class="skip-link" href="#ask-section">Skip to assistant</a>
-  <header class="site-header" role="banner">
-    <div class="brand">
-      <span class="brand-mark" aria-hidden="true">S</span>
-      <strong data-i18n="title">SaansPlan</strong>
-    </div>
-    <div class="header-actions">
-      <button id="language-toggle" type="button" aria-label="हिं / EN Switch language">हिं / EN</button>
-      <div class="text-controls" role="group" aria-label="Reading comfort controls">
-        <button id="text-smaller" type="button" data-text-scale="90" aria-label="A− Decrease text size">A−</button>
-        <button id="text-reset" type="button" data-text-scale="100" aria-label="A Reset text size">A</button>
-        <button id="text-larger" type="button" data-text-scale="110" aria-label="A+ Increase text size">A+</button>
-        <button id="contrast-toggle" type="button" aria-label="Toggle high contrast display">◐</button>
-        <button id="spacing-toggle" type="button" aria-label="Toggle enhanced text spacing">↔</button>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#12372a" />
+    <meta
+      name="description"
+      content="SaansPlan: Urban Air Quality & Winter Smog Assistant for Families and Communities. Low-emission daily routines, indoor air quality hacks, and verified alternatives."
+    />
+    <title>SaansPlan — Family Air Quality & Winter Smog Assistant</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <a class="skip-link" href="#results">Skip to results</a>
+    <a class="skip-link" href="#ask-section">Skip to assistant</a>
+    <header class="site-header" role="banner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">S</span>
+        <strong data-i18n="title">SaansPlan</strong>
       </div>
-    </div>
-  </header>
-  <noscript>
-    <div class="noscript-banner" role="status">
-      <strong>JavaScript is required.</strong> SaansPlan uses client-side calculation for personalized family exposure modeling. Please enable JavaScript to generate routines, indoor purifier sizing, and smog forecasts.
-    </div>
-  </noscript>
-
-  <main id="main-content" role="main" tabindex="-1">
-    <section class="hero" aria-labelledby="page-title">
-      <p class="eyebrow" data-i18n="subtitle">Family air-quality day plan</p>
-      <h1 id="page-title">SaansPlan</h1>
-      <p id="medical-note" class="medical-note" data-i18n="estimates"></p>
-    </section>
-
-    <!-- WCAG 2.2 AA Accessible Error Summary -->
-    <div id="error-summary" class="error-summary" role="alert" aria-labelledby="error-summary-title" hidden></div>
-
-    <!-- Lifestyle Persona Presets -->
-    <section class="personas-section" aria-labelledby="personas-heading">
-      <h2 id="personas-heading" data-i18n="personasTitle">Lifestyle Presets</h2>
-      <div class="persona-pills" role="group" aria-label="Lifestyle persona quick-fill presets">
-        <button type="button" class="secondary persona-btn" data-persona="working_parents" data-i18n="personaWorkingParents">Working Parents</button>
-        <button type="button" class="secondary persona-btn" data-persona="elderly_home" data-i18n="personaElderly">Elderly at Home</button>
-        <button type="button" class="secondary persona-btn" data-persona="student_hostel" data-i18n="personaStudent">Student / Hostel</button>
-        <button type="button" class="secondary persona-btn" data-persona="outdoor_worker" data-i18n="personaOutdoorWorker">Delivery Rider</button>
+      <div class="header-actions">
+        <button id="language-toggle" type="button" aria-label="हिं / EN Switch language">
+          हिं / EN
+        </button>
+        <div class="text-controls" role="group" aria-label="Reading comfort controls">
+          <button
+            id="text-smaller"
+            type="button"
+            data-text-scale="90"
+            aria-label="A− Decrease text size"
+          >
+            A−
+          </button>
+          <button
+            id="text-reset"
+            type="button"
+            data-text-scale="100"
+            aria-label="A Reset text size"
+          >
+            A
+          </button>
+          <button
+            id="text-larger"
+            type="button"
+            data-text-scale="110"
+            aria-label="A+ Increase text size"
+          >
+            A+
+          </button>
+          <button id="contrast-toggle" type="button" aria-label="Toggle high contrast display">
+            ◐
+          </button>
+          <button id="spacing-toggle" type="button" aria-label="Toggle enhanced text spacing">
+            ↔
+          </button>
+        </div>
       </div>
-    </section>
+    </header>
+    <noscript>
+      <div class="noscript-banner" role="status">
+        <strong>JavaScript is required.</strong> SaansPlan uses client-side calculation for
+        personalized family exposure modeling. Please enable JavaScript to generate routines, indoor
+        purifier sizing, and smog forecasts.
+      </div>
+    </noscript>
 
-    <div class="layout">
-      <form id="plan-form" novalidate aria-label="Family air-quality planning form">
-        <fieldset>
-          <legend data-i18n="location">Location</legend>
-          <label for="city" data-i18n="city">City</label>
-          <div class="row">
-            <input id="city" name="city" type="text" maxlength="80" autocomplete="address-level2" placeholder="New Delhi">
-            <button id="city-search" type="button" data-i18n="search">Search</button>
-          </div>
-          <div id="city-results" class="city-results" aria-live="polite"></div>
-          <button id="geo-button" class="secondary" type="button" data-i18n="geolocate">Use my location</button>
-          <div class="row">
-            <div>
-              <label for="latitude">Latitude</label>
-              <input id="latitude" name="latitude" type="number" min="-90" max="90" step="0.0001" value="28.6139" required>
-            </div>
-            <div>
-              <label for="longitude">Longitude</label>
-              <input id="longitude" name="longitude" type="number" min="-180" max="180" step="0.0001" value="77.2090" required>
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend data-i18n="family">Family members</legend>
-          <div id="members"></div>
-          <button id="add-member" type="button" class="secondary" data-i18n="addMember">Add member</button>
-        </fieldset>
-
-        <fieldset>
-          <legend data-i18n="routine">Routine</legend>
-          <div class="routine-input-wrap">
-            <label for="routine-text" class="sr-only" data-i18n="routine">Daily Routine Text</label>
-            <textarea id="routine-text" maxlength="1000" rows="4" data-i18n-placeholder="routinePlaceholder"></textarea>
-            <button id="voice-input-btn" type="button" class="secondary voice-btn" aria-label="Speak routine (Voice input)">🎤 Speak routine</button>
-          </div>
-
-          <div class="row controls">
-            <div>
-              <label for="commute" data-i18n="commute">Commute</label>
-              <select id="commute">
-                <option value="none">None</option>
-                <option value="walk">Walk</option>
-                <option value="cycle">Cycle</option>
-                <option value="bike">Bike/scooter</option>
-                <option value="bus">Bus</option>
-                <option value="metro">Metro</option>
-                <option value="car">Car</option>
-              </select>
-            </div>
-            <div>
-              <label for="outdoor" data-i18n="outdoor">Outdoor time</label>
-              <select id="outdoor">
-                <option value="30">30 min</option>
-                <option value="60" selected>1 hour</option>
-                <option value="120">2 hours</option>
-              </select>
-            </div>
-            <div>
-              <label for="cooking" data-i18n="cooking">Cooking fuel</label>
-              <select id="cooking">
-                <option value="lpg" selected>LPG</option>
-                <option value="induction">Induction</option>
-                <option value="wood_coal">Wood/coal/biomass</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label for="heating" data-i18n="heating">Heating</label>
-              <select id="heating">
-                <option value="none" selected>None</option>
-                <option value="electric">Electric</option>
-                <option value="wood_coal">Wood/coal</option>
-                <option value="gas">Gas</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label for="windows" data-i18n="windows">Window habit</label>
-              <select id="windows">
-                <option value="mostly_closed" selected>Mostly closed</option>
-                <option value="mostly_open">Mostly open</option>
-              </select>
-            </div>
-            <div>
-              <label for="purifier" data-i18n="purifier">Purifier</label>
-              <select id="purifier">
-                <option value="false" selected>No</option>
-                <option value="true">Yes</option>
-              </select>
-            </div>
-          </div>
-        </fieldset>
-        <button class="primary" type="submit" data-i18n="plan">Create my plan</button>
-      </form>
-
-      <section id="results" class="results" tabindex="-1" aria-live="polite" aria-busy="false" aria-labelledby="results-heading">
-        <h2 id="results-heading" class="sr-only">Your Plan Results</h2>
-        <div id="empty-state" class="empty-state" data-i18n="emptyState">Fill the form and press Create my plan.</div>
-        <div id="status" role="status"></div>
-        <div id="error" role="alert" class="error"></div>
-        <p id="ai-notice" class="ai-notice" hidden data-i18n="aiUnavailable">AI explanation unavailable</p>
-
-        <article id="summary-card" hidden>
-          <div class="aqi-head">
-            <div><span data-i18n="aqi">AQI</span> <strong id="peak-aqi">—</strong></div>
-            <div id="aqi-category"></div>
-          </div>
-          <p id="peak-exposure-text"></p>
-          <p id="highest-aqi-text"></p>
-          <p id="explanation"></p>
-        </article>
-
-        <!-- F3: 5-Day Smog Forecast -->
-        <section id="forecast-section" hidden aria-labelledby="forecast-heading">
-          <h2 id="forecast-heading" data-i18n="forecastTitle">5-Day Winter Smog Forecast</h2>
-          <div id="forecast-cards" class="card-grid"></div>
-        </section>
-
-        <!-- F4: Your Cleaner Day Alternative Routine -->
-        <section id="cleaner-day-section" hidden aria-labelledby="cleaner-day-heading">
-          <h2 id="cleaner-day-heading" data-i18n="cleanerDayTitle">Your Cleaner Day</h2>
-          <div id="cleaner-day-content"></div>
-        </section>
-
-        <!-- Hourly Timeline -->
-        <section id="timeline-section" hidden aria-labelledby="timeline-heading">
-          <h2 id="timeline-heading" data-i18n="timeline">Hour-by-hour</h2>
-          <div class="timeline" id="timeline" role="region" tabindex="0" aria-label="Hourly air quality timeline visual"></div>
-          <details>
-            <summary data-i18n="tableAlternative">Text/table alternative</summary>
-            <div class="table-wrap" role="region" tabindex="0" aria-label="Hourly timeline data table">
-              <table id="timeline-table">
-                <caption>Hour-by-hour air quality and exposure</caption>
-                <thead>
-                  <tr>
-                    <th scope="col">Hour</th>
-                    <th scope="col">PM2.5 µg/m³</th>
-                    <th scope="col">Indian AQI category</th>
-                    <th scope="col">AQI</th>
-                    <th scope="col">Relative exposure estimate</th>
-                    <th scope="col">Interpolated</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </details>
-        </section>
-
-        <!-- Top Swaps -->
-        <section id="swaps-section" hidden aria-labelledby="swaps-heading">
-          <h2 id="swaps-heading" data-i18n="swaps">Top exposure swaps</h2>
-          <div id="swaps"></div>
-        </section>
-
-        <!-- F5: Emissions & Cost -->
-        <section id="emissions-section" hidden aria-labelledby="emissions-heading">
-          <h2 id="emissions-heading" data-i18n="emissionsTitle">Emissions & Cost</h2>
-          <div id="emissions-content"></div>
-        </section>
-
-        <!-- F6: Indoor Module -->
-        <section id="indoor-module-section" hidden aria-labelledby="indoor-module-heading">
-          <h2 id="indoor-module-heading" data-i18n="indoorModuleTitle">Indoor Air Quality Module</h2>
-          <div id="indoor-module-content"></div>
-        </section>
-
-        <!-- F9: Community Kit -->
-        <section id="community-section" hidden aria-labelledby="community-heading">
-          <h2 id="community-heading" data-i18n="communityTitle">Community Clean Air Kit</h2>
-          <div id="community-content"></div>
-        </section>
-
-        <!-- Share & Read Aloud -->
-        <section id="share-section" hidden aria-labelledby="share-heading">
-          <h2 id="share-heading" data-i18n="summary">Family summary</h2>
-          <p id="family-summary"></p>
-          <div class="share-actions">
-            <button id="copy-summary" type="button" class="secondary" data-i18n="copy">Copy summary</button>
-            <button id="read-aloud-btn" type="button" class="secondary" data-i18n="readAloud">🔊 Read aloud</button>
-          </div>
-        </section>
+    <main id="main-content" role="main" tabindex="-1">
+      <section class="hero" aria-labelledby="page-title">
+        <p class="eyebrow" data-i18n="subtitle">Family air-quality day plan</p>
+        <h1 id="page-title">SaansPlan</h1>
+        <p id="medical-note" class="medical-note" data-i18n="estimates"></p>
       </section>
 
-      <!-- F8: Grounded Assistant -->
-      <section id="ask-section" tabindex="-1" aria-labelledby="ask-heading">
-        <h2 id="ask-heading" data-i18n="askTitle">Ask SaansPlan</h2>
-        <label for="ask-question" data-i18n="askPlaceholder">Question</label>
-        <textarea id="ask-question" maxlength="300" rows="3" placeholder="Ask about purifier sizing, mask fit, or timing windows"></textarea>
-        <button id="ask-button" type="button" class="secondary" data-i18n="askButton">Ask</button>
-        <div id="ask-answer" role="status" aria-live="polite"></div>
+      <!-- WCAG 2.2 AA Accessible Error Summary -->
+      <div
+        id="error-summary"
+        class="error-summary"
+        role="alert"
+        aria-labelledby="error-summary-title"
+        hidden
+      ></div>
+
+      <!-- Lifestyle Persona Presets -->
+      <section class="personas-section" aria-labelledby="personas-heading">
+        <h2 id="personas-heading" data-i18n="personasTitle">Lifestyle Presets</h2>
+        <div class="persona-pills" role="group" aria-label="Lifestyle persona quick-fill presets">
+          <button
+            type="button"
+            class="secondary persona-btn"
+            data-persona="working_parents"
+            data-i18n="personaWorkingParents"
+          >
+            Working Parents
+          </button>
+          <button
+            type="button"
+            class="secondary persona-btn"
+            data-persona="elderly_home"
+            data-i18n="personaElderly"
+          >
+            Elderly at Home
+          </button>
+          <button
+            type="button"
+            class="secondary persona-btn"
+            data-persona="student_hostel"
+            data-i18n="personaStudent"
+          >
+            Student / Hostel
+          </button>
+          <button
+            type="button"
+            class="secondary persona-btn"
+            data-persona="outdoor_worker"
+            data-i18n="personaOutdoorWorker"
+          >
+            Delivery Rider
+          </button>
+        </div>
       </section>
-    </div>
-  </main>
 
-  <footer class="site-footer" role="contentinfo">
-    <p>SaansPlan is an open-source Urban Air Quality Assistant for Indian winter smog. Deterministic EPA & CPCB models. Non-medical guidance.</p>
-    <p>
-      <a href="/accessibility" class="footer-link">Accessibility Statement (WCAG 2.2 AA)</a> · 
-      <a href="https://github.com/CodeWithMehru/saansplan" class="footer-link" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
-    </p>
-  </footer>
+      <div class="layout">
+        <form id="plan-form" novalidate aria-label="Family air-quality planning form">
+          <fieldset>
+            <legend data-i18n="location">Location</legend>
+            <label for="city" data-i18n="city">City</label>
+            <div class="row">
+              <input
+                id="city"
+                name="city"
+                type="text"
+                maxlength="80"
+                autocomplete="address-level2"
+                placeholder="New Delhi"
+              />
+              <button id="city-search" type="button" data-i18n="search">Search</button>
+            </div>
+            <div id="city-results" class="city-results" aria-live="polite"></div>
+            <button id="geo-button" class="secondary" type="button" data-i18n="geolocate">
+              Use my location
+            </button>
+            <div class="row">
+              <div>
+                <label for="latitude">Latitude</label>
+                <input
+                  id="latitude"
+                  name="latitude"
+                  type="number"
+                  min="-90"
+                  max="90"
+                  step="0.0001"
+                  value="28.6139"
+                  required
+                />
+              </div>
+              <div>
+                <label for="longitude">Longitude</label>
+                <input
+                  id="longitude"
+                  name="longitude"
+                  type="number"
+                  min="-180"
+                  max="180"
+                  step="0.0001"
+                  value="77.2090"
+                  required
+                />
+              </div>
+            </div>
+          </fieldset>
 
-  <script type="module" src="/static/js/app.js"></script>
-</body>
+          <fieldset>
+            <legend data-i18n="family">Family members</legend>
+            <div id="members"></div>
+            <button id="add-member" type="button" class="secondary" data-i18n="addMember">
+              Add member
+            </button>
+          </fieldset>
+
+          <fieldset>
+            <legend data-i18n="routine">Routine</legend>
+            <div class="routine-input-wrap">
+              <label for="routine-text" class="sr-only" data-i18n="routine"
+                >Daily Routine Text</label
+              >
+              <textarea
+                id="routine-text"
+                maxlength="1000"
+                rows="4"
+                data-i18n-placeholder="routinePlaceholder"
+              ></textarea>
+              <button
+                id="voice-input-btn"
+                type="button"
+                class="secondary voice-btn"
+                aria-label="Speak routine (Voice input)"
+              >
+                🎤 Speak routine
+              </button>
+            </div>
+
+            <div class="row controls">
+              <div>
+                <label for="commute" data-i18n="commute">Commute</label>
+                <select id="commute">
+                  <option value="none">None</option>
+                  <option value="walk">Walk</option>
+                  <option value="cycle">Cycle</option>
+                  <option value="bike">Bike/scooter</option>
+                  <option value="bus">Bus</option>
+                  <option value="metro">Metro</option>
+                  <option value="car">Car</option>
+                </select>
+              </div>
+              <div>
+                <label for="outdoor" data-i18n="outdoor">Outdoor time</label>
+                <select id="outdoor">
+                  <option value="30">30 min</option>
+                  <option value="60" selected>1 hour</option>
+                  <option value="120">2 hours</option>
+                </select>
+              </div>
+              <div>
+                <label for="cooking" data-i18n="cooking">Cooking fuel</label>
+                <select id="cooking">
+                  <option value="lpg" selected>LPG</option>
+                  <option value="induction">Induction</option>
+                  <option value="wood_coal">Wood/coal/biomass</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label for="heating" data-i18n="heating">Heating</label>
+                <select id="heating">
+                  <option value="none" selected>None</option>
+                  <option value="electric">Electric</option>
+                  <option value="wood_coal">Wood/coal</option>
+                  <option value="gas">Gas</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label for="windows" data-i18n="windows">Window habit</label>
+                <select id="windows">
+                  <option value="mostly_closed" selected>Mostly closed</option>
+                  <option value="mostly_open">Mostly open</option>
+                </select>
+              </div>
+              <div>
+                <label for="purifier" data-i18n="purifier">Purifier</label>
+                <select id="purifier">
+                  <option value="false" selected>No</option>
+                  <option value="true">Yes</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+          <button class="primary" type="submit" data-i18n="plan">Create my plan</button>
+        </form>
+
+        <section
+          id="results"
+          class="results"
+          tabindex="-1"
+          aria-live="polite"
+          aria-busy="false"
+          aria-labelledby="results-heading"
+        >
+          <h2 id="results-heading" class="sr-only">Your Plan Results</h2>
+          <div id="empty-state" class="empty-state" data-i18n="emptyState">
+            Fill the form and press Create my plan.
+          </div>
+          <div id="status" role="status"></div>
+          <div id="error" role="alert" class="error"></div>
+          <p id="ai-notice" class="ai-notice" hidden data-i18n="aiUnavailable">
+            AI explanation unavailable
+          </p>
+
+          <article id="summary-card" hidden>
+            <div class="aqi-head">
+              <div><span data-i18n="aqi">AQI</span> <strong id="peak-aqi">—</strong></div>
+              <div id="aqi-category"></div>
+            </div>
+            <p id="peak-exposure-text"></p>
+            <p id="highest-aqi-text"></p>
+            <p id="explanation"></p>
+          </article>
+
+          <!-- F3: 5-Day Smog Forecast -->
+          <section id="forecast-section" hidden aria-labelledby="forecast-heading">
+            <h2 id="forecast-heading" data-i18n="forecastTitle">5-Day Winter Smog Forecast</h2>
+            <div id="forecast-cards" class="card-grid"></div>
+          </section>
+
+          <!-- F4: Your Cleaner Day Alternative Routine -->
+          <section id="cleaner-day-section" hidden aria-labelledby="cleaner-day-heading">
+            <h2 id="cleaner-day-heading" data-i18n="cleanerDayTitle">Your Cleaner Day</h2>
+            <div id="cleaner-day-content"></div>
+          </section>
+
+          <!-- Hourly Timeline -->
+          <section id="timeline-section" hidden aria-labelledby="timeline-heading">
+            <h2 id="timeline-heading" data-i18n="timeline">Hour-by-hour</h2>
+            <div
+              class="timeline"
+              id="timeline"
+              role="region"
+              tabindex="0"
+              aria-label="Hourly air quality timeline visual"
+            ></div>
+            <details>
+              <summary data-i18n="tableAlternative">Text/table alternative</summary>
+              <div
+                class="table-wrap"
+                role="region"
+                tabindex="0"
+                aria-label="Hourly timeline data table"
+              >
+                <table id="timeline-table">
+                  <!-- prettier-ignore -->
+                  <caption>Hour-by-hour air quality and exposure</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Hour</th>
+                      <th scope="col">PM2.5 µg/m³</th>
+                      <th scope="col">Indian AQI category</th>
+                      <th scope="col">AQI</th>
+                      <th scope="col">Relative exposure estimate</th>
+                      <th scope="col">Interpolated</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </details>
+          </section>
+
+          <!-- Top Swaps -->
+          <section id="swaps-section" hidden aria-labelledby="swaps-heading">
+            <h2 id="swaps-heading" data-i18n="swaps">Top exposure swaps</h2>
+            <div id="swaps"></div>
+          </section>
+
+          <!-- F5: Emissions & Cost -->
+          <section id="emissions-section" hidden aria-labelledby="emissions-heading">
+            <h2 id="emissions-heading" data-i18n="emissionsTitle">Emissions & Cost</h2>
+            <div id="emissions-content"></div>
+          </section>
+
+          <!-- F6: Indoor Module -->
+          <section id="indoor-module-section" hidden aria-labelledby="indoor-module-heading">
+            <h2 id="indoor-module-heading" data-i18n="indoorModuleTitle">
+              Indoor Air Quality Module
+            </h2>
+            <div id="indoor-module-content"></div>
+          </section>
+
+          <!-- F9: Community Kit -->
+          <section id="community-section" hidden aria-labelledby="community-heading">
+            <h2 id="community-heading" data-i18n="communityTitle">Community Clean Air Kit</h2>
+            <div id="community-content"></div>
+          </section>
+
+          <!-- Share & Read Aloud -->
+          <section id="share-section" hidden aria-labelledby="share-heading">
+            <h2 id="share-heading" data-i18n="summary">Family summary</h2>
+            <p id="family-summary"></p>
+            <div class="share-actions">
+              <button id="copy-summary" type="button" class="secondary" data-i18n="copy">
+                Copy summary
+              </button>
+              <button id="read-aloud-btn" type="button" class="secondary" data-i18n="readAloud">
+                🔊 Read aloud
+              </button>
+            </div>
+          </section>
+        </section>
+
+        <!-- F8: Grounded Assistant -->
+        <section id="ask-section" tabindex="-1" aria-labelledby="ask-heading">
+          <h2 id="ask-heading" data-i18n="askTitle">Ask SaansPlan</h2>
+          <label for="ask-question" data-i18n="askPlaceholder">Question</label>
+          <textarea
+            id="ask-question"
+            maxlength="300"
+            rows="3"
+            placeholder="Ask about purifier sizing, mask fit, or timing windows"
+          ></textarea>
+          <button id="ask-button" type="button" class="secondary" data-i18n="askButton">Ask</button>
+          <div id="ask-answer" role="status" aria-live="polite"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+      <p>
+        SaansPlan is an open-source Urban Air Quality Assistant for Indian winter smog.
+        Deterministic EPA & CPCB models. Non-medical guidance.
+      </p>
+      <p>
+        <a href="/accessibility" class="footer-link">Accessibility Statement (WCAG 2.2 AA)</a> ·
+        <a
+          href="https://github.com/CodeWithMehru/saansplan"
+          class="footer-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          >GitHub Repository</a
+        >
+      </p>
+    </footer>
+
+    <script type="module" src="/static/js/app.js"></script>
+  </body>
 </html>

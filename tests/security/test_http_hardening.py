@@ -1,6 +1,6 @@
 """Security and HTTP defense-in-depth automated tests."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, patch
 
 from fastapi.testclient import TestClient
@@ -63,12 +63,12 @@ def test_security_txt_rfc_9116_compliance() -> None:
             # ISO 8601 parsing
             clean_date_str = date_str.replace("Z", "+00:00")
             exp_date = datetime.fromisoformat(clean_date_str)
-            assert exp_date.timestamp() > datetime.now().timestamp()
+            assert exp_date.timestamp() > datetime.now(UTC).timestamp()
 
 
 def test_groq_api_key_never_leaked() -> None:
     """Verify GROQ_API_KEY value is never reflected in API outputs or headers."""
-    dummy_key = "gsk_test_dummy_token_never_real_12345"  # noqa: S105 - Test fixture dummy token
+    dummy_key = "gsk_test_dummy_token_never_real_12345"
     with (
         patch.dict("os.environ", {"GROQ_API_KEY": dummy_key}),
         patch("app.services.assistant.groq_chat", new_callable=AsyncMock) as mock_chat,

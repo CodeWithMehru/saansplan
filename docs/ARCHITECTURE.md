@@ -87,3 +87,12 @@ flowchart TD
 
 4. **Hermetic & Offline-Capable Testing:**
    - The entire core test suite executes hermetically without requiring external network access or API secrets.
+
+## Architecture Decision Records (ADRs)
+
+Structural and design decisions are formally documented in `docs/adr/`:
+
+- [ADR 0001: Layered Hexagonal Architecture and Boundary Isolation](adr/0001-layered-hexagonal-architecture.md)
+- [ADR 0002: Deterministic Grounding Guards and Safety Interception](adr/0002-deterministic-grounding-guards.md)
+- [ADR 0003: Frozen Typed Domain Models and Dict Invariance](adr/0003-frozen-domain-models.md)
+- [ADR 0004: WCAG 2.2 AA Accessibility and Multilingual Inclusion](adr/0004-wcag-accessibility.md)

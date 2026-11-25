@@ -1,7 +1,19 @@
 import pytest
 
 from app.core.limiting import limiter
+from app.core.settings import get_settings
 from app.models import Activity, AgeGroup, FamilyMember, HomeSetup, Routine
+from app.services.air_quality import clear_air_quality_cache
+
+
+@pytest.fixture(autouse=True)
+def clean_state_and_cache():
+    """Ensure clean caches and settings between tests."""
+    clear_air_quality_cache()
+    get_settings.cache_clear()
+    yield
+    clear_air_quality_cache()
+    get_settings.cache_clear()
 
 
 @pytest.fixture(autouse=True)

@@ -116,6 +116,14 @@ def check_safety(q_lower: str) -> dict[str, Any] | None:
     return None
 
 
+def _attach_cadr_kb_entry(entries: list[dict[str, Any]], kb: KnowledgeBase | None) -> None:
+    """Prepend purifier sizing documentation to retrieved entries."""
+    if kb and not any(e["id"] == "purifier-sizing" for e in entries):
+        p_entry = next((e for e in kb.entries if e["id"] == "purifier-sizing"), None)
+        if p_entry:
+            entries.insert(0, p_entry)
+
+
 def resolve_cadr(
     room_sqft: float | None, entries: list[dict[str, Any]], kb: KnowledgeBase | None = None
 ) -> tuple[dict[str, Any] | None, int | None]:
@@ -132,10 +140,7 @@ def resolve_cadr(
         "target_ach": cadr_calc["target_ach"],
         "basis": "AHAM 2/3 Rule (Smoke CADR in CFM >= 2/3 room area in sq ft)",
     }
-    if kb and not any(e["id"] == "purifier-sizing" for e in entries):
-        p_entry = next((e for e in kb.entries if e["id"] == "purifier-sizing"), None)
-        if p_entry:
-            entries.insert(0, p_entry)
+    _attach_cadr_kb_entry(entries, kb)
     return info, cadr_cfm
 
 
