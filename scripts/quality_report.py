@@ -22,11 +22,13 @@ def run_cmd(cmd: list[str]) -> str:
 def main() -> None:
     """Audit codebase with radon, interrogate, and AST analysis; write docs/CODE_QUALITY.md."""
     # 1. Cyclomatic Complexity via Radon or AST fallback
-    radon_bin = (
-        "/tmp/tools_venv/bin/radon"
-        if os.path.exists("/tmp/tools_venv/bin/radon")
-        else (shutil.which("radon") or "radon")
-    )
+    radon_candidates = [
+        "/tmp/saansplan_tools_venv/bin/radon",
+        "/tmp/tools_venv/bin/radon",
+        str(PROJECT_ROOT / ".venv" / "bin" / "radon"),
+        shutil.which("radon") or "radon",
+    ]
+    radon_bin = next((b for b in radon_candidates if os.path.exists(b)), "radon")
     radon_out = run_cmd([radon_bin, "cc", "app/", "-s", "-a"])
     avg_line = [line for line in radon_out.splitlines() if "Average complexity:" in line]
     if avg_line and "(" in avg_line[0]:
@@ -105,11 +107,13 @@ def main() -> None:
                     max_fn = f"{n.name} ({pf.name})"
 
     # 3. Interrogate Docstrings or AST fallback
-    interrogate_bin = (
-        "/tmp/tools_venv/bin/interrogate"
-        if os.path.exists("/tmp/tools_venv/bin/interrogate")
-        else (shutil.which("interrogate") or "interrogate")
-    )
+    interrogate_candidates = [
+        "/tmp/saansplan_tools_venv/bin/interrogate",
+        "/tmp/tools_venv/bin/interrogate",
+        str(PROJECT_ROOT / ".venv" / "bin" / "interrogate"),
+        shutil.which("interrogate") or "interrogate",
+    ]
+    interrogate_bin = next((b for b in interrogate_candidates if os.path.exists(b)), "interrogate")
     interrogate_out = run_cmd([interrogate_bin, "-v", "app/"])
     doc_cov = ""
     for line in interrogate_out.splitlines():

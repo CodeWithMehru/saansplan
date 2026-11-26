@@ -21,7 +21,13 @@ def ensure_axe():
 
 
 def run_a11y_audit():
-    if os.path.exists("/tmp/pw_venv/bin/python3") and sys.executable != "/tmp/pw_venv/bin/python3":
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    local_venv_py = os.path.join(project_root, ".venv", "bin", "python3")
+    if os.path.exists(local_venv_py) and sys.executable != local_venv_py:
+        os.execv(local_venv_py, [local_venv_py, __file__] + sys.argv[1:])
+    elif (
+        os.path.exists("/tmp/pw_venv/bin/python3") and sys.executable != "/tmp/pw_venv/bin/python3"
+    ):
         os.execv("/tmp/pw_venv/bin/python3", ["/tmp/pw_venv/bin/python3", __file__] + sys.argv[1:])
 
     from playwright.sync_api import sync_playwright

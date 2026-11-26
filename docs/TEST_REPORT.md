@@ -1,16 +1,16 @@
 # Test & Verification Report
 
-Generated automatically on: `2026-11-25 17:45:45 UTC`
+Generated automatically on: `2026-11-26 08:24:59 UTC`
 
 ## System Verification Summary
 
 | Category | Target / Requirement | Measured Result | Status |
 |---|---|---|---|
-| **Engine Execution Speed** | < 50 ms for 6-member family | `2.41 ms` | ✅ PASS |
-| **Interpolation Throughput** | 1000 runs < 200 ms | `38.72 ms` | ✅ PASS |
-| **Static Bundle Size** | < 60 KB gzipped | `33.48 KB` (raw: 106.85 KB) | ✅ PASS |
-| **Overall Test Coverage** | ≥ 95% enforced by pyproject | `99.55%` (251 passed) | ✅ PASS |
-| **Engine Test Coverage** | ≥ 95% target | `99.49%` | ✅ PASS |
+| **Engine Execution Speed** | < 50 ms for 6-member family | `2.47 ms` | ✅ PASS |
+| **Interpolation Throughput** | 1000 runs < 200 ms | `44.65 ms` | ✅ PASS |
+| **Static Bundle Size** | < 60 KB gzipped | `35.68 KB` (raw: 112.54 KB) | ✅ PASS |
+| **Overall Test Coverage** | ≥ 95% enforced by pyproject | `99.32%` (269 passed) | ✅ PASS |
+| **Engine Test Coverage** | ≥ 95% target | `99.4%` | ✅ PASS |
 | **Hermetic Execution** | No secrets & no network required | Hermetic tests pass cleanly | ✅ PASS |
 | **Axe Accessibility Audit** | 0 WCAG 2.2 AA violations | 0 violations (43 initial, 56 populated) | ✅ PASS |
 | **Reflow (WCAG 1.4.10)** | 360 px width without horizontal scroll | Zero horizontal overflow | ✅ PASS |
