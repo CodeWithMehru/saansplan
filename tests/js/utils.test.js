@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { aqiLevel, getHumanLabel } from "../js/utils.js";
+import { aqiLevel, getHumanLabel } from "../../app/static/js/utils.js";
 
 test("aqiLevel categorizes standard CPCB breakpoints correctly", () => {
   assert.equal(aqiLevel(30).level, "good");

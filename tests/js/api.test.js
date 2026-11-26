@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { fetchGeocode, askAssistant, fetchPlan } from "../js/api.js";
+import { fetchGeocode, askAssistant, fetchPlan } from "../../app/static/js/api.js";
 
 test("fetchGeocode returns results array on success", async () => {
   const originalFetch = globalThis.fetch;

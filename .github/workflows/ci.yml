@@ -37,9 +37,9 @@ jobs:
         with:
           node-version: "22"
       - run: npx --yes eslint@10.15.0 app/static/js/
-      - run: npx --yes prettier@3.5.2 --check app/static/
+      - run: npx --yes prettier@3.5.2 --check app/static/ tests/js/
       - run: npx --yes --package=typescript@5.7.3 tsc --noEmit
-      - run: node --test app/static/tests/*.test.js
+      - run: node --test tests/js/*.test.js
 
   security:
     name: Security & Supply Chain

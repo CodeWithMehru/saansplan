@@ -34,7 +34,7 @@ All development verification is standardized via the project `Makefile`. Before 
 | `make verify` | `lint typecheck test test-js security report` | Runs the full verification pipeline before pushing. |
 | `make quality` | `python3 scripts/quality_report.py` | Audits cyclomatic complexity with Radon and docstring coverage with Interrogate. |
 | `make test` | `pytest` | Runs the hermetic pytest suite with 95% coverage enforcement (`--cov-fail-under=95`). |
-| `make test-js` | `node --test app/static/tests/*.test.js` | Runs frontend i18n key parity and script integrity tests. |
+| `make test-js` | `node --test tests/js/*.test.js` | Runs frontend i18n key parity and script integrity tests. |
 | `make lint` | `ruff format --check && ruff check` | Checks formatting and code style across `app`, `tests`, and `scripts`. |
 | `make typecheck` | `mypy app` | Runs strict static type checking across all 46 Python source files. |
 | `make security` | `bandit -q -r app && pip-audit -r requirements.txt` | Runs static AST security analysis and checks dependencies for CVEs. |

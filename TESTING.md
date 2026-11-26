@@ -33,7 +33,7 @@ Every test in the `tests/` suite executes hermetically:
 | `tests/security/test_http_hardening.py` | Defensive HTTP headers & RFC 9116 | Content-Type 415 rejection for non-JSON POST, CORP same-origin, X-Request-ID, RFC 9116 security.txt validation, zero key leakage. |
 | `tests/a11y/test_static_markup.py` | Accessibility AST markup tests | Single `<h1>` document hierarchy, semantic landmarks, form control labels, scoped table headers, zero inline JavaScript event handlers. |
 | `tests/a11y/test_aria_snapshots.py` | Playwright ARIA tree verification | Headless Chromium ARIA tree verification for banner, main, contentinfo landmarks, and live announcement regions. |
-| `app/static/tests/` | Frontend native test runner (`node --test`) | 11 unit tests covering i18n translation key parity across English, Hinglish, and Hindi; CPCB AQI thresholds; human label lookups; and client API network helpers. |
+| `tests/js/` | Frontend native test runner (`node --test`) | 11 unit tests covering i18n translation key parity across English, Hinglish, and Hindi; CPCB AQI thresholds; human label lookups; and client API network helpers. |
 | `scripts/a11y.py` | Automated Axe-Core audit | End-to-end WCAG 2.2 Level AA compliance check across initial, translated, and populated views (0 violations across 56 rules). |
 | `scripts/verify_lighthouse.py` | Automated Google Lighthouse runner | Runs headless Chrome Lighthouse accessibility audit (measured: 100/100). |
 | `scripts/e2e.py` | Playwright end-to-end journey | Automated verification of city search, persona prefilling, plan generation, human-readable labels, and zero console errors. |
@@ -85,7 +85,7 @@ pip install -r requirements.txt -r requirements-dev.txt
 pytest
 
 # 5. Run frontend i18n unit tests
-node --test app/static/tests/*.test.js
+node --test tests/js/*.test.js
 
 # 6. Run lint and typecheck
 ruff format --check app tests scripts

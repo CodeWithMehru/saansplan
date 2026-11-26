@@ -21,11 +21,11 @@ test: ## Run unit and integration test suite with coverage
 	pytest --cov=app --cov-report=term-missing --cov-fail-under=95
 
 test-js: ## Run Node.js tests for frontend modules
-	node --test app/static/tests/*.test.js
+	node --test tests/js/*.test.js
 
 check-js: ## Run ESLint, Prettier, and TypeScript checks on frontend assets
 	npx --yes eslint@10.15.0 app/static/js/
-	npx --yes prettier@3.5.2 --check app/static/
+	npx --yes prettier@3.5.2 --check app/static/ tests/js/
 	npx --yes --package=typescript@5.7.3 tsc --noEmit
 
 check-docs: ## Check Markdown consistency, links, paths, and Makefile targets

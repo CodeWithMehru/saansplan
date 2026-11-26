@@ -41,7 +41,7 @@ Generated automatically on: `2026-11-25 17:45:45 UTC`
   - Strict Content Security Policy (`default-src 'self'`, no unsafe-inline, no unsafe-eval).
   - Playwright and Axe-Core automated WCAG 2.2 AA validation (`scripts/a11y.py`).
   - End-to-end multi-language user journey (`scripts/e2e.py`).
-  - Node.js native test runner for i18n key parity and Devanagari script integrity (`app/static/tests/`).
+  - Node.js native test runner for i18n key parity and Devanagari script integrity (`tests/js/`).
 
 ## Verification Commands
 
