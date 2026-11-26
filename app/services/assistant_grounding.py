@@ -231,17 +231,23 @@ def _fallback_cadr(room_sqft: float, cadr_cfm: int) -> dict[str, Any]:
     }
 
 
-def _fallback_walk(asked_hour: int, walk_info: dict[str, Any], city: str) -> dict[str, Any]:
+def _fallback_walk(asked_hour: int, walk_info: dict[str, Any] | None, city: str) -> dict[str, Any]:
     """Return deterministic fallback for walk / outdoor safety queries."""
     h12 = (
         f"{asked_hour - NOON_HOUR} pm"
         if asked_hour > NOON_HOUR
         else (f"{asked_hour} am" if asked_hour > MIDNIGHT_HOUR else "12 am")
     )
+    if walk_info:
+        cond = (
+            f"forecast PM2.5 is {walk_info['pm25']} µg/m³ with "
+            f"AQI {walk_info['aqi']} ({walk_info['category']})"
+        )
+    else:
+        cond = "check local AQI levels before heading out"
     return {
         "answer": (
-            f"At {h12} in {city}, forecast PM2.5 is {walk_info['pm25']} µg/m³ with "
-            f"AQI {walk_info['aqi']} ({walk_info['category']}). Strenuous outdoor walking "
+            f"At {h12} in {city}, {cond}. Strenuous outdoor walking "
             "during peak smog is not advised; consider indoor exercise [cpcb-aqi-breakpoints]."
         ),
         "kb_ids": ["cpcb-aqi-breakpoints"],
@@ -259,8 +265,8 @@ def _try_fallback_cadr(room_sqft: float | None, cadr_cfm: int | None) -> dict[st
 def _try_fallback_walk(
     asked_hour: int | None, walk_info: dict[str, Any] | None, city: str
 ) -> dict[str, Any] | None:
-    """Build walk advisory fallback if hour and conditions are available."""
-    if asked_hour is not None and walk_info is not None:
+    """Build walk advisory fallback if hour is available."""
+    if asked_hour is not None:
         return _fallback_walk(asked_hour, walk_info, city)
     return None
 

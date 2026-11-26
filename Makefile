@@ -23,10 +23,11 @@ test: ## Run unit and integration test suite with coverage
 test-js: ## Run Node.js tests for frontend modules
 	node --test tests/js/*.test.js
 
-check-js: ## Run ESLint, Prettier, and TypeScript checks on frontend assets
+check-js: ## Run ESLint, Prettier, TypeScript, and HTML validation on frontend assets
 	npx --yes eslint@10.15.0 app/static/js/
 	npx --yes prettier@3.5.2 --check app/static/ tests/js/
 	npx --yes --package=typescript@5.7.3 tsc --noEmit
+	npx --yes html-validate app/static/*.html
 
 check-docs: ## Check Markdown consistency, links, paths, and Makefile targets
 	python3 scripts/verify/check_docs_consistency.py

@@ -1,31 +1,53 @@
 /**
- * Utility functions: DOM helpers, CPCB AQI categories, and F10 human titles in 3 languages.
+ * Utility functions: DOM helpers, CPCB AQI categories, and human action titles in 3 languages.
+ *
+ * @module utils
  */
 
+import { AQI_THRESHOLDS, SEVERE_AQI_LEVEL } from "./constants.js";
+
+/**
+ * Query selector returning element with any type to support value/property access.
+ * @param {string} selector - CSS selector string.
+ * @returns {any} Matching DOM element or null.
+ */
 export const $ = (selector) => document.querySelector(selector);
+
+/**
+ * Multiple element query selector.
+ * @param {string} selector - CSS selector string.
+ * @returns {NodeListOf<any>} Matching DOM elements node list.
+ */
 export const $$ = (selector) => document.querySelectorAll(selector);
 
+/**
+ * Safely set element textContent.
+ * @param {HTMLElement | null} element - Target DOM element.
+ * @param {unknown} value - Value to set as string.
+ */
 export function textContent(element, value) {
   if (element) element.textContent = String(value);
 }
 
-const AQI_THRESHOLDS = [
-  { max: 50, level: "good", text: "Good (CPCB)", icon: "●", slug: "good" },
-  { max: 100, level: "satisfactory", text: "Satisfactory (CPCB)", icon: "●", slug: "satisfactory" },
-  { max: 200, level: "moderate", text: "Moderate (CPCB)", icon: "◆", slug: "moderate" },
-  { max: 300, level: "poor", text: "Poor (CPCB)", icon: "▲", slug: "poor" },
-  { max: 400, level: "very-poor", text: "Very Poor (CPCB)", icon: "▲", slug: "very-poor" },
-];
-
+/**
+ * Resolve CPCB AQI category and display metadata for a numeric AQI value.
+ *
+ * @param {number | string} aqi - Numeric AQI value or numeric string.
+ * @param {string} [_language="en"] - Optional locale (reserved for localized categories).
+ * @returns {{level: string, text: string, icon: string, slug: string}} Category metadata.
+ */
 export function aqiLevel(aqi, _language = "en") {
   const num = Number(aqi) || 0;
   for (const t of AQI_THRESHOLDS) {
     if (num <= t.max) return t;
   }
-  return { level: "severe", text: "Severe (CPCB)", icon: "■", slug: "severe" };
+  return SEVERE_AQI_LEVEL;
 }
 
-// F10: Comprehensive Human Titles in English, Hinglish, and Hindi
+/**
+ * Human-readable action titles localized across English, Hinglish, and Hindi.
+ * @type {Record<string, Record<string, string>>}
+ */
 const HUMAN_TITLES = {
   swap_shift: {
     en: "Shift outdoor activity to a cleaner hour",
@@ -114,6 +136,14 @@ const HUMAN_TITLES = {
   },
 };
 
+/**
+ * Return localized human-readable display label for a swap or action key.
+ * Never leaks raw snake_case identifiers to users.
+ *
+ * @param {string | null | undefined} key - Action or swap identifier key.
+ * @param {string} [language="en"] - Active user language ('en', 'hinglish', 'hi').
+ * @returns {string} Human-friendly display title.
+ */
 export function getHumanLabel(key, language = "en") {
   if (!key) return "Cleaner daily action";
   const cleanKey = String(key).toLowerCase().trim();

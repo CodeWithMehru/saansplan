@@ -819,3 +819,18 @@ caption {
     page-break-inside: avoid;
   }
 }
+
+/* Accessibility Statement Page */
+.accessibility-main {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem 1.5rem;
+}
+.accessibility-nav-link {
+  color: #ffffff;
+  text-decoration: underline;
+}
+.accessibility-footer-link {
+  color: inherit;
+  text-decoration: underline;
+}

@@ -39,6 +39,7 @@ jobs:
       - run: npx --yes eslint@10.15.0 app/static/js/
       - run: npx --yes prettier@3.5.2 --check app/static/ tests/js/
       - run: npx --yes --package=typescript@5.7.3 tsc --noEmit
+      - run: npx --yes html-validate app/static/*.html
       - run: node --test tests/js/*.test.js
 
   security:
