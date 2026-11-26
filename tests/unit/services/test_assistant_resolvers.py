@@ -1,8 +1,24 @@
-"""Unit tests for app.services.assistant_resolvers module."""
+"""Unit tests for app.services.assistant_grounding and assistant_resolvers module."""
 
 from __future__ import annotations
 
-from app.services.assistant_resolvers import check_safety, resolve_cadr, resolve_walk
+from app.services.assistant_grounding import check_safety, resolve_cadr, resolve_walk
+from app.services.assistant_resolvers import (
+    check_safety as check_safety_res,
+)
+from app.services.assistant_resolvers import (
+    resolve_cadr as resolve_cadr_res,
+)
+from app.services.assistant_resolvers import (
+    resolve_walk as resolve_walk_res,
+)
+
+
+def test_backward_compatibility_aliases() -> None:
+    """Verify assistant_resolvers exports aliases matching assistant_grounding."""
+    assert check_safety_res is check_safety
+    assert resolve_cadr_res is resolve_cadr
+    assert resolve_walk_res is resolve_walk
 
 
 def test_check_safety_symptom_detection() -> None:

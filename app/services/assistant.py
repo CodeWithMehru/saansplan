@@ -7,20 +7,20 @@ from typing import Any
 
 from app.core.constants import DEFAULT_FORECAST_DAYS, HOURS_IN_DAY
 from app.services.air_quality import fetch_air_quality
-from app.services.assistant_resolvers import (
+from app.services.assistant_grounding import (
     _ensure_cpcb_breakpoint_entry as _ensure_cpcb_bp_res,
 )
-from app.services.assistant_resolvers import (
+from app.services.assistant_grounding import (
     _is_valid_hour,
     build_deterministic_fallback,
     check_safety,
     extract_hour,
     extract_room_size_sqft,
 )
-from app.services.assistant_resolvers import (
+from app.services.assistant_grounding import (
     resolve_cadr as _resolve_cadr_resolver,
 )
-from app.services.assistant_resolvers import (
+from app.services.assistant_grounding import (
     resolve_walk as _resolve_walk_resolver,
 )
 from app.services.kb import KnowledgeBase

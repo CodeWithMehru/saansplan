@@ -59,6 +59,32 @@ class Activity(BaseModel):
         return value.strip()
 
 
+class HeatingFuel(str, Enum):
+    """Primary residential heating fuel source."""
+
+    none = "none"
+    electric = "electric"
+    wood_coal = "wood_coal"
+    gas = "gas"
+    other = "other"
+
+
+class CookingFuel(str, Enum):
+    """Primary household cooking fuel modality."""
+
+    lpg = "lpg"
+    induction = "induction"
+    wood_coal = "wood_coal"
+    other = "other"
+
+
+class WindowHabit(str, Enum):
+    """Daily window opening and natural ventilation habit."""
+
+    mostly_open = "mostly_open"
+    mostly_closed = "mostly_closed"
+
+
 class HomeSetup(BaseModel):
     """Residential baseline factors dictating indoor infiltration and emission sources."""
 
