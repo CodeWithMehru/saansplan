@@ -2,6 +2,30 @@
 
 All notable changes to the SaansPlan project are documented here.
 
+## [2.2.0] - 2026-11-26
+
+### Refactored
+- **Cyclomatic Complexity Reduction (Radon & Xenon Rank A):**
+  - Average cyclomatic complexity reduced to 2.37 across 247 blocks; every single function in the core domain capped at CC $\le 5$ (Rank A).
+  - 100% of modules achieve Xenon Rank A (`xenon --max-absolute B --max-modules A --max-average A app/` clean).
+- **Backend Architecture & Service Decoupling:**
+  - Extracted `app/api/router.py` aggregating API routes into centralized `api_router`.
+  - Extracted `app/core/middleware.py` (security headers, caching headers, payload limit inspection) and `app/core/error_handlers.py` (RFC 6585 rate limiting, 404, validation error envelope).
+  - Extracted orchestration pipeline from `app/routers/plan.py` into dedicated `app/services/plan_service.py` (shrunk route handler to 11 lines).
+  - Renamed `app/services/assistant_resolvers.py` to `app/services/assistant_grounding.py` with backward-compatible re-export shim.
+  - Defined centralized domain enumerations in `app/schemas/enums.py` (`CPCBCategory`, `BudgetTier`) and `app/schemas/routine.py` (`HeatingFuel`, `CookingFuel`, `WindowHabit`).
+- **Frontend Architecture & Tooling Consolidation:**
+  - Extracted `app/static/js/constants.js` centralizing API endpoints, localStorage keys, CPCB breakpoints, and defaults.
+  - Added full JSDoc typing across ES modules; verified with `tsc --noEmit`.
+  - Relocated frontend unit tests from the public static mount to dedicated `tests/js/`.
+  - Removed duplicate config files (`.eslintrc.json`, `.prettierrc`) in favor of canonical `eslint.config.mjs` and `.prettierrc.json`.
+  - Added `.htmlvalidate.json` and resolved HTML validation issues in `app/static/index.html` and `app/static/accessibility.html`.
+- **Test & Script Hygiene:**
+  - Reorganized script entries with clean forwarders across `scripts/reports/` and `scripts/verify/`.
+  - Automated venv detection in `scripts/a11y.py` and dynamic metric generation in `scripts/quality_report.py` and `scripts/report.py`.
+  - All 280 automated tests (269 pytest + 11 node.js) pass hermetically with 99.32% statement coverage.
+
+
 ## [2.1.0] - 2026-11-25
 
 ### Added

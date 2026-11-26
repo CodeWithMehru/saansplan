@@ -9,12 +9,16 @@ flowchart TD
     subgraph Client["Client Tier (Vanilla ES / HTML5)"]
         UI["app/static/index.html"]
         APP["app/static/js/app.js"]
+        CONSTS["app/static/js/constants.js"]
         HANDLERS["app/static/js/handlers.js"]
         RENDER["app/static/js/render/*.js"]
     end
 
     subgraph API["API & Routing Tier (FastAPI)"]
         MAIN["app/main.py"]
+        ROUTER["app/api/router.py"]
+        CORE_MID["app/core/middleware.py"]
+        CORE_ERR["app/core/error_handlers.py"]
         R_PLAN["app/routers/plan.py"]
         R_ASK["app/routers/ask.py"]
         R_GEO["app/routers/geocode.py"]
@@ -22,8 +26,9 @@ flowchart TD
     end
 
     subgraph Services["Service Tier"]
+        SVC_PLAN["app/services/plan_service.py"]
         SVC_ASSIST["app/services/assistant.py"]
-        SVC_RESOLV["app/services/assistant_resolvers.py"]
+        SVC_GROUND["app/services/assistant_grounding.py"]
         SVC_AQ["app/services/air_quality.py"]
         SVC_GUARD["app/services/guard*.py"]
         SVC_LLM["app/services/llm.py"]
@@ -41,6 +46,7 @@ flowchart TD
     end
 
     subgraph Schemas["Domain Schemas (Pydantic v2)"]
+        SCH_ENUM["app/schemas/enums.py"]
         SCH_FAM["app/schemas/family.py"]
         SCH_ROU["app/schemas/routine.py"]
         SCH_PLN["app/schemas/plan.py"]
@@ -53,16 +59,18 @@ flowchart TD
     end
 
     UI --> APP
-    APP --> HANDLERS
+    APP --> CONSTS & HANDLERS
     HANDLERS --> RENDER
     APP -- "JSON REST" --> MAIN
-    MAIN --> R_PLAN & R_ASK & R_GEO & R_HEALTH
+    MAIN --> CORE_MID & CORE_ERR & ROUTER
+    ROUTER --> R_PLAN & R_ASK & R_GEO & R_HEALTH
 
-    R_PLAN --> SVC_AQ & SVC_GUARD & SVC_LLM & Engine
+    R_PLAN --> SVC_PLAN
+    SVC_PLAN --> SVC_AQ & SVC_GUARD & SVC_LLM & Engine
     R_ASK --> SVC_ASSIST
-    SVC_ASSIST --> SVC_AQ & SVC_KB & SVC_LLM & Engine
+    SVC_ASSIST --> SVC_GROUND & SVC_AQ & SVC_KB & SVC_LLM & Engine
 
-    R_PLAN & R_ASK & SVC_ASSIST --> Schemas
+    R_PLAN & R_ASK & SVC_ASSIST & SVC_PLAN --> Schemas
     Engine --> Schemas
 
     SVC_AQ --> OPEN_METEO
@@ -80,7 +88,8 @@ flowchart TD
 
 2. **Thin Routers & Modular Services:**
    - Routers perform request validation, route dispatching, and HTTP response mapping.
-   - Business orchestration logic resides in specialized services (`app/services/assistant.py`, `app/services/guard_numbers.py`, `app/services/guard_safety.py`, `app/services/guard_wording.py`).
+   - Business orchestration logic resides in specialized services (`app/services/plan_service.py`, `app/services/assistant.py`, `app/services/assistant_grounding.py`, `app/services/guard_numbers.py`, `app/services/guard_safety.py`, `app/services/guard_wording.py`).
+   - Cross-cutting concerns are factored into `app/core/middleware.py` and `app/core/error_handlers.py`.
 
 3. **Deterministic Fallbacks:**
    - LLM generation is strictly guarded. If Groq is unavailable, rate-limited, returns malformed text, violates clinical safety criteria, uses prohibited past-tense wording, or invents numeric values, the system seamlessly returns verified deterministic templates with zero downtime (`ai_available=false`).
