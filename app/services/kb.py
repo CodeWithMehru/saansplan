@@ -71,17 +71,21 @@ def _extract_query_words(text: str) -> set[str]:
     }
 
 
+def _word_match_score(word: str, topic: str, haystack: str) -> int:
+    """Calculate match score for an individual keyword in entry topic or text."""
+    if word not in haystack:
+        return 0
+    return TOPIC_MATCH_WEIGHT if word in topic else 1
+
+
 def _score_entry(entry: dict[str, Any], words: set[str], text: str) -> int:
     """Calculate keyword and domain boost score for a single KB entry."""
-    eid = entry["id"]
     topic = entry["topic"].lower()
     haystack = f"{topic} {entry['text']}".lower()
-
-    score = sum(TOPIC_MATCH_WEIGHT if w in topic else 1 for w in words if w in haystack)
-    boost_keys = TOPIC_KEYWORDS.get(eid, ())
-    if any(k in text for k in boost_keys):
-        score += DEFAULT_MATCH_BOOST
-    return score
+    score = sum(_word_match_score(w, topic, haystack) for w in words)
+    boost_keys = TOPIC_KEYWORDS.get(entry["id"], ())
+    has_boost = any(k in text for k in boost_keys)
+    return score + (DEFAULT_MATCH_BOOST if has_boost else 0)
 
 
 class KnowledgeBase:

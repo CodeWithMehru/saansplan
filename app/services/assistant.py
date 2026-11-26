@@ -73,6 +73,33 @@ async def _fetch_today_pm25(lat: float, lon: float, client: Any, fetch_aq: Any) 
         return []
 
 
+def _format_assistant_payload(
+    question: str, engine_facts: dict[str, Any], entries: list[dict[str, Any]]
+) -> str:
+    """Format user prompt payload with grounding facts and retrieved entries."""
+    return json.dumps(
+        {
+            "question": question,
+            "deterministic_engine_facts": engine_facts,
+            "grounded_kb_entries": [{"id": e["id"], "text": e["text"]} for e in entries],
+        },
+        ensure_ascii=False,
+    )
+
+
+def _parse_assistant_response(raw: str, entries: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Parse raw LLM JSON response and extract answer and citation ids."""
+    try:
+        parsed = json.loads(raw)
+        ans_text = parsed.get("answer", "").strip()
+        cited_ids = parsed.get("kb_ids") or [e["id"] for e in entries]
+        if ans_text:
+            return {"answer": ans_text, "kb_ids": cited_ids, "safety_redirect": False}
+    except json.JSONDecodeError:
+        pass
+    return None
+
+
 async def _call_groq_assistant(
     question: str,
     engine_facts: dict[str, Any],
@@ -89,21 +116,10 @@ async def _call_groq_assistant(
         "Keep the answer to 2-3 concise sentences. Never make up numbers. "
         'Return JSON: {"answer": "...", "kb_ids": ["..."]}.'
     )
-    user_payload = json.dumps(
-        {
-            "question": question,
-            "deterministic_engine_facts": engine_facts,
-            "grounded_kb_entries": [{"id": e["id"], "text": e["text"]} for e in entries],
-        },
-        ensure_ascii=False,
-    )
+    user_payload = _format_assistant_payload(question, engine_facts, entries)
     try:
         raw = await asyncio.wait_for(chat(system, user_payload, 0.2), timeout=8.0)
-        parsed = json.loads(raw)
-        ans_text = parsed.get("answer", "").strip()
-        cited_ids = parsed.get("kb_ids") or [e["id"] for e in entries]
-        if ans_text:
-            return {"answer": ans_text, "kb_ids": cited_ids, "safety_redirect": False}
+        return _parse_assistant_response(raw, entries)
     except Exception as err:  # noqa: BLE001  # Safe assistant generation fallback
         logger.warning("Groq ask generation fallback: %s", err)
     return None
@@ -146,6 +162,18 @@ async def _assemble_assistant_context(
     return engine_facts, room_sqft, cadr_cfm, asked_hour, walk_info, loc_city
 
 
+def _preliminary_check(question: str) -> dict[str, Any] | None:
+    """Perform early exit validation for empty questions or clinical symptoms."""
+    q_clean = question.strip()
+    if not q_clean:
+        return {
+            "answer": "Please ask an air-quality question.",
+            "kb_ids": [],
+            "safety_redirect": False,
+        }
+    return check_safety(q_clean.lower())
+
+
 async def answer_question(
     question: str,
     location: tuple[float | None, float | None, str | None] = (None, None, None),
@@ -154,20 +182,13 @@ async def answer_question(
     fetch_aq_fn: Any = None,
 ) -> dict[str, Any]:
     """Provide grounded answer to an air-quality question."""
-    chat = chat_fn or groq_chat
-    fetch_aq = fetch_aq_fn or fetch_air_quality
+    prelim = _preliminary_check(question)
+    if prelim:
+        return prelim
 
     q_clean = question.strip()
-    if not q_clean:
-        return {
-            "answer": "Please ask an air-quality question.",
-            "kb_ids": [],
-            "safety_redirect": False,
-        }
-
-    safety_response = check_safety(q_clean.lower())
-    if safety_response:
-        return safety_response
+    chat = chat_fn or groq_chat
+    fetch_aq = fetch_aq_fn or fetch_air_quality
 
     entries = _kb_instance.retrieve(q_clean, limit=2, threshold=3)
     facts, room_sqft, cadr_cfm, asked_h, walk_info, loc_city = await _assemble_assistant_context(

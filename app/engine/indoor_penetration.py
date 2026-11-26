@@ -8,6 +8,12 @@ from app.config import (
 )
 from app.models import HomeSetup
 
+COOKING_SOURCE_INCREMENTS: dict[str, float] = {
+    "wood_coal": INDOOR_SOURCE_INCREMENTS["biomass"],
+    "lpg": INDOOR_SOURCE_INCREMENTS["lpg_cooking"],
+    "induction": INDOOR_SOURCE_INCREMENTS["induction"],
+}
+
 
 def indoor_concentration(outdoor_pm25: float, home: HomeSetup) -> float:
     """Estimate indoor PM2.5 from infiltration and home source increments."""
@@ -15,13 +21,6 @@ def indoor_concentration(outdoor_pm25: float, home: HomeSetup) -> float:
     if home.purifier:
         infiltration *= PURIFIER_FACTOR
 
-    source = 0.0
-    if home.heating == "wood_coal":
-        source += INDOOR_SOURCE_INCREMENTS["wood_coal"]
-    if home.cooking == "wood_coal":
-        source += INDOOR_SOURCE_INCREMENTS["biomass"]
-    elif home.cooking == "lpg":
-        source += INDOOR_SOURCE_INCREMENTS["lpg_cooking"]
-    elif home.cooking == "induction":
-        source += INDOOR_SOURCE_INCREMENTS["induction"]
-    return max(0.0, outdoor_pm25 * infiltration + source)
+    heating_source = INDOOR_SOURCE_INCREMENTS["wood_coal"] if home.heating == "wood_coal" else 0.0
+    cooking_source = COOKING_SOURCE_INCREMENTS.get(home.cooking, 0.0)
+    return max(0.0, outdoor_pm25 * infiltration + heating_source + cooking_source)

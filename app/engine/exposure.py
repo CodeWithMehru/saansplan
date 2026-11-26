@@ -26,9 +26,22 @@ def _interpolate_between(
 
 def _nearest_known(index: int, known: list[int]) -> tuple[int | None, int | None]:
     """Find left and right known indices around a target index."""
-    left = [i for i in known if i < index]
-    right = [i for i in known if i > index]
-    return (left[-1] if left else None), (right[0] if right else None)
+    left: int | None = None
+    right: int | None = None
+    for i in known:
+        if i < index:
+            left = i
+        elif right is None and i > index:
+            right = i
+    return left, right
+
+
+def _edge_value(idx: int | None, values: list[float | None]) -> float:
+    """Extract float value from an edge index if present."""
+    if idx is None:
+        return 0.0
+    val = values[idx]
+    return float(val) if val is not None else 0.0
 
 
 def _fill_missing_value(index: int, known: list[int], values: list[float | None]) -> float:
@@ -36,11 +49,25 @@ def _fill_missing_value(index: int, known: list[int], values: list[float | None]
     left_idx, right_idx = _nearest_known(index, known)
     if left_idx is not None and right_idx is not None:
         return _interpolate_between(index, left_idx, right_idx, values)
-    edge_idx = left_idx if left_idx is not None else right_idx
-    if edge_idx is not None:
-        val = values[edge_idx]
-        return float(val) if val is not None else 0.0
-    return 0.0
+    return _edge_value(left_idx if left_idx is not None else right_idx, values)
+
+
+def _interpolate_hour_point(
+    idx: int, val: float | None, known: list[int], values: list[float | None]
+) -> tuple[float, bool]:
+    """Return interpolated float and flag for a single hour index."""
+    if val is not None:
+        return float(val), False
+    return _fill_missing_value(idx, known, values), True
+
+
+def _collect_known_indices(values: list[float | None]) -> list[int]:
+    """Find all indices where values are not None."""
+    indices: list[int] = []
+    for i, v in enumerate(values):
+        if v is not None:
+            indices.append(i)
+    return indices
 
 
 def interpolate_hourly(values: list[float | None]) -> tuple[list[float], list[bool]]:
@@ -48,19 +75,16 @@ def interpolate_hourly(values: list[float | None]) -> tuple[list[float], list[bo
     if not values:
         return [], []
 
-    known = [i for i, v in enumerate(values) if v is not None]
+    known = _collect_known_indices(values)
     if not known:
         return [0.0] * len(values), [True] * len(values)
 
     result: list[float] = []
     interpolated: list[bool] = []
     for i, v in enumerate(values):
-        if v is not None:
-            result.append(float(v))
-            interpolated.append(False)
-        else:
-            result.append(_fill_missing_value(i, known, values))
-            interpolated.append(True)
+        pt, flag = _interpolate_hour_point(i, v, known, values)
+        result.append(pt)
+        interpolated.append(flag)
 
     return result, interpolated
 
@@ -153,6 +177,22 @@ def _build_hourly_row(
     )
 
 
+def _simulate_single_hour(
+    hour: int,
+    air_timeline: tuple[list[float], list[bool], list[float | None]],
+    members: Sequence[FamilyMember],
+    routine: Routine,
+) -> tuple[HourlyExposureRow, list[float]]:
+    """Simulate exposures and build row for a designated clock hour."""
+    pm25, interpolated, aqi_hourly = air_timeline
+    outdoor = pm25[hour] if hour < len(pm25) else 0.0
+    exp_hour, m_exps = _compute_hour_exposures(members, routine, hour, outdoor)
+    raw_aqi = aqi_hourly[hour] if hour < len(aqi_hourly) else None
+    is_interp = interpolated[hour] if hour < len(interpolated) else True
+    row = _build_hourly_row(hour, outdoor, raw_aqi, exp_hour, is_interp)
+    return row, m_exps
+
+
 def _simulate_day_hours(
     pm25: list[float],
     interpolated: list[bool],
@@ -163,16 +203,13 @@ def _simulate_day_hours(
     """Simulate exposures across all 24 hours of the day."""
     hourly_rows: list[HourlyExposureRow] = []
     member_totals = [0.0 for _ in members]
+    air_timeline = (pm25, interpolated, aqi_hourly)
 
     for hour in range(24):
-        outdoor = pm25[hour] if hour < len(pm25) else 0.0
-        exp_hour, m_exps = _compute_hour_exposures(members, routine, hour, outdoor)
+        row, m_exps = _simulate_single_hour(hour, air_timeline, members, routine)
+        hourly_rows.append(row)
         for i, val in enumerate(m_exps):
             member_totals[i] += val
-
-        raw_aqi = aqi_hourly[hour] if hour < len(aqi_hourly) else None
-        is_interp = interpolated[hour] if hour < len(interpolated) else True
-        hourly_rows.append(_build_hourly_row(hour, outdoor, raw_aqi, exp_hour, is_interp))
 
     return hourly_rows, member_totals
 

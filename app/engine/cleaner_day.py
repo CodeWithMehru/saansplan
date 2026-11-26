@@ -80,6 +80,18 @@ def _optimize_home(routine: Routine) -> list[dict[str, str | int | float]]:
     return changes
 
 
+def _activity_dose_for_members(act: Activity, conc: float, members: list[FamilyMember]) -> float:
+    """Calculate cumulative inhaled dose for all referenced family members."""
+    dose = 0.0
+    for m_idx in act.member_refs:
+        if m_idx < len(members):
+            m = members[m_idx]
+            dose += inhaled_micrograms(
+                conc, act.duration_min, act.intensity.value, m.age_group.value
+            )
+    return dose
+
+
 def _compute_inhaled_dose(
     routine: Routine, members: list[FamilyMember], pm25: list[float]
 ) -> float:
@@ -89,12 +101,7 @@ def _compute_inhaled_dose(
         penetration = 0.25 if routine.home.purifier else 0.5
         act_pm25 = pm25[act.start_hour]
         conc = act_pm25 if act.place == "outdoor" else act_pm25 * penetration
-        for m_idx in act.member_refs:
-            if m_idx < len(members):
-                m = members[m_idx]
-                total_ug += inhaled_micrograms(
-                    conc, act.duration_min, act.intensity.value, m.age_group.value
-                )
+        total_ug += _activity_dose_for_members(act, conc, members)
     return total_ug
 
 

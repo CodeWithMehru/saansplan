@@ -209,6 +209,16 @@ class EmissionsOption(FrozenDomainModel):
         return d
 
 
+def _model_to_dict(model: Any) -> Any:
+    """Normalize model to primitive dict representation."""
+    return model.to_dict() if hasattr(model, "to_dict") else model
+
+
+def _models_to_dict_list(models: Sequence[Any]) -> list[Any]:
+    """Convert sequence of models to list of primitive dictionaries."""
+    return [_model_to_dict(m) for m in models]
+
+
 @dataclass(frozen=True)
 class EmissionsResult(FrozenDomainModel):
     """Weekly household transit, cooking, and heating emissions analysis."""
@@ -221,15 +231,9 @@ class EmissionsResult(FrozenDomainModel):
     def to_dict(self) -> dict[str, Any]:
         """Convert result to clean dictionary matching exact schema."""
         return {
-            "current": (
-                self.current.to_dict() if hasattr(self.current, "to_dict") else self.current
-            ),
-            "alternatives": [
-                opt.to_dict() if hasattr(opt, "to_dict") else opt for opt in self.alternatives
-            ],
-            "all_alternatives": [
-                opt.to_dict() if hasattr(opt, "to_dict") else opt for opt in self.all_alternatives
-            ],
+            "current": _model_to_dict(self.current),
+            "alternatives": _models_to_dict_list(self.alternatives),
+            "all_alternatives": _models_to_dict_list(self.all_alternatives),
             "budget_filter": self.budget_filter,
         }
 

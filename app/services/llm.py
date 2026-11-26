@@ -22,6 +22,41 @@ from app.services.guard import (
 logger = logging.getLogger(__name__)
 
 
+def _build_groq_payload(
+    system: str,
+    user: str,
+    temperature: float,
+    max_tokens: int,
+    json_schema: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Format payload dictionary with model and JSON schema response options."""
+    resp_fmt = (
+        {
+            "type": "json_schema",
+            "json_schema": {"name": "routine", "strict": True, "schema": json_schema},
+        }
+        if json_schema
+        else {"type": "json_object"}
+    )
+    return {
+        "model": GROQ_MODEL,
+        "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+        "response_format": resp_fmt,
+    }
+
+
+async def _execute_groq_request(
+    client: httpx.AsyncClient, headers: dict[str, str], payload: dict[str, Any]
+) -> str:
+    """Execute raw HTTP POST to Groq endpoint and extract completion content."""
+    response = await client.post(GROQ_ENDPOINT, headers=headers, json=payload)
+    response.raise_for_status()
+    data = response.json()
+    return cast(str, data["choices"][0]["message"]["content"])
+
+
 async def groq_chat(
     system: str,
     user: str,
@@ -35,28 +70,12 @@ async def groq_chat(
         err_msg = "GROQ_API_KEY is not configured"
         raise RuntimeError(err_msg)
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-    payload = {
-        "model": GROQ_MODEL,
-        "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
-        "temperature": temperature,
-        "max_tokens": max_tokens,
-        "response_format": (
-            {
-                "type": "json_schema",
-                "json_schema": {"name": "routine", "strict": True, "schema": json_schema},
-            }
-            if json_schema
-            else {"type": "json_object"}
-        ),
-    }
+    payload = _build_groq_payload(system, user, temperature, max_tokens, json_schema)
     last_error: Exception | None = None
     async with httpx.AsyncClient(timeout=OUTBOUND_TIMEOUT_SECONDS) as client:
         for attempt in range(OUTBOUND_RETRIES + 1):
             try:
-                response = await client.post(GROQ_ENDPOINT, headers=headers, json=payload)
-                response.raise_for_status()
-                data = response.json()
-                return cast(str, data["choices"][0]["message"]["content"])
+                return await _execute_groq_request(client, headers, payload)
             except Exception as error:  # noqa: BLE001  # Outbound API retry boundary
                 last_error = error
                 logger.warning("groq_chat attempt %d failed: %r", attempt, error)
@@ -155,19 +174,25 @@ def _build_explain_system_prompt(language: str) -> str:
     return system + " Write 1-2 short Hinglish sentences."
 
 
-def _parse_and_validate_llm_text(raw: str, engine: dict[str, Any]) -> str | None:
-    """Parse raw LLM JSON response and validate against numeric grounding rules."""
+def _extract_llm_text(raw: str) -> str:
+    """Extract and sanitize raw string or json text payload from LLM response."""
     try:
         parsed = json.loads(raw)
         text = parsed if isinstance(parsed, str) else parsed.get("text", "")
     except json.JSONDecodeError:
         text = raw
-    text = re.sub(r"<[^>]*>", "", text).strip()
-    if text and validate_number_guard(text, engine):
+    return re.sub(r"<[^>]*>", "", text).strip()
+
+
+def _parse_and_validate_llm_text(raw: str, engine: dict[str, Any]) -> str | None:
+    """Parse raw LLM JSON response and validate against numeric grounding rules."""
+    text = _extract_llm_text(raw)
+    if not text:
+        return None
+    if validate_number_guard(text, engine):
         return text
-    if text:
-        diff = rejected_numbers(text, engine)
-        logger.warning("Number guard rejected text: %s | Rejected numbers: %s", text, diff)
+    diff = rejected_numbers(text, engine)
+    logger.warning("Number guard rejected text: %s | Rejected numbers: %s", text, diff)
     return None
 
 

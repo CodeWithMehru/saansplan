@@ -66,18 +66,26 @@ def extract_room_size_sqft(text: str) -> float | None:
     return None
 
 
+def _convert_12h_to_24h(hour: int, meridiem: str) -> int:
+    """Convert 12-hour AM/PM hour to 24-hour clock."""
+    if meridiem == "pm":
+        return hour + NOON_HOUR if hour != NOON_HOUR else NOON_HOUR
+    return MIDNIGHT_HOUR if hour == NOON_HOUR else hour
+
+
 def _extract_12h_hour(text: str) -> int | None:
     """Parse 12-hour AM/PM format into 24-hour integer."""
     m_12h = re.search(r"\b(\d{1,2})\s*(am|pm)\b", text, re.IGNORECASE)
     if not m_12h:
         return None
-    h = int(m_12h.group(1))
-    meridiem = m_12h.group(2).lower()
-    if meridiem == "pm" and h != NOON_HOUR:
-        return h + NOON_HOUR
-    if meridiem == "am" and h == NOON_HOUR:
-        return MIDNIGHT_HOUR
-    return h
+    return _convert_12h_to_24h(int(m_12h.group(1)), m_12h.group(2).lower())
+
+
+def _adjust_hindi_period_hour(hour: int, period: str) -> int:
+    """Offset evening hours into 24-hour PM timeframe."""
+    if period in ("shaam", "raat") and hour < NOON_HOUR:
+        return hour + NOON_HOUR
+    return hour
 
 
 def _extract_hindi_hour(text: str) -> int | None:
@@ -90,10 +98,7 @@ def _extract_hindi_hour(text: str) -> int | None:
     if not m_hi:
         return None
     period = (m_hi.group(1) or m_hi.group(3) or "").lower()
-    h = int(m_hi.group(2))
-    if period in ("shaam", "raat") and h < NOON_HOUR:
-        return h + NOON_HOUR
-    return h
+    return _adjust_hindi_period_hour(int(m_hi.group(2)), period)
 
 
 def extract_hour(text: str) -> int | None:
@@ -129,12 +134,27 @@ def check_safety(q_lower: str) -> dict[str, Any] | None:
     return None
 
 
+def _find_kb_entry(kb: KnowledgeBase | None, entry_id: str) -> dict[str, Any] | None:
+    """Look up an entry by ID from the knowledge base."""
+    if not kb:
+        return None
+    for entry in kb.entries:
+        if entry["id"] == entry_id:
+            return entry
+    return None
+
+
+def _has_entry_id(entries: list[dict[str, Any]], entry_id: str) -> bool:
+    """Check if an entry with the designated ID exists in the list."""
+    return any(entry["id"] == entry_id for entry in entries)
+
+
 def _attach_cadr_kb_entry(entries: list[dict[str, Any]], kb: KnowledgeBase | None) -> None:
     """Prepend purifier sizing documentation to retrieved entries."""
-    if kb and not any(e["id"] == "purifier-sizing" for e in entries):
-        p_entry = next((e for e in kb.entries if e["id"] == "purifier-sizing"), None)
-        if p_entry:
-            entries.insert(0, p_entry)
+    if not _has_entry_id(entries, "purifier-sizing"):
+        entry = _find_kb_entry(kb, "purifier-sizing")
+        if entry is not None:
+            entries.insert(0, entry)
 
 
 def resolve_cadr(
@@ -166,10 +186,10 @@ def _ensure_cpcb_breakpoint_entry(
     entries: list[dict[str, Any]], kb: KnowledgeBase | None = None
 ) -> None:
     """Attach CPCB breakpoint reference to KB context if absent."""
-    if kb and not any(e["id"] == "cpcb-aqi-breakpoints" for e in entries):
-        b_entry = next((e for e in kb.entries if e["id"] == "cpcb-aqi-breakpoints"), None)
-        if b_entry:
-            entries.append(b_entry)
+    if not _has_entry_id(entries, "cpcb-aqi-breakpoints"):
+        entry = _find_kb_entry(kb, "cpcb-aqi-breakpoints")
+        if entry is not None:
+            entries.append(entry)
 
 
 def resolve_walk(
@@ -229,18 +249,24 @@ def _fallback_walk(asked_hour: int, walk_info: dict[str, Any], city: str) -> dic
     }
 
 
-def build_deterministic_fallback(
-    cadr_data: tuple[float | None, int | None],
-    walk_data: tuple[int | None, dict[str, Any] | None, str],
-    entries: list[dict[str, Any]],
-) -> dict[str, Any]:
-    """Return verified deterministic fallback answer when model call fails."""
-    room_sqft, cadr_cfm = cadr_data
-    asked_hour, walk_info, city = walk_data
+def _try_fallback_cadr(room_sqft: float | None, cadr_cfm: int | None) -> dict[str, Any] | None:
+    """Build CADR fallback if both square footage and CADR are available."""
     if room_sqft is not None and cadr_cfm is not None:
         return _fallback_cadr(room_sqft, cadr_cfm)
+    return None
+
+
+def _try_fallback_walk(
+    asked_hour: int | None, walk_info: dict[str, Any] | None, city: str
+) -> dict[str, Any] | None:
+    """Build walk advisory fallback if hour and conditions are available."""
     if asked_hour is not None and walk_info is not None:
         return _fallback_walk(asked_hour, walk_info, city)
+    return None
+
+
+def _fallback_generic_or_entry(entries: list[dict[str, Any]]) -> dict[str, Any]:
+    """Return top retrieved entry or general CPCB advisory fallback."""
     if entries:
         return {
             "answer": f"{entries[0]['text']} [{entries[0]['id']}]",
@@ -252,3 +278,18 @@ def build_deterministic_fallback(
         "kb_ids": ["cpcb-aqi-breakpoints"],
         "safety_redirect": False,
     }
+
+
+def build_deterministic_fallback(
+    cadr_data: tuple[float | None, int | None],
+    walk_data: tuple[int | None, dict[str, Any] | None, str],
+    entries: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Return verified deterministic fallback answer when model call fails."""
+    cadr_fb = _try_fallback_cadr(cadr_data[0], cadr_data[1])
+    if cadr_fb:
+        return cadr_fb
+    walk_fb = _try_fallback_walk(walk_data[0], walk_data[1], walk_data[2])
+    if walk_fb:
+        return walk_fb
+    return _fallback_generic_or_entry(entries)

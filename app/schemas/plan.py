@@ -8,6 +8,11 @@ from app.schemas.family import FamilyMember
 from app.schemas.routine import MIN_PRINTABLE_ASCII, Routine
 
 
+def _has_control_chars(text: str) -> bool:
+    """Check if string contains forbidden unprintable control characters."""
+    return any(ord(char) < MIN_PRINTABLE_ASCII and char not in "\n\t" for char in text)
+
+
 class PlanRequest(BaseModel):
     """Payload for submitting location, family demographics, and optional routine."""
 
@@ -27,6 +32,6 @@ class PlanRequest(BaseModel):
         """Reject unprintable ASCII control characters while preserving whitespace."""
         if value is None:
             return None
-        if any(ord(char) < MIN_PRINTABLE_ASCII and char not in "\n\t" for char in value):
+        if _has_control_chars(value):
             raise ValueError("Control characters are not allowed")
         return value.strip()

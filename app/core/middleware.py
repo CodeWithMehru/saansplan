@@ -11,12 +11,16 @@ from fastapi.responses import JSONResponse, Response
 from app.config import MAX_REQUEST_BYTES
 
 
-def _validate_request_limits(request: Request) -> JSONResponse | None:
-    """Validate request size and Content-Type."""
+def _check_content_length(request: Request) -> JSONResponse | None:
+    """Validate request size against MAX_REQUEST_BYTES."""
     content_length = request.headers.get("content-length")
     if content_length and int(content_length) > MAX_REQUEST_BYTES:
         return JSONResponse(status_code=413, content={"detail": "Request body is too large"})
+    return None
 
+
+def _check_api_content_type(request: Request) -> JSONResponse | None:
+    """Enforce application/json media type on API POST endpoints."""
     if request.method == "POST" and request.url.path.startswith("/api/"):
         content_type = request.headers.get("content-type", "")
         if "application/json" not in content_type.lower():
@@ -25,6 +29,11 @@ def _validate_request_limits(request: Request) -> JSONResponse | None:
                 content={"detail": "Unsupported Media Type: expected application/json"},
             )
     return None
+
+
+def _validate_request_limits(request: Request) -> JSONResponse | None:
+    """Validate request size and Content-Type."""
+    return _check_content_length(request) or _check_api_content_type(request)
 
 
 def _apply_security_headers(response: Response, request: Request) -> None:

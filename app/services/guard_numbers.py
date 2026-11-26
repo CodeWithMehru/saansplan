@@ -1,6 +1,7 @@
 """Number extraction, whitelist validation, and numeric grounding checks."""
 
 import re
+from collections.abc import Sequence
 from typing import Any
 
 from app.services.guard_wording import NOON, has_past_tense, has_raw_hour_zero, has_raw_units
@@ -31,19 +32,20 @@ def _round_variations(val: int | float) -> set[float]:
     return {float(val), round(float(val)), round(float(val), 1), float(int(val))}
 
 
-def _allowed_hours(engine: dict[str, Any]) -> set[float]:
-    """Extract peak and swap hours with their 12h and 24h clock representations."""
+def _extract_hour_values(source: dict[str, Any], keys: tuple[str, ...]) -> set[float]:
+    """Extract clock hours and their 12h/24h variations for designated keys."""
     values: set[float] = set()
-    for key in ("peak_hour", "highest_aqi_hour"):
-        val = engine.get(key)
+    for key in keys:
+        val = source.get(key)
         if isinstance(val, int | float):
             values.update(_to_12h_and_24h(val))
+    return values
 
-    top = engine.get("top_swap") or {}
-    for h_key in ("from_hour", "to_hour"):
-        h_val = top.get(h_key)
-        if isinstance(h_val, int | float):
-            values.update(_to_12h_and_24h(h_val))
+
+def _allowed_hours(engine: dict[str, Any]) -> set[float]:
+    """Extract peak and swap hours with their 12h and 24h clock representations."""
+    values = _extract_hour_values(engine, ("peak_hour", "highest_aqi_hour"))
+    values.update(_extract_hour_values(engine.get("top_swap") or {}, ("from_hour", "to_hour")))
     return values
 
 
@@ -57,18 +59,21 @@ def _allowed_aqi(engine: dict[str, Any]) -> set[float]:
     return values
 
 
+def _collect_numeric_variations(items: Sequence[Any]) -> set[float]:
+    """Extract rounded variations for all numbers in a sequence."""
+    values: set[float] = set()
+    for item in items:
+        if isinstance(item, int | float):
+            values.update(_round_variations(item))
+    return values
+
+
 def _allowed_saved_ug(cleaner: dict[str, Any]) -> set[float]:
     """Extract micrograms saved and uncertainty range values."""
-    values: set[float] = set()
-    saved_ug = cleaner.get("inhaled_saved_ug")
-    if isinstance(saved_ug, int | float):
-        values.update(_round_variations(saved_ug))
-
+    values = _collect_numeric_variations([cleaner.get("inhaled_saved_ug")])
     saved_range = cleaner.get("inhaled_saved_range_ug")
     if isinstance(saved_range, list | tuple) and len(saved_range) == EXPECTED_RANGE_LEN:
-        for r_val in saved_range:
-            if isinstance(r_val, int | float):
-                values.update(_round_variations(r_val))
+        values.update(_collect_numeric_variations(saved_range))
     return values
 
 

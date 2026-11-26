@@ -34,21 +34,25 @@ class BoundedTTLCache(Generic[T]):
         self._store.move_to_end(key)
         return value
 
+    def _evict_expired(self, now: float) -> None:
+        """Evict all entries that exceeded time-to-live."""
+        expired = [k for k, (t, _) in self._store.items() if now - t > self.ttl_seconds]
+        for k in expired:
+            del self._store[k]
+
+    def _evict_over_capacity(self) -> None:
+        """Evict oldest entries when storage size exceeds maximum capacity."""
+        while len(self._store) > self.max_size:
+            self._store.popitem(last=False)
+
     def set(self, key: str, value: T) -> None:
         """Store value, evicting expired or oldest items if capacity is exceeded."""
         now = time.monotonic()
         if key in self._store:
             self._store.move_to_end(key)
         self._store[key] = (now, value)
-
-        # Evict expired items first
-        keys_to_remove = [k for k, (t, _) in self._store.items() if now - t > self.ttl_seconds]
-        for k in keys_to_remove:
-            del self._store[k]
-
-        # Evict oldest if still over capacity
-        while len(self._store) > self.max_size:
-            self._store.popitem(last=False)
+        self._evict_expired(now)
+        self._evict_over_capacity()
 
     def clear(self) -> None:
         """Clear all cached entries."""

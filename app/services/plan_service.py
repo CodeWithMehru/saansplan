@@ -53,14 +53,19 @@ def default_routine(request: PlanRequest) -> Routine:
     )
 
 
+async def _parse_text_routine(text: str, parse_fn: Any, payload: PlanRequest) -> Routine:
+    """Parse text into routine using LLM parser with safe fallback."""
+    try:
+        return await asyncio.wait_for(parse_fn(text), timeout=6.0)
+    except Exception:  # noqa: BLE001  # Safe routine parsing fallback
+        return default_routine(payload)
+
+
 async def _resolve_routine(payload: PlanRequest, parse_routine_fn: Any = None) -> Routine:
     """Resolve routine from free text with LLM parser or return validated routine."""
-    parse_fn = parse_routine_fn or parse_routine
     if payload.routine_text.strip() and payload.routine is None:
-        try:
-            return await asyncio.wait_for(parse_fn(payload.routine_text), timeout=6.0)
-        except Exception:  # noqa: BLE001  # Safe routine parsing fallback
-            return default_routine(payload)
+        parse_fn = parse_routine_fn or parse_routine
+        return await _parse_text_routine(payload.routine_text, parse_fn, payload)
     return payload.routine or default_routine(payload)
 
 

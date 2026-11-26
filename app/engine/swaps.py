@@ -21,6 +21,30 @@ def reduce_fraction(before: float, after: float) -> float:
 SimContext = tuple[list[float | None], list[float | None], Sequence[FamilyMember]]
 
 
+def _find_cleanest_alternate_hour(current_hour: int, pm25: list[float]) -> int:
+    """Identify the hour of the day with lowest PM2.5 excluding current hour."""
+    cleanest_hour = 0
+    lowest_pm = float("inf")
+    for hour in range(24):
+        if hour == current_hour:
+            continue
+        level = pm25[hour] if hour < len(pm25) else 0.0
+        if level < lowest_pm:
+            lowest_pm = level
+            cleanest_hour = hour
+    return cleanest_hour
+
+
+def _shift_activity_start_hour(routine: Routine, label: str, new_hour: int) -> Routine:
+    """Create routine copy with designated activity shifted to new start hour."""
+    changed = deepcopy(routine)
+    for act in changed.activities:
+        if act.label == label:
+            act.start_hour = new_hour
+            break
+    return changed
+
+
 def _evaluate_outdoor_shift(
     activity: Activity,
     sim_ctx: SimContext,
@@ -30,11 +54,8 @@ def _evaluate_outdoor_shift(
 ) -> SwapRecommendation:
     """Evaluate shifting one outdoor activity to the lowest-pollution hour of the day."""
     pm25_hourly, aqi_hourly, members = sim_ctx
-    valid_hours = [hour for hour in range(24) if hour != activity.start_hour]
-    cleaner = min(valid_hours, key=lambda hour: pm25[hour] if hour < len(pm25) else 0.0)
-    changed = deepcopy(routine)
-    target = next(item for item in changed.activities if item.label == activity.label)
-    target.start_hour = cleaner
+    cleaner = _find_cleanest_alternate_hour(activity.start_hour, pm25)
+    changed = _shift_activity_start_hour(routine, activity.label, cleaner)
     reduced = simulate_exposure(pm25_hourly, aqi_hourly, members, changed)
     return SwapRecommendation(
         key="shift_activity",
