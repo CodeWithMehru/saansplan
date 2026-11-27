@@ -6,7 +6,9 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "node",
-    "strict": false
+    "strict": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": ["app/static/js/**/*"]
 }

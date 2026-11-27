@@ -105,3 +105,5 @@ Structural and design decisions are formally documented in `docs/adr/`:
 - [ADR 0002: Deterministic Grounding Guards and Safety Interception](adr/0002-deterministic-grounding-guards.md)
 - [ADR 0003: Frozen Typed Domain Models and Dict Invariance](adr/0003-frozen-domain-models.md)
 - [ADR 0004: WCAG 2.2 AA Accessibility and Multilingual Inclusion](adr/0004-wcag-accessibility.md)
+- [ADR 0005: Split Domain Models by Bounded Context](adr/0005-split-domain-models.md)
+- [ADR 0006: Typed External Plan Dependencies](adr/0006-typed-plan-dependencies.md)
