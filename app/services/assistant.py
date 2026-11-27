@@ -5,17 +5,21 @@ import json
 import logging
 from typing import Any
 
+import httpx
+
 from app.core.constants import DEFAULT_FORECAST_DAYS, HOURS_IN_DAY
 from app.services.air_quality import fetch_air_quality
 from app.services.assistant_grounding import (
-    _ensure_cpcb_breakpoint_entry as _ensure_cpcb_bp_res,
-)
-from app.services.assistant_grounding import (
+    AssistantResult,
+    SafetyResult,
     _is_valid_hour,
     build_deterministic_fallback,
     check_safety,
     extract_hour,
     extract_room_size_sqft,
+)
+from app.services.assistant_grounding import (
+    _ensure_cpcb_breakpoint_entry as _ensure_cpcb_bp_res,
 )
 from app.services.assistant_grounding import (
     resolve_cadr as _resolve_cadr_resolver,
@@ -69,7 +73,16 @@ async def _fetch_today_pm25(lat: float, lon: float, client: Any, fetch_aq: Any) 
         if isinstance(pm25, list):
             return [float(v) for v in pm25[:HOURS_IN_DAY] if v is not None]
         return []
-    except Exception:  # noqa: BLE001  # Safe air quality slice fallback
+    except (
+        httpx.HTTPError,
+        TimeoutError,
+        RuntimeError,
+        ValueError,
+        KeyError,
+        TypeError,
+        AttributeError,
+        json.JSONDecodeError,
+    ):
         return []
 
 
@@ -87,7 +100,7 @@ def _format_assistant_payload(
     )
 
 
-def _parse_assistant_response(raw: str, entries: list[dict[str, Any]]) -> dict[str, Any] | None:
+def _parse_assistant_response(raw: str, entries: list[dict[str, Any]]) -> AssistantResult | None:
     """Parse raw LLM JSON response and extract answer and citation ids."""
     try:
         parsed = json.loads(raw)
@@ -105,7 +118,7 @@ async def _call_groq_assistant(
     engine_facts: dict[str, Any],
     entries: list[dict[str, Any]],
     chat: Any,
-) -> dict[str, Any] | None:
+) -> AssistantResult | None:
     """Send structured facts to Groq and parse response."""
     system = (
         "You are SaansPlan's grounded air-quality assistant. Answer using ONLY "
@@ -120,7 +133,14 @@ async def _call_groq_assistant(
     try:
         raw = await asyncio.wait_for(chat(system, user_payload, 0.2), timeout=8.0)
         return _parse_assistant_response(raw, entries)
-    except Exception as err:  # noqa: BLE001  # Safe assistant generation fallback
+    except (
+        httpx.HTTPError,
+        TimeoutError,
+        RuntimeError,
+        ValueError,
+        KeyError,
+        json.JSONDecodeError,
+    ) as err:
         logger.warning("Groq ask generation fallback: %s", err)
     return None
 
@@ -162,7 +182,7 @@ async def _assemble_assistant_context(
     return engine_facts, room_sqft, cadr_cfm, asked_hour, walk_info, loc_city
 
 
-def _preliminary_check(question: str) -> dict[str, Any] | None:
+def _preliminary_check(question: str) -> AssistantResult | None:
     """Perform early exit validation for empty questions or clinical symptoms."""
     q_clean = question.strip()
     if not q_clean:
@@ -180,7 +200,7 @@ async def answer_question(
     client: Any = None,
     chat_fn: Any = None,
     fetch_aq_fn: Any = None,
-) -> dict[str, Any]:
+) -> AssistantResult:
     """Provide grounded answer to an air-quality question."""
     prelim = _preliminary_check(question)
     if prelim:
@@ -205,6 +225,8 @@ async def answer_question(
 
 
 __all__ = [
+    "AssistantResult",
+    "SafetyResult",
     "_ensure_cpcb_breakpoint_entry",
     "_is_valid_hour",
     "answer_question",

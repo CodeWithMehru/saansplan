@@ -7,8 +7,12 @@ cleaner day optimization, and grounded LLM explanation generation.
 from __future__ import annotations
 
 import asyncio
+import json
 from dataclasses import dataclass
 from typing import Any
+
+import httpx
+from pydantic import ValidationError
 
 from app.core.constants import DEFAULT_FORECAST_DAYS, HOURS_IN_DAY
 from app.engine.alternatives import indoor_hacks, sustainable_alternatives
@@ -58,7 +62,15 @@ async def _parse_text_routine(text: str, parse_fn: Any, payload: PlanRequest) ->
     """Parse text into routine using LLM parser with safe fallback."""
     try:
         return await asyncio.wait_for(parse_fn(text), timeout=6.0)
-    except Exception:  # noqa: BLE001  # Safe routine parsing fallback
+    except (
+        httpx.HTTPError,
+        TimeoutError,
+        RuntimeError,
+        ValueError,
+        KeyError,
+        json.JSONDecodeError,
+        ValidationError,
+    ):
         return default_routine(payload)
 
 
@@ -123,7 +135,14 @@ async def _generate_explanation(
         res: Any = await asyncio.wait_for(fn(engine, language), timeout=15.0)
         out = res.to_dict() if hasattr(res, "to_dict") else res
         return dict(out)
-    except Exception:  # noqa: BLE001  # Safe explanation fallback
+    except (
+        httpx.HTTPError,
+        TimeoutError,
+        RuntimeError,
+        ValueError,
+        KeyError,
+        json.JSONDecodeError,
+    ):
         return {
             "explanation": "AI explanation unavailable. Deterministic engine estimates are ready.",
             "ai_available": False,

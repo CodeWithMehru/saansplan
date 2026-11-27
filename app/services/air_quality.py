@@ -1,6 +1,7 @@
 """Open-Meteo air-quality and atmospheric dispersion fetcher with TTL cache and single-flight."""
 
 import asyncio
+import json
 from typing import Any
 
 import httpx
@@ -103,7 +104,7 @@ async def _fetch_with_client(
 
             aq_resp.raise_for_status()
             return _parse_air_quality_payload(aq_resp.json(), w_resp, forecast_days)
-        except Exception as error:  # noqa: BLE001  # Safe retry boundary
+        except (httpx.HTTPError, json.JSONDecodeError, KeyError, ValueError) as error:
             last_error = error
             if attempt < OUTBOUND_RETRIES:
                 await asyncio.sleep(0.2 * (2**attempt))

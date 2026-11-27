@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import time
 from collections import OrderedDict
 from collections.abc import Awaitable, Callable
 from typing import Generic, TypeVar
+
+import httpx
 
 T = TypeVar("T")
 
@@ -90,7 +93,15 @@ class BoundedTTLCache(Generic[T]):
             self.set(key, res)
             if not future.done():
                 future.set_result(res)
-        except Exception as exc:  # noqa: BLE001  # Safe future error propagation boundary
+        except (
+            httpx.HTTPError,
+            TimeoutError,
+            RuntimeError,
+            ValueError,
+            KeyError,
+            json.JSONDecodeError,
+            OSError,
+        ) as exc:
             if not future.done():
                 future.set_exception(exc)
         finally:

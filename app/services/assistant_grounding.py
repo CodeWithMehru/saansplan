@@ -1,11 +1,22 @@
 """Deterministic resolvers and fallback generators for assistant Q&A."""
 
 import re
-from typing import Any
+from typing import Any, TypedDict
 
 from app.core.aqi import indian_aqi_category
 from app.engine.indoor_guidance import SQFT_PER_SQM, calculate_purifier_cadr
 from app.services.kb import KnowledgeBase
+
+
+class AssistantResult(TypedDict):
+    """Normalized assistant response structure."""
+
+    answer: str
+    kb_ids: list[str]
+    safety_redirect: bool
+
+
+SafetyResult = AssistantResult
 
 NOON_HOUR = 12
 MIDNIGHT_HOUR = 0
@@ -109,7 +120,7 @@ def extract_hour(text: str) -> int | None:
     return _extract_hindi_hour(text)
 
 
-def check_safety(q_lower: str) -> dict[str, Any] | None:
+def check_safety(q_lower: str) -> SafetyResult | None:
     """Intercept acute medical symptoms and injection attempts."""
     if any(term in q_lower for term in SYMPTOM_TERMS):
         return {
@@ -218,7 +229,7 @@ def resolve_walk(
     }
 
 
-def _fallback_cadr(room_sqft: float, cadr_cfm: int) -> dict[str, Any]:
+def _fallback_cadr(room_sqft: float, cadr_cfm: int) -> AssistantResult:
     """Return deterministic fallback for purifier sizing queries."""
     cadr_m3h = round(cadr_cfm * 1.699)
     return {
@@ -231,7 +242,7 @@ def _fallback_cadr(room_sqft: float, cadr_cfm: int) -> dict[str, Any]:
     }
 
 
-def _fallback_walk(asked_hour: int, walk_info: dict[str, Any] | None, city: str) -> dict[str, Any]:
+def _fallback_walk(asked_hour: int, walk_info: dict[str, Any] | None, city: str) -> AssistantResult:
     """Return deterministic fallback for walk / outdoor safety queries."""
     h12 = (
         f"{asked_hour - NOON_HOUR} pm"
@@ -255,7 +266,7 @@ def _fallback_walk(asked_hour: int, walk_info: dict[str, Any] | None, city: str)
     }
 
 
-def _try_fallback_cadr(room_sqft: float | None, cadr_cfm: int | None) -> dict[str, Any] | None:
+def _try_fallback_cadr(room_sqft: float | None, cadr_cfm: int | None) -> AssistantResult | None:
     """Build CADR fallback if both square footage and CADR are available."""
     if room_sqft is not None and cadr_cfm is not None:
         return _fallback_cadr(room_sqft, cadr_cfm)
@@ -264,14 +275,14 @@ def _try_fallback_cadr(room_sqft: float | None, cadr_cfm: int | None) -> dict[st
 
 def _try_fallback_walk(
     asked_hour: int | None, walk_info: dict[str, Any] | None, city: str
-) -> dict[str, Any] | None:
+) -> AssistantResult | None:
     """Build walk advisory fallback if hour is available."""
     if asked_hour is not None:
         return _fallback_walk(asked_hour, walk_info, city)
     return None
 
 
-def _fallback_generic_or_entry(entries: list[dict[str, Any]]) -> dict[str, Any]:
+def _fallback_generic_or_entry(entries: list[dict[str, Any]]) -> AssistantResult:
     """Return top retrieved entry or general CPCB advisory fallback."""
     if entries:
         return {
@@ -290,7 +301,7 @@ def build_deterministic_fallback(
     cadr_data: tuple[float | None, int | None],
     walk_data: tuple[int | None, dict[str, Any] | None, str],
     entries: list[dict[str, Any]],
-) -> dict[str, Any]:
+) -> AssistantResult:
     """Return verified deterministic fallback answer when model call fails."""
     cadr_fb = _try_fallback_cadr(cadr_data[0], cadr_data[1])
     if cadr_fb:

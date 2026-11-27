@@ -9,6 +9,7 @@ from app.core.settings import Settings, get_settings
 from app.schemas.ask import AskRequest
 from app.services.air_quality import fetch_air_quality
 from app.services.assistant import (
+    AssistantResult,
     answer_question,
     build_deterministic_fallback,
     check_safety,
@@ -30,6 +31,7 @@ _resolve_walk = resolve_walk
 _build_deterministic_fallback = build_deterministic_fallback
 
 __all__ = [
+    "AssistantResult",
     "_build_deterministic_fallback",
     "_check_safety",
     "_resolve_cadr",
@@ -53,10 +55,11 @@ async def ask(
 ) -> dict[str, Any]:
     """Provide grounded answers using server-side engine facts, KB entries, and Groq."""
     client = getattr(request.app.state, "http_client", None)
-    return await answer_question(
+    res = await answer_question(
         question=payload.question,
         location=(payload.latitude, payload.longitude, payload.city),
         client=client,
         chat_fn=groq_chat,
         fetch_aq_fn=fetch_air_quality,
     )
+    return dict(res)

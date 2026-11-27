@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from typing import Any
 
 import httpx
@@ -48,7 +49,7 @@ async def _fetch_geocode_with_retry(
                 payload = response.json()
                 results = payload.get("results", [])
                 return _filter_safe_geocode_results(results) if results else []
-            except Exception as error:  # noqa: BLE001  # Safe retry boundary
+            except (httpx.HTTPError, json.JSONDecodeError, KeyError, ValueError) as error:
                 last_error = error
                 if attempt < OUTBOUND_RETRIES:
                     await asyncio.sleep(0.25 * (2**attempt))

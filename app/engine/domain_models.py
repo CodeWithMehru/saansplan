@@ -326,8 +326,26 @@ class PersonaMember(FrozenDomainModel):
     """Preset family member entry."""
 
     name: str
-    ageGroup: str  # noqa: N815
+    age_group: str
     sensitive: bool
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert dataclass ensuring camelCase ageGroup in serialized output."""
+        return {
+            "name": self.name,
+            "ageGroup": self.age_group,
+            "sensitive": self.sensitive,
+        }
+
+    def __getitem__(self, key: str) -> Any:
+        if key == "ageGroup":
+            return self.age_group
+        return super().__getitem__(key)
+
+    def get(self, key: str, default: Any = None) -> Any:
+        if key == "ageGroup":
+            return self.age_group
+        return super().get(key, default)
 
 
 @dataclass(frozen=True)
@@ -346,6 +364,23 @@ class PersonaPreset(FrozenDomainModel):
     windows: str
     purifier: bool
     budget: str
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert preset and its member objects to primitive dictionary."""
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "members": [m.to_dict() if hasattr(m, "to_dict") else m for m in self.members],
+            "routine_text": self.routine_text,
+            "commute": self.commute,
+            "outdoor_minutes": self.outdoor_minutes,
+            "cooking": self.cooking,
+            "heating": self.heating,
+            "windows": self.windows,
+            "purifier": self.purifier,
+            "budget": self.budget,
+        }
 
 
 @dataclass(frozen=True)

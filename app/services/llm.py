@@ -76,7 +76,14 @@ async def groq_chat(
         for attempt in range(OUTBOUND_RETRIES + 1):
             try:
                 return await _execute_groq_request(client, headers, payload)
-            except Exception as error:  # noqa: BLE001  # Outbound API retry boundary
+            except (
+                httpx.HTTPError,
+                json.JSONDecodeError,
+                KeyError,
+                ValueError,
+                IndexError,
+                RuntimeError,
+            ) as error:
                 last_error = error
                 logger.warning("groq_chat attempt %d failed: %r", attempt, error)
                 if attempt < OUTBOUND_RETRIES:
@@ -210,7 +217,14 @@ async def explain_with_fallback(
             valid_text = _parse_and_validate_llm_text(raw, engine)
             if valid_text:
                 return ExplanationResult(explanation=valid_text, ai_available=True)
-        except Exception as exc:  # noqa: BLE001  # Safe LLM retry boundary
+        except (
+            httpx.HTTPError,
+            TimeoutError,
+            RuntimeError,
+            ValueError,
+            KeyError,
+            json.JSONDecodeError,
+        ) as exc:
             logger.warning("Groq call exception: %s", exc)
             continue
     fallback_text = templated_explanation(engine, language)

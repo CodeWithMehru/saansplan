@@ -13,8 +13,8 @@ def get_personas() -> dict[str, PersonaPreset]:
             name="Working Parents & School Children",
             description="Busy family with morning school drop-off and daily office transit.",
             members=[
-                PersonaMember(name="Parent 1", ageGroup="adult", sensitive=False),
-                PersonaMember(name="Child", ageGroup="child", sensitive=True),
+                PersonaMember(name="Parent 1", age_group="adult", sensitive=False),
+                PersonaMember(name="Child", age_group="child", sensitive=True),
             ],
             routine_text=(
                 "Subah 7:30 bache ko school drop karte hain, 9 baje metro se office, "
@@ -33,8 +33,8 @@ def get_personas() -> dict[str, PersonaPreset]:
             name="Senior Citizen / Elderly at Home",
             description="Retired grandparents with respiratory sensitivity and high indoor hours.",
             members=[
-                PersonaMember(name="Grandparent", ageGroup="elderly", sensitive=True),
-                PersonaMember(name="Caregiver", ageGroup="adult", sensitive=False),
+                PersonaMember(name="Grandparent", age_group="elderly", sensitive=True),
+                PersonaMember(name="Caregiver", age_group="adult", sensitive=False),
             ],
             routine_text=(
                 "Dada ji din bhar ghar pe rehte hain, subah balcony me baithte hain, "
@@ -53,7 +53,7 @@ def get_personas() -> dict[str, PersonaPreset]:
             name="Student / Hostel Resident",
             description="University student walking between hostel, library, and campus mess.",
             members=[
-                PersonaMember(name="Student", ageGroup="adult", sensitive=False),
+                PersonaMember(name="Student", age_group="adult", sensitive=False),
             ],
             routine_text=(
                 "College campus me subah 8 baje class ke liye walk karta hoon, "
@@ -72,7 +72,7 @@ def get_personas() -> dict[str, PersonaPreset]:
             name="Outdoor Worker / Delivery Rider",
             description="Gig delivery partner or outdoor worker with 6+ hours street exposure.",
             members=[
-                PersonaMember(name="Rider", ageGroup="adult", sensitive=False),
+                PersonaMember(name="Rider", age_group="adult", sensitive=False),
             ],
             routine_text=(
                 "Subah 10 baje se shaam 6 baje tak bike pe deliveries karta hoon busy roads pe."

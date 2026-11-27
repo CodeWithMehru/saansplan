@@ -63,3 +63,14 @@ def test_exposure_vehicle_and_interpolation_calculation() -> None:
     vals, interp = interpolate_hourly([None, None])
     assert vals == [0.0, 0.0]
     assert interp == [True, True]
+
+
+def test_persona_member_attribute_access() -> None:
+    """Verify PersonaMember dictionary-like subscript and fallback retrieval."""
+    from app.engine.domain_models import PersonaMember
+
+    m = PersonaMember(name="Test", age_group="adult", sensitive=False)
+    assert m["ageGroup"] == "adult"
+    assert m["name"] == "Test"
+    assert m.get("ageGroup") == "adult"
+    assert m.get("missing", "default") == "default"
