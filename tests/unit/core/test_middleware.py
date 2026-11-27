@@ -59,6 +59,27 @@ def test_apply_security_headers() -> None:
     assert response.headers["X-Request-ID"] == "test-req-123"
 
 
+def test_apply_security_headers_sanitizes_crlf_and_invalid_request_id() -> None:
+    """Ensure invalid, CRLF injection, or oversized X-Request-ID defaults to local."""
+    # CRLF injection in raw ASGI header
+    req_crlf = Request({"type": "http", "headers": [(b"x-request-id", b"bad\r\ninjection")]})
+    resp_crlf = Response(content="ok")
+    _apply_security_headers(resp_crlf, req_crlf)
+    assert resp_crlf.headers["X-Request-ID"] == "local"
+
+    # Non-ASCII raw bytes
+    req_unicode = Request({"type": "http", "headers": [(b"x-request-id", b"req-\xf0\x9f\x94\xa5")]})
+    resp_unicode = Response(content="ok")
+    _apply_security_headers(resp_unicode, req_unicode)
+    assert resp_unicode.headers["X-Request-ID"] == "local"
+
+    # Oversized > 64 chars
+    req_long = Request({"type": "http", "headers": [(b"x-request-id", b"a" * 65)]})
+    resp_long = Response(content="ok")
+    _apply_security_headers(resp_long, req_long)
+    assert resp_long.headers["X-Request-ID"] == "local"
+
+
 def test_apply_cache_headers_static_and_dynamic() -> None:
     """Static assets get public cache headers and dynamic routes get no-store."""
     static_resp = Response(content=b"test-asset")

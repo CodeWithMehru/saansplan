@@ -1,15 +1,15 @@
 # Test & Verification Report
 
-Generated automatically on: `2026-11-27 13:27:02 UTC`
+Generated automatically on: `2026-11-27 13:48:32 UTC`
 
 ## System Verification Summary
 
 | Category | Target / Requirement | Measured Result | Status |
 |---|---|---|---|
-| **Engine Execution Speed** | < 50 ms (6 members) | `3.73 ms` | ✅ PASS |
-| **Interpolation Throughput** | 1000 runs < 200 ms | `54.26 ms` | ✅ PASS |
+| **Engine Execution Speed** | < 50 ms (6 members) | `3.7 ms` | ✅ PASS |
+| **Interpolation Throughput** | 1000 runs < 200 ms | `44.39 ms` | ✅ PASS |
 | **Static Bundle Size** | < 60 KB gzipped | `39.95 KB` (raw: 126.12 KB) | ✅ PASS |
-| **Overall Test Coverage** | ≥ 95% enforced | `99.28%` (272 passed) | ✅ PASS |
+| **Overall Test Coverage** | ≥ 95% enforced | `99.37%` (275 passed) | ✅ PASS |
 | **Engine Test Coverage** | ≥ 95% target | `99.42%` | ✅ PASS |
 | **Hermetic Execution** | No secrets/network | Hermetic clean | ✅ PASS |
 | **Axe Accessibility Audit** | 0 WCAG 2.2 AA violations | 0 violations (56 rules) | ✅ PASS |

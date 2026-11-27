@@ -132,3 +132,46 @@ def test_oversized_payload_rejected_with_413() -> None:
     )
     assert resp.status_code == 413
     assert "Request body is too large" in resp.json()["detail"]
+
+
+def test_request_id_sanitization() -> None:
+    """Ensure incoming X-Request-ID is validated and sanitized against injection."""
+    # 1. Valid alphanumeric/allowed punctuation is preserved
+    resp_valid = client.get("/health", headers={"X-Request-ID": "req-123_abc.xyz"})
+    assert resp_valid.headers.get("X-Request-ID") == "req-123_abc.xyz"
+
+    # 2. Invalid characters (spaces, semicolons, quotes) are reset to default
+    resp_invalid_chars = client.get("/health", headers={"X-Request-ID": "bad id with spaces"})
+    assert resp_invalid_chars.headers.get("X-Request-ID") == "local"
+
+    resp_semi = client.get("/health", headers={"X-Request-ID": "bad;semi"})
+    assert resp_semi.headers.get("X-Request-ID") == "local"
+
+    # 3. Oversized (>64 chars) is rejected and reset to default
+    resp_oversized = client.get("/health", headers={"X-Request-ID": "a" * 65})
+    assert resp_oversized.headers.get("X-Request-ID") == "local"
+
+    # 4. Missing header defaults to local
+    resp_missing = client.get("/health")
+    assert resp_missing.headers.get("X-Request-ID") == "local"
+
+
+def test_invalid_content_length_rejected_with_400() -> None:
+    """Verify non-numeric or negative Content-Length returns 400 Bad Request."""
+    # 1. Non-numeric Content-Length
+    resp_non_numeric = client.post(
+        "/api/plan",
+        content='{"routine": "test"}',
+        headers={"Content-Type": "application/json", "Content-Length": "not-an-int"},
+    )
+    assert resp_non_numeric.status_code == 400
+    assert resp_non_numeric.json()["detail"] == "Invalid Content-Length header"
+
+    # 2. Negative Content-Length
+    resp_negative = client.post(
+        "/api/plan",
+        content='{"routine": "test"}',
+        headers={"Content-Type": "application/json", "Content-Length": "-42"},
+    )
+    assert resp_negative.status_code == 400
+    assert resp_negative.json()["detail"] == "Invalid Content-Length header"

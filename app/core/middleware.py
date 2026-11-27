@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 from collections.abc import Awaitable, Callable
 
 from fastapi import Request
@@ -10,12 +11,30 @@ from fastapi.responses import JSONResponse, Response
 
 from app.core.constants import MAX_REQUEST_BYTES
 
+REQUEST_ID_REGEX = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
+
 
 def _check_content_length(request: Request) -> JSONResponse | None:
     """Validate request size against MAX_REQUEST_BYTES."""
     content_length = request.headers.get("content-length")
-    if content_length and int(content_length) > MAX_REQUEST_BYTES:
-        return JSONResponse(status_code=413, content={"detail": "Request body is too large"})
+    if content_length is not None:
+        try:
+            length = int(content_length)
+        except (ValueError, TypeError):
+            return JSONResponse(
+                status_code=400,
+                content={"detail": "Invalid Content-Length header"},
+            )
+        if length < 0:
+            return JSONResponse(
+                status_code=400,
+                content={"detail": "Invalid Content-Length header"},
+            )
+        if length > MAX_REQUEST_BYTES:
+            return JSONResponse(
+                status_code=413,
+                content={"detail": "Request body is too large"},
+            )
     return None
 
 
@@ -55,7 +74,9 @@ def _apply_security_headers(response: Response, request: Request) -> None:
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
     response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
-    response.headers["X-Request-ID"] = request.headers.get("x-request-id", "local")
+    raw_req_id = request.headers.get("x-request-id", "")
+    req_id = raw_req_id if REQUEST_ID_REGEX.match(raw_req_id) else "local"
+    response.headers["X-Request-ID"] = req_id
 
 
 def _apply_cache_headers(response: Response, path: str) -> None:
