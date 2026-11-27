@@ -66,9 +66,7 @@ def resolve_cadr(
 
 
 def resolve_walk(
-    asked_hour: int | None,
-    today_pm25: list[float],
-    entries: list[KBEntry],
+    asked_hour: int | None, today_pm25: list[float], entries: list[KBEntry]
 ) -> WalkInfo | None:
     """Evaluate outdoor conditions with global KB instance."""
     return _resolve_walk_resolver(asked_hour, today_pm25, entries, kb=_kb_instance)
@@ -162,9 +160,7 @@ async def _call_groq_assistant(
 
 
 def _build_engine_facts(
-    city: str,
-    cadr_info: CadrInfo | None,
-    walk_info: WalkInfo | None,
+    city: str, cadr_info: CadrInfo | None, walk_info: WalkInfo | None
 ) -> dict[str, object]:
     """Assemble location and domain calculation facts for prompt injection."""
     facts: dict[str, object] = {"city": city}
@@ -183,10 +179,9 @@ async def _assemble_assistant_context(
     entries: list[KBEntry],
 ) -> tuple[dict[str, object], float | None, int | None, int | None, WalkInfo | None, str]:
     """Assemble atmospheric context, CADR sizing, and walk conditions."""
-    req_lat, req_lon, req_city = location
-    lat = req_lat or DEFAULT_LATITUDE
-    lon = req_lon or DEFAULT_LONGITUDE
-    loc_city = req_city or DEFAULT_CITY
+    lat = location[0] or DEFAULT_LATITUDE
+    lon = location[1] or DEFAULT_LONGITUDE
+    loc_city = location[2] or DEFAULT_CITY
 
     today_pm25 = await _fetch_today_pm25(lat, lon, client, fetch_aq)
     room_sqft = extract_room_size_sqft(q_clean)
@@ -227,10 +222,8 @@ async def answer_question(
     fetch_aq = fetch_aq_fn or fetch_air_quality
 
     entries = _kb_instance.retrieve(q_clean, limit=2, threshold=3)
-    facts, room_sqft, cadr_cfm, asked_h, walk_info, loc_city = await _assemble_assistant_context(
-        q_clean, location, client, fetch_aq, entries
-    )
-
+    ctx = await _assemble_assistant_context(q_clean, location, client, fetch_aq, entries)
+    facts, room_sqft, cadr_cfm, asked_h, walk_info, loc_city = ctx
     llm_res = await _call_groq_assistant(q_clean, facts, entries, chat)
     if llm_res:
         return llm_res

@@ -21,7 +21,6 @@ from app.engine.cleaner_day import generate_cleaner_day
 from app.engine.emissions import calculate_emissions_and_cost
 from app.engine.exposure import simulate_exposure
 from app.engine.exposure_models import ExposureResult
-from app.engine.forecast import analyze_forecast
 from app.engine.swaps import generate_swaps
 from app.schemas.family import FamilyMember
 from app.schemas.plan import PlanRequest
@@ -29,14 +28,14 @@ from app.schemas.routine import Routine
 from app.services.air_quality import fetch_air_quality
 from app.services.llm import explain_with_fallback, parse_routine
 from app.services.plan_builder import (
-    PlanExecutionArtifacts,
+    PipelineOutputs,
     build_community_payload,
     build_indoor_module,
+    build_plan_artifacts,
     default_routine,
     extract_aqi_series,
     extract_pm25_series,
     extract_primary_commute,
-    extract_wind_series,
     format_plan_response,
 )
 
@@ -186,37 +185,23 @@ async def execute_plan_pipeline(
     cleaner_day_dict, emissions_dict = _compute_cleaner_and_emissions(air, routine, payload.members)
     engine["cleaner_day"] = cleaner_day_dict
 
-    pm25_list = extract_pm25_series(air)
-    wind_list = extract_wind_series(air)
-    forecast_days = analyze_forecast(pm25_list, wind_list, forecast_days=DEFAULT_FORECAST_DAYS)
-
-    peak_aqi_raw = engine.get("peak_aqi", 250)
-    peak_aqi = int(peak_aqi_raw) if isinstance(peak_aqi_raw, int | float | str) else 250
-    category = str(engine.hourly[0].indian_category) if engine.hourly else "Poor"
-    community = build_community_payload(
-        payload.city, peak_aqi, category, swaps_dicts, cleaner_day_dict
-    )
     explanation = await _generate_explanation(
         engine, payload.language, explain_fn=resolved_deps.explain_fn
     )
 
-    artifacts = PlanExecutionArtifacts(
-        payload=payload,
-        air=air,
-        engine=engine,
+    outputs = PipelineOutputs(
         swaps_dicts=swaps_dicts,
-        forecast_days=forecast_days,
         cleaner_day_dict=cleaner_day_dict,
         emissions_dict=emissions_dict,
-        community=community,
         explanation=explanation,
     )
-
+    artifacts = build_plan_artifacts(payload, air, engine, outputs)
     return format_plan_response(artifacts)
 
 
 resolve_routine = _resolve_routine
 generate_explanation = _generate_explanation
+_build_artifacts = build_plan_artifacts
 _build_community_payload = build_community_payload
 _build_indoor_module = build_indoor_module
 _extract_primary_commute = extract_primary_commute
@@ -225,7 +210,9 @@ __all__ = [
     "ExplainFn",
     "FetchAirQualityFn",
     "ParseRoutineFn",
+    "PipelineOutputs",
     "PlanDependencies",
+    "_build_artifacts",
     "_build_community_payload",
     "_build_indoor_module",
     "_extract_primary_commute",

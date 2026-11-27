@@ -58,6 +58,28 @@ def _build_request_params(
     return params, weather_params
 
 
+def _extract_series_floats(
+    hourly: Mapping[str, object], key: str, fallback_len: int
+) -> list[float | None]:
+    """Extract float series with None fallback from hourly payload dictionary."""
+    raw = hourly.get(key)
+    if isinstance(raw, list):
+        return [float(v) if isinstance(v, int | float) else None for v in raw]
+    return [None] * fallback_len
+
+
+def _extract_wind_speeds(w_resp: httpx.Response | None) -> list[float | None] | None:
+    """Extract wind speed series from auxiliary weather response if successful."""
+    if not (isinstance(w_resp, httpx.Response) and w_resp.status_code == HTTP_STATUS_OK):
+        return None
+    w_json = w_resp.json()
+    w_hourly = w_json.get("hourly", {}) if isinstance(w_json, dict) else {}
+    ws_raw = w_hourly.get("wind_speed_10m")
+    if isinstance(ws_raw, list):
+        return [float(v) if isinstance(v, int | float) else None for v in ws_raw]
+    return None
+
+
 def _parse_air_quality_payload(
     payload: Mapping[str, object],
     w_resp: httpx.Response | None,
@@ -67,29 +89,14 @@ def _parse_air_quality_payload(
     total_expected_hours = forecast_days * HOURS_IN_DAY
     hourly_raw = payload.get("hourly")
     hourly: Mapping[str, object] = hourly_raw if isinstance(hourly_raw, Mapping) else {}
-    pm25_raw = hourly.get("pm2_5")
-    pm25: list[float | None] = (
-        [float(v) if isinstance(v, int | float) else None for v in pm25_raw]
-        if isinstance(pm25_raw, list)
-        else [None] * total_expected_hours
-    )
-    aqi_raw = hourly.get("us_aqi")
-    aqi: list[float | None] = (
-        [float(v) if isinstance(v, int | float) else None for v in aqi_raw]
-        if isinstance(aqi_raw, list)
-        else [None] * total_expected_hours
-    )
+
+    pm25 = _extract_series_floats(hourly, "pm2_5", total_expected_hours)
+    aqi = _extract_series_floats(hourly, "us_aqi", total_expected_hours)
+
     times_raw = hourly.get("time")
-    times: list[str] = [str(t) for t in times_raw] if isinstance(times_raw, list) else []
+    times = [str(t) for t in times_raw] if isinstance(times_raw, list) else []
 
-    wind_speeds: list[float | None] | None = None
-    if isinstance(w_resp, httpx.Response) and w_resp.status_code == HTTP_STATUS_OK:
-        w_json = w_resp.json()
-        w_hourly = w_json.get("hourly", {}) if isinstance(w_json, dict) else {}
-        ws_raw = w_hourly.get("wind_speed_10m")
-        if isinstance(ws_raw, list):
-            wind_speeds = [float(v) if isinstance(v, int | float) else None for v in ws_raw]
-
+    wind_speeds = _extract_wind_speeds(w_resp)
     tz_val = payload.get("timezone", "Asia/Kolkata")
     tz_str = str(tz_val) if tz_val is not None else "Asia/Kolkata"
 

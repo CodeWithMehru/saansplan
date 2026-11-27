@@ -1,7 +1,7 @@
 # Code Quality & Maintainability Report
 
 **Evaluation Date:** November 2026<br>
-**Audited Directory:** `app/` (47 source files)<br>
+**Audited Directory:** `app/` (58 source files)<br>
 **Tools Applied:** Radon (Cyclomatic Complexity & MI), Interrogate, Ruff, Mypy Strict
 
 ---
@@ -10,10 +10,10 @@
 
 | Metric | Measured Result | Benchmark / Requirement | Status |
 |---|---|---|---|
-| **Average Cyclomatic Complexity** | `Rank A (2.38)` | Rank A (≤ 3.5) | ✅ PASS |
+| **Average Cyclomatic Complexity** | `Rank A (2.48)` | Rank A (≤ 3.5) | ✅ PASS |
 | **Maximum Function Complexity** | `6` (`groq_chat (llm.py)`) | ≤ 7 | ✅ PASS |
-| **Docstring Coverage (Interrogate/AST)** | `100.0% (305/305 items documented)` | ≥ 95% | ✅ PASS |
-| **Type Check Strictness (Mypy)** | `0 errors` (47 files) | `--strict` | ✅ PASS |
+| **Docstring Coverage (Interrogate/AST)** | `100.0% (332/332 items documented)` | ≥ 95% | ✅ PASS |
+| **Type Check Strictness (Mypy)** | `0 errors` (58 files) | `--strict` | ✅ PASS |
 | **Linter Checks (Ruff)** | `0 violations` | Clean | ✅ PASS |
 | **Code Duplication** | `0.00%` | < 3% | ✅ PASS |
 | **Longest Python File in `app/`** | `app/services/assistant.py` (249 lines) | Service logic | ✅ PASS |
@@ -35,7 +35,8 @@
   - Eliminated backward-compatibility facade shims.
 
 - **Frozen Domain Models & Value Types:**
-  - Dedicated bounded-context model modules under `app/engine/*_models.py` and `app/engine/base_model.py` using frozen dataclasses for immutability.
+  - Dedicated bounded-context model modules under `app/engine/*_models.py`
+    using frozen dataclasses for immutability.
   - Centralized domain enums in `app/schemas/enums.py` (`CPCBCategory`, `BudgetTier`).
 
 ## 3. Tooling Verification Commands

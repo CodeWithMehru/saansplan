@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
+from app.core.constants import DEFAULT_FORECAST_DAYS
 from app.engine.assistant_models import AirQualityData
 from app.engine.community import (
     generate_whatsapp_share_url,
@@ -12,6 +13,7 @@ from app.engine.community import (
     get_school_day_advisory,
 )
 from app.engine.exposure_models import ExposureResult
+from app.engine.forecast import analyze_forecast
 from app.engine.forecast_models import ForecastDay
 from app.engine.indoor_guidance import (
     calculate_purifier_cadr,
@@ -38,6 +40,46 @@ class PlanExecutionArtifacts:
     emissions_dict: dict[str, object]
     community: dict[str, object]
     explanation: dict[str, object]
+
+
+@dataclass(frozen=True)
+class PipelineOutputs:
+    """Intermediate computation artifacts from exposure, cleaner day, and emissions engines."""
+
+    swaps_dicts: list[dict[str, object]]
+    cleaner_day_dict: dict[str, object]
+    emissions_dict: dict[str, object]
+    explanation: dict[str, object]
+
+
+def build_plan_artifacts(
+    payload: PlanRequest,
+    air: AirQualityData | Mapping[str, object],
+    engine: ExposureResult,
+    outputs: PipelineOutputs,
+) -> PlanExecutionArtifacts:
+    """Package calculation artifacts into response container."""
+    pm25_list = extract_pm25_series(air)
+    wind_list = extract_wind_series(air)
+    forecast_days = analyze_forecast(pm25_list, wind_list, forecast_days=DEFAULT_FORECAST_DAYS)
+
+    peak_aqi_raw = engine.get("peak_aqi", 250)
+    peak_aqi = int(peak_aqi_raw) if isinstance(peak_aqi_raw, int | float | str) else 250
+    category = str(engine.hourly[0].indian_category) if engine.hourly else "Poor"
+    community = build_community_payload(
+        payload.city, peak_aqi, category, outputs.swaps_dicts, outputs.cleaner_day_dict
+    )
+    return PlanExecutionArtifacts(
+        payload=payload,
+        air=air,
+        engine=engine,
+        swaps_dicts=outputs.swaps_dicts,
+        forecast_days=forecast_days,
+        cleaner_day_dict=outputs.cleaner_day_dict,
+        emissions_dict=outputs.emissions_dict,
+        community=community,
+        explanation=outputs.explanation,
+    )
 
 
 def default_routine(request: PlanRequest) -> Routine:

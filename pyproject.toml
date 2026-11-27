@@ -67,6 +67,7 @@ extend-immutable-calls = [
 "app/routers/**" = ["ARG001"]
 "app/main.py" = ["ARG001"]
 "app/engine/indoor_guidance.py" = ["RUF001"]
+"scripts/verify/verify_lighthouse.py" = ["S603", "S607"]
 
 [tool.mypy]
 python_version = "3.13"

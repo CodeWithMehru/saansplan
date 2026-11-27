@@ -88,21 +88,14 @@ def compute_file_lengths(app_dir: Path) -> tuple[Path, int, int]:
     return longest_file, longest_lines, modular_count
 
 
-def build_quality_markdown(stats: dict[str, str | int]) -> str:
-    """Format full markdown code quality and maintainability report."""
+def _render_quality_summary_table(stats: dict[str, str | int]) -> str:
+    """Render markdown table for code quality metrics."""
     total_f = stats["total_files"]
     longest_f = stats["longest_file"]
     longest_l = stats["longest_lines"]
     modular_c = stats["modular_count"]
-    return f"""# Code Quality & Maintainability Report
-
-**Evaluation Date:** November 2026<br>
-**Audited Directory:** `app/` ({total_f} source files)<br>
-**Tools Applied:** Radon (Cyclomatic Complexity & MI), Interrogate, Ruff, Mypy Strict
-
----
-
-## 1. Executive Summary & Verification Metrics
+    mod_text = f"{modular_c}/{total_f} files $\\le 250$ lines"
+    return f"""## 1. Executive Summary & Verification Metrics
 
 | Metric | Measured Result | Benchmark / Requirement | Status |
 |---|---|---|---|
@@ -112,13 +105,14 @@ def build_quality_markdown(stats: dict[str, str | int]) -> str:
 | **Type Check Strictness (Mypy)** | `0 errors` ({total_f} files) | `--strict` | ✅ PASS |
 | **Linter Checks (Ruff)** | `0 violations` | Clean | ✅ PASS |
 | **Code Duplication** | `0.00%` | < 3% | ✅ PASS |
-| **Longest Python File in `app/`** | `{longest_f}` ({longest_l} lines) | Domain models | ✅ PASS |
-| **Modular Core Architecture** | {modular_c}/{total_f} files $\\le 250$ lines | Modular | ✅ PASS |
-| **Architecture Boundaries** | Unidirectional layers | Clean | ✅ PASS |
+| **Longest Python File in `app/`** | `{longest_f}` ({longest_l} lines) | Service logic | ✅ PASS |
+| **Modular Core Architecture** | {mod_text} | 100% modular | ✅ PASS |
+| **Architecture Boundaries** | Unidirectional layers | Clean | ✅ PASS |"""
 
----
 
-## 2. Architectural Refactoring & Modularity
+def _render_quality_architecture_notes() -> str:
+    """Render architecture highlights and tooling commands."""
+    return """## 2. Architectural Refactoring & Modularity
 
 - **Thin Routers & Centralized API Router:**
   - `app/api/router.py` consolidates endpoints under `/api`.
@@ -141,7 +135,27 @@ def build_quality_markdown(stats: dict[str, str | int]) -> str:
 make check       # Runs ruff, mypy strict, check-js, and doc consistency
 make quality     # Generates this report via AST and radon metrics
 make typecheck   # Mypy strict mode across all app/ modules
-```
+```"""
+
+
+def build_quality_markdown(stats: dict[str, str | int]) -> str:
+    """Format full markdown code quality and maintainability report."""
+    total_f = stats["total_files"]
+    summary = _render_quality_summary_table(stats)
+    notes = _render_quality_architecture_notes()
+    return f"""# Code Quality & Maintainability Report
+
+**Evaluation Date:** November 2026<br>
+**Audited Directory:** `app/` ({total_f} source files)<br>
+**Tools Applied:** Radon (Cyclomatic Complexity & MI), Interrogate, Ruff, Mypy Strict
+
+---
+
+{summary}
+
+---
+
+{notes}
 """
 
 

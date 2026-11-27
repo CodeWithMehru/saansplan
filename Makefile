@@ -48,10 +48,10 @@ bench: ## Run performance latency benchmarks
 	python3 scripts/verify/bench.py
 
 report: ## Generate docs/TEST_REPORT.md from current test and benchmark results
-	python3 scripts/reports/report.py
+	python3 -m scripts.reports.report
 
 quality: ## Generate docs/CODE_QUALITY.md metrics report
-	python3 scripts/reports/quality_report.py
+	python3 -m scripts.reports.quality_report
 
 mutation: ## Run mutation testing on engine and guard modules
 	mutmut run

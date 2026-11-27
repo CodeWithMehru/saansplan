@@ -66,7 +66,7 @@ def run_lighthouse_audit(base_url: str, report_path: Path) -> int:
             "--quiet",
         ]
     )
-    res = subprocess.run(  # noqa: S603
+    res = subprocess.run(
         cmd,
         capture_output=True,
         text=True,

@@ -170,6 +170,19 @@ def _calc_heating_totals(heating_fuel: str) -> tuple[float, float, float]:
     return heating_data["co2e_kg"], heating_data["pm_g"], heating_data["cost_inr"]
 
 
+def _aggregate_baseline_emissions(
+    commute_mode: str, cooking_fuel: str, heating_fuel: str
+) -> tuple[float, float, float]:
+    """Calculate aggregated current baseline weekly emissions across sectors."""
+    c_co2, c_cost = _calc_commute_totals(commute_mode)
+    ck_co2, ck_pm, ck_cost = _calc_cooking_totals(cooking_fuel)
+    h_co2, h_pm, h_cost = _calc_heating_totals(heating_fuel)
+    total_co2 = round(c_co2 + ck_co2 + h_co2, 1)
+    total_pm = round(ck_pm + h_pm, 1)
+    total_cost = round(c_cost + ck_cost + h_cost)
+    return total_co2, total_pm, total_cost
+
+
 def calculate_emissions_and_cost(
     commute_mode: str = "car",
     cooking_fuel: str = "lpg",
@@ -177,39 +190,26 @@ def calculate_emissions_and_cost(
     budget_filter: str = "any",
 ) -> EmissionsResult:
     """Calculate current and alternative weekly carbon emissions, particles, and cost."""
-    current_commute_co2, current_commute_cost = _calc_commute_totals(commute_mode)
-    current_cooking_co2, current_cooking_pm, current_cooking_cost = _calc_cooking_totals(
-        cooking_fuel
+    total_co2, total_pm, total_cost = _aggregate_baseline_emissions(
+        commute_mode, cooking_fuel, heating_fuel
     )
-    current_heating_co2, current_heating_pm, current_heating_cost = _calc_heating_totals(
-        heating_fuel
-    )
+    c_co2, c_cost = _calc_commute_totals(commute_mode)
+    ck_co2, ck_pm, ck_cost = _calc_cooking_totals(cooking_fuel)
+    h_co2, h_pm, h_cost = _calc_heating_totals(heating_fuel)
 
-    total_current_co2 = round(current_commute_co2 + current_cooking_co2 + current_heating_co2, 1)
-    total_current_pm = round(current_cooking_pm + current_heating_pm, 1)
-    total_current_cost = round(current_commute_cost + current_cooking_cost + current_heating_cost)
-
-    commute_options = _build_commute_options(
-        commute_mode, current_commute_co2, current_commute_cost
+    all_options = (
+        _build_commute_options(commute_mode, c_co2, c_cost)
+        + _build_cooking_options(cooking_fuel, ck_co2, ck_pm, ck_cost)
+        + _build_heating_options(heating_fuel, h_co2, h_pm, h_cost)
     )
-    cooking_options = _build_cooking_options(
-        cooking_fuel, current_cooking_co2, current_cooking_pm, current_cooking_cost
-    )
-    heating_options = _build_heating_options(
-        heating_fuel, current_heating_co2, current_heating_pm, current_heating_cost
-    )
-
-    all_options = commute_options + cooking_options + heating_options
-    filtered = _filter_by_budget(all_options, budget_filter)
-
     return EmissionsResult(
         current=EmissionsCurrent(
             commute_mode=commute_mode,
-            weekly_co2e_kg=total_current_co2,
-            weekly_pm_g=total_current_pm,
-            weekly_cost_inr=round(total_current_cost),
+            weekly_co2e_kg=total_co2,
+            weekly_pm_g=total_pm,
+            weekly_cost_inr=total_cost,
         ),
-        alternatives=filtered,
+        alternatives=_filter_by_budget(all_options, budget_filter),
         all_alternatives=all_options,
         budget_filter=budget_filter,
     )

@@ -16,24 +16,25 @@ from app.schemas.family import AgeGroup, FamilyMember
 from app.schemas.routine import HomeSetup, Routine
 
 
-def benchmark_engine() -> None:
-    """Benchmark engine performance for interpolation and full 6-member family calculation."""
-    # 1. Hourly interpolation
+def _bench_interpolation() -> float:
+    """Measure elapsed milliseconds for 1000 hourly interpolation passes."""
     start = perf_counter()
     for _ in range(1000):
         interpolate_hourly([100.0 if index % 2 else None for index in range(24)])
-    elapsed_interp = (perf_counter() - start) * 1000
-    print(f"interpolation_1000_runs_ms={elapsed_interp:.2f}")
+    return (perf_counter() - start) * 1000
 
-    # 2. Inhaled dose calculation (1000 runs)
+
+def _bench_inhaled_dose() -> float:
+    """Measure elapsed milliseconds for 1000 inhaled dose calculations."""
     start = perf_counter()
     for _ in range(1000):
         ug = inhaled_micrograms(150.0, 60, "rest", "child")
         uncertainty_band(ug)
-    elapsed_dose = (perf_counter() - start) * 1000
-    print(f"inhaled_dose_1000_runs_ms={elapsed_dose:.2f}")
+    return (perf_counter() - start) * 1000
 
-    # 3. Full 6-member family plan computation
+
+def _bench_family_plan() -> float:
+    """Measure elapsed milliseconds for full 6-member family calculation."""
     family = [
         FamilyMember(name="Parent 1", age_group=AgeGroup.adult, sensitive=False),
         FamilyMember(name="Parent 2", age_group=AgeGroup.adult, sensitive=False),
@@ -76,8 +77,14 @@ def benchmark_engine() -> None:
         for member in family:
             ug = inhaled_micrograms(120.0, 60, "light", member.age_group.value)
             uncertainty_band(ug)
-    elapsed_full = ((perf_counter() - start) / 100) * 1000
-    print(f"full_6member_plan_calc_ms={elapsed_full:.2f}")
+    return ((perf_counter() - start) / 100) * 1000
+
+
+def benchmark_engine() -> None:
+    """Benchmark engine performance for interpolation and full 6-member family calculation."""
+    print(f"interpolation_1000_runs_ms={_bench_interpolation():.2f}")
+    print(f"inhaled_dose_1000_runs_ms={_bench_inhaled_dose():.2f}")
+    print(f"full_6member_plan_calc_ms={_bench_family_plan():.2f}")
 
 
 GZIP_BUDGET_KB = 60.0

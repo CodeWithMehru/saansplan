@@ -131,6 +131,19 @@ def _build_hourly_comparison(
     return comparison
 
 
+def _compute_savings(
+    base_total: float,
+    opt_total: float,
+    base_dose: float,
+    opt_dose: float,
+) -> tuple[float, float, tuple[float, float]]:
+    """Calculate percentage and dose reduction with uncertainty band."""
+    reduction_pct = round((base_total - opt_total) / base_total * 100, 1) if base_total > 0 else 0.0
+    inhaled_saved = max(0.0, base_dose - opt_dose)
+    low_ug, high_ug = uncertainty_band(inhaled_saved)
+    return reduction_pct, round(inhaled_saved, 1), (round(low_ug, 1), round(high_ug, 1))
+
+
 def generate_cleaner_day(
     pm25_hourly: list[float | None],
     aqi_hourly: list[float | None],
@@ -148,26 +161,21 @@ def generate_cleaner_day(
     changes.extend(_optimize_home(opt_routine))
 
     optimized = simulate_exposure(pm25_hourly, aqi_hourly, members, opt_routine)
-
     base_dose = _compute_inhaled_dose(routine, members, pm25)
     opt_dose = _compute_inhaled_dose(opt_routine, members, pm25)
 
-    base_total = baseline.total_before
-    opt_total = optimized.total_before
-    reduction_pct = round((base_total - opt_total) / base_total * 100, 1) if base_total > 0 else 0.0
-
-    inhaled_saved = max(0.0, base_dose - opt_dose)
-    low_ug, high_ug = uncertainty_band(inhaled_saved)
-
-    hourly_comparison = _build_hourly_comparison(pm25, baseline, optimized)
+    base_total, opt_total = baseline.total_before, optimized.total_before
+    reduction_pct, saved_ug, saved_range = _compute_savings(
+        base_total, opt_total, base_dose, opt_dose
+    )
 
     return CleanerDayResult(
         changes=changes,
         total_exposure_before=base_total,
         total_exposure_after=opt_total,
         percent_reduction=reduction_pct,
-        inhaled_saved_ug=round(inhaled_saved, 1),
-        inhaled_saved_range_ug=(round(low_ug, 1), round(high_ug, 1)),
-        hourly_comparison=hourly_comparison,
+        inhaled_saved_ug=saved_ug,
+        inhaled_saved_range_ug=saved_range,
+        hourly_comparison=_build_hourly_comparison(pm25, baseline, optimized),
         routine=opt_routine,
     )

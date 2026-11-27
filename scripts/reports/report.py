@@ -1,5 +1,7 @@
 """Generate a verified, comprehensive test and benchmark report."""
 
+from __future__ import annotations
+
 import datetime
 import gzip
 import io
@@ -10,16 +12,15 @@ from time import perf_counter
 import coverage
 import pytest
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
+from app.engine.cleaner_day import generate_cleaner_day
+from app.engine.emissions import calculate_emissions_and_cost
+from app.engine.exposure import interpolate_hourly, simulate_exposure
+from app.engine.forecast import analyze_forecast
+from app.engine.inhaled import inhaled_micrograms, uncertainty_band
+from app.schemas.family import AgeGroup, FamilyMember
+from app.schemas.routine import HomeSetup, Routine
 
-from app.engine.cleaner_day import generate_cleaner_day  # noqa: E402
-from app.engine.emissions import calculate_emissions_and_cost  # noqa: E402
-from app.engine.exposure import interpolate_hourly, simulate_exposure  # noqa: E402
-from app.engine.forecast import analyze_forecast  # noqa: E402
-from app.engine.inhaled import inhaled_micrograms, uncertainty_band  # noqa: E402
-from app.schemas.family import AgeGroup, FamilyMember  # noqa: E402
-from app.schemas.routine import HomeSetup, Routine  # noqa: E402
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 INTERP_RUNS = 1000
 BENCH_RUNS = 100
@@ -131,42 +132,36 @@ def get_coverage_metrics() -> tuple[float, float, int]:
     return total_cov, engine_cov, test_count
 
 
-def build_markdown_report(
-    now: str,
+def _render_summary_table(
     bench: dict[str, float],
     metrics: dict[str, float | int],
 ) -> str:
-    """Format full markdown test report document."""
-    total_cov = metrics["total_cov"]
-    engine_cov = metrics["engine_cov"]
-    test_count = int(metrics["test_count"])
-    injections = int(metrics["injections"])
-    b_gzip = bench["gzip_kb"]
-    b_raw = bench["raw_kb"]
-    b_calc = bench["calc_ms"]
-    b_interp = bench["interp_ms"]
-
-    return f"""# Test & Verification Report
-
-Generated automatically on: `{now}`
-
-## System Verification Summary
+    """Render markdown table for system verification metrics."""
+    raw_kb = bench["raw_kb"]
+    gzip_kb = bench["gzip_kb"]
+    t_cov = metrics["total_cov"]
+    t_cnt = int(metrics["test_count"])
+    inj_cnt = int(metrics["injections"])
+    return f"""## System Verification Summary
 
 | Category | Target / Requirement | Measured Result | Status |
 |---|---|---|---|
-| **Engine Execution Speed** | < 50 ms (6 members) | `{b_calc} ms` | ✅ PASS |
-| **Interpolation Throughput** | 1000 runs < 200 ms | `{b_interp} ms` | ✅ PASS |
-| **Static Bundle Size** | < 60 KB gzipped | `{b_gzip} KB` (raw: {b_raw} KB) | ✅ PASS |
-| **Overall Test Coverage** | ≥ 95% enforced | `{total_cov}%` ({test_count} passed) | ✅ PASS |
-| **Engine Test Coverage** | ≥ 95% target | `{engine_cov}%` | ✅ PASS |
+| **Engine Execution Speed** | < 50 ms (6 members) | `{bench["calc_ms"]} ms` | ✅ PASS |
+| **Interpolation Throughput** | 1000 runs < 200 ms | `{bench["interp_ms"]} ms` | ✅ PASS |
+| **Static Bundle Size** | < 60 KB gzipped | `{gzip_kb} KB` (raw: {raw_kb} KB) | ✅ PASS |
+| **Overall Test Coverage** | ≥ 95% enforced | `{t_cov}%` ({t_cnt} passed) | ✅ PASS |
+| **Engine Test Coverage** | ≥ 95% target | `{metrics["engine_cov"]}%` | ✅ PASS |
 | **Hermetic Execution** | No secrets/network | Hermetic clean | ✅ PASS |
 | **Axe Accessibility Audit** | 0 WCAG 2.2 AA violations | 0 violations (56 rules) | ✅ PASS |
 | **Reflow (WCAG 1.4.10)** | 360 px without scroll | Zero overflow | ✅ PASS |
-| **Prompt Injection Defense** | Multilingual corpus | {injections} blocked | ✅ PASS |
+| **Prompt Injection Defense** | Multilingual corpus | {inj_cnt} blocked | ✅ PASS |
 | **Medical Safety Redirect** | Immediate clinical safety | Redirect active | ✅ PASS |
-| **Security Audits** | Bandit & pip-audit | Clean scan | ✅ PASS |
+| **Security Audits** | Bandit & pip-audit | Clean scan | ✅ PASS |"""
 
-## Test Suite Breakdown
+
+def _render_suite_breakdown(injections: int) -> str:
+    """Render breakdown of engine, API, and accessibility test suites."""
+    return f"""## Test Suite Breakdown
 
 - **Engine Unit Tests (`tests/unit/engine/`):**
   - CPCB PM2.5 category breakpoints against official Gazette/MoEFCC standards.
@@ -189,9 +184,12 @@ Generated automatically on: `{now}`
   - Strict Content Security Policy (`default-src 'self'`, no unsafe-inline, no unsafe-eval).
   - Playwright and Axe-Core automated WCAG 2.2 AA validation (`scripts/verify/a11y.py`).
   - End-to-end multi-language user journey (`scripts/verify/e2e.py`).
-  - Node.js native test runner for i18n key parity and Devanagari script integrity (`tests/js/`).
+  - Node.js native test runner for i18n key parity and Devanagari script integrity (`tests/js/`)."""
 
-## Verification Commands
+
+def _render_verification_commands() -> str:
+    """Render verification commands reference block."""
+    return """## Verification Commands
 
 ```bash
 make verify      # Runs lint, typecheck, pytest with coverage, JS unit tests, security, and report
@@ -203,7 +201,28 @@ make security    # Runs bandit and pip-audit
 make e2e         # Runs Playwright full journey across English, Hinglish, Hindi
 make a11y        # Runs Axe-core WCAG 2.2 AA audit
 make bench       # Runs engine latency and bundle benchmarks
-```
+```"""
+
+
+def build_markdown_report(
+    now: str,
+    bench: dict[str, float],
+    metrics: dict[str, float | int],
+) -> str:
+    """Format full markdown test report document."""
+    injections = int(metrics["injections"])
+    summary = _render_summary_table(bench, metrics)
+    breakdown = _render_suite_breakdown(injections)
+    commands = _render_verification_commands()
+    return f"""# Test & Verification Report
+
+Generated automatically on: `{now}`
+
+{summary}
+
+{breakdown}
+
+{commands}
 """
 
 
