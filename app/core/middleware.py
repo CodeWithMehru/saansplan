@@ -104,6 +104,7 @@ def _wrap_streaming_body_limiter(request: Request) -> None:
     orig_receive = request.receive
 
     async def limited_receive() -> Message:
+        """Receive message chunks and abort with 413 if payload size exceeds budget."""
         nonlocal bytes_received
         msg = await orig_receive()
         if msg.get("type") == "http.request":

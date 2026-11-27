@@ -1,16 +1,16 @@
 # Test & Verification Report
 
-Generated automatically on: `2026-11-27 13:48:32 UTC`
+Generated automatically on: `2026-11-27 18:34:08 UTC`
 
 ## System Verification Summary
 
 | Category | Target / Requirement | Measured Result | Status |
 |---|---|---|---|
-| **Engine Execution Speed** | < 50 ms (6 members) | `3.7 ms` | ✅ PASS |
-| **Interpolation Throughput** | 1000 runs < 200 ms | `44.39 ms` | ✅ PASS |
-| **Static Bundle Size** | < 60 KB gzipped | `39.95 KB` (raw: 126.12 KB) | ✅ PASS |
-| **Overall Test Coverage** | ≥ 95% enforced | `99.37%` (275 passed) | ✅ PASS |
-| **Engine Test Coverage** | ≥ 95% target | `99.42%` | ✅ PASS |
+| **Engine Execution Speed** | < 50 ms (6 members) | `5.02 ms` | ✅ PASS |
+| **Interpolation Throughput** | 1000 runs < 200 ms | `75.92 ms` | ✅ PASS |
+| **Static Bundle Size** | < 60 KB gzipped | `36.66 KB` (raw: 113.03 KB) | ✅ PASS |
+| **Overall Test Coverage** | ≥ 95% enforced | `96.6%` (291 passed) | ✅ PASS |
+| **Engine Test Coverage** | ≥ 95% target | `99.44%` | ✅ PASS |
 | **Hermetic Execution** | No secrets/network | Hermetic clean | ✅ PASS |
 | **Axe Accessibility Audit** | 0 WCAG 2.2 AA violations | 0 violations (56 rules) | ✅ PASS |
 | **Reflow (WCAG 1.4.10)** | 360 px without scroll | Zero overflow | ✅ PASS |

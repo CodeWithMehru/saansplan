@@ -10,9 +10,9 @@
 
 | Metric | Measured Result | Benchmark / Requirement | Status |
 |---|---|---|---|
-| **Average Cyclomatic Complexity** | `Rank A (2.48)` | Rank A (≤ 3.5) | ✅ PASS |
+| **Average Cyclomatic Complexity** | `Rank A (2.50)` | Rank A (≤ 3.5) | ✅ PASS |
 | **Maximum Function Complexity** | `6` (`groq_chat (llm.py)`) | ≤ 7 | ✅ PASS |
-| **Docstring Coverage (Interrogate/AST)** | `100.0% (332/332 items documented)` | ≥ 95% | ✅ PASS |
+| **Docstring Coverage (Interrogate/AST)** | `100.0% (335/335 items documented)` | ≥ 95% | ✅ PASS |
 | **Type Check Strictness (Mypy)** | `0 errors` (58 files) | `--strict` | ✅ PASS |
 | **Linter Checks (Ruff)** | `0 violations` | Clean | ✅ PASS |
 | **Code Duplication** | `0.00%` | < 3% | ✅ PASS |
