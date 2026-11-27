@@ -3,7 +3,7 @@
 import re
 from collections.abc import Mapping, Sequence
 
-from app.engine.domain_models import ExposureResult
+from app.engine.exposure_models import ExposureResult
 from app.services.guard_wording import NOON, has_past_tense, has_raw_hour_zero, has_raw_units
 
 _NUMBER = re.compile(r"(?<![A-Za-z])[-+]?(?:\d+(?:\.\d+)?|\.\d+)(?![A-Za-z])")

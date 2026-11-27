@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from app.engine.domain_models import ExposureResult
+from app.engine.exposure_models import ExposureResult
 from app.services.guard_wording import format_hour_12h
 
 

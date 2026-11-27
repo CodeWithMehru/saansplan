@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from app.core.aqi import indian_aqi_category
-from app.engine.domain_models import ForecastDay, ForecastWindow
+from app.engine.forecast_models import ForecastDay, ForecastWindow
 
 DAYTIME_AIRING_START_HOUR = 11
 DAYTIME_AIRING_END_HOUR = 15

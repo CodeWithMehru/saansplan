@@ -20,7 +20,8 @@ from app.core.middleware import (
     security_middleware,
 )
 from app.engine import cleaner_day, emissions, exposure, forecast
-from app.engine.domain_models import HourlyExposureRow, IndoorModulePayload, PurifierCadr
+from app.engine.exposure_models import HourlyExposureRow
+from app.engine.indoor_models import IndoorModulePayload, PurifierCadr
 from app.engine.indoor_penetration import indoor_concentration
 from app.main import (
     accessibility,

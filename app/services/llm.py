@@ -11,7 +11,8 @@ import httpx
 
 from app.core.constants import OUTBOUND_RETRIES, OUTBOUND_TIMEOUT_SECONDS
 from app.core.settings import get_settings
-from app.engine.domain_models import ExplanationResult, ExposureResult
+from app.engine.assistant_models import ExplanationResult
+from app.engine.exposure_models import ExposureResult
 from app.schemas.routine import Routine
 from app.services.guard_numbers import (
     rejected_numbers,

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from app.engine.domain_models import EmissionsCurrent, EmissionsOption, EmissionsResult
+from app.engine.emissions_models import EmissionsCurrent, EmissionsOption, EmissionsResult
 
 EMISSION_FACTORS_TRANSPORT = {
     "car": 140.0,

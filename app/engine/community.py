@@ -5,7 +5,7 @@ from __future__ import annotations
 import urllib.parse
 
 from app.core.constants import SEVERE_AQI_THRESHOLD
-from app.engine.domain_models import RwaChecklist, RwaChecklistItem, SchoolAdvisory
+from app.engine.community_models import RwaChecklist, RwaChecklistItem, SchoolAdvisory
 
 
 def generate_whatsapp_share_url(summary_text: str) -> str:

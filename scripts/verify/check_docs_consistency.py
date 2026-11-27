@@ -67,7 +67,10 @@ def check_markdown_files(root: Path) -> list[str]:
     """Check all markdown files for valid paths, targets, and links."""
     errors: list[str] = []
     targets = get_makefile_targets(root)
-    md_files = sorted(list(root.glob("*.md")) + list((root / "docs").glob("**/*.md")))
+    md_files = sorted(
+        [md for md in root.glob("*.md") if not md.name.startswith(".")]
+        + [md for md in (root / "docs").glob("**/*.md") if not md.name.startswith(".")]
+    )
 
     for md in md_files:
         content = md.read_text(encoding="utf-8")

@@ -16,8 +16,8 @@
 | **Type Check Strictness (Mypy)** | `0 errors` (47 files) | `--strict` | ✅ PASS |
 | **Linter Checks (Ruff)** | `0 violations` | Clean | ✅ PASS |
 | **Code Duplication** | `0.00%` | < 3% | ✅ PASS |
-| **Longest Python File in `app/`** | `app/engine/domain_models.py` (434 lines) | Domain models | ✅ PASS |
-| **Modular Core Architecture** | 44/47 files $\le 250$ lines | Modular | ✅ PASS |
+| **Longest Python File in `app/`** | `app/services/assistant.py` (249 lines) | Service logic | ✅ PASS |
+| **Modular Core Architecture** | 58/58 files $\le 250$ lines | 100% modular | ✅ PASS |
 | **Architecture Boundaries** | Unidirectional layers | Clean | ✅ PASS |
 
 ---
@@ -35,7 +35,7 @@
   - Eliminated backward-compatibility facade shims.
 
 - **Frozen Domain Models & Value Types:**
-  - `app/engine/domain_models.py` uses frozen Pydantic models for immutability.
+  - Dedicated bounded-context model modules under `app/engine/*_models.py` and `app/engine/base_model.py` using frozen dataclasses for immutability.
   - Centralized domain enums in `app/schemas/enums.py` (`CPCBCategory`, `BudgetTier`).
 
 ## 3. Tooling Verification Commands

@@ -7,7 +7,7 @@ Accepted
 Earlier versions passed loose dictionaries (`dict[str, Any]`) across engine calculations and service layers. This obscured schema contracts, prevented static type enforcement (mypy), and allowed accidental mutation of intermediate dosage values.
 
 ## Decision
-We adopt frozen dataclasses (`app/engine/domain_models.py`) as the canonical data representation across the application:
+We adopt frozen dataclasses (`app/engine/*_models.py` and `app/engine/base_model.py`) as the canonical data representation across the application:
 1. **Immutability**: All domain models are decorated with `@dataclass(frozen=True)`.
 2. **Explicit Typing**: Zero `Any` in public domain models; all fields use strict primitive types, enums, or nested domain models with comprehensive docstrings.
 3. **Dict Compatibility Interface**: To preserve exact backwards compatibility and JSON snapshot equality, domain models implement mapping protocols (`__getitem__`, `get`, `keys`, `__iter__`, `to_dict()`).

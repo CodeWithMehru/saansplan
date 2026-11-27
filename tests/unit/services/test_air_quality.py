@@ -5,7 +5,7 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from app.engine.domain_models import AirQualityData
+from app.engine.assistant_models import AirQualityData
 from app.services import air_quality
 from app.services.air_quality import fetch_air_quality
 

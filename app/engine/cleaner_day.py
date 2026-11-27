@@ -6,8 +6,9 @@ from copy import deepcopy
 
 from app.core.aqi import indian_aqi_category
 from app.core.constants import HOURS_IN_DAY
-from app.engine.domain_models import CleanerDayHourlyRow, CleanerDayResult, ExposureResult
+from app.engine.cleaner_day_models import CleanerDayHourlyRow, CleanerDayResult
 from app.engine.exposure import interpolate_hourly, simulate_exposure
+from app.engine.exposure_models import ExposureResult
 from app.engine.inhaled import inhaled_micrograms, uncertainty_band
 from app.schemas.family import FamilyMember
 from app.schemas.routine import Activity, Routine

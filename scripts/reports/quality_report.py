@@ -131,7 +131,8 @@ def build_quality_markdown(stats: dict[str, str | int]) -> str:
   - Eliminated backward-compatibility facade shims.
 
 - **Frozen Domain Models & Value Types:**
-  - `app/engine/domain_models.py` uses frozen Pydantic models for immutability.
+  - Dedicated bounded-context model modules under `app/engine/*_models.py`
+    using frozen dataclasses for immutability.
   - Centralized domain enums in `app/schemas/enums.py` (`CPCBCategory`, `BudgetTier`).
 
 ## 3. Tooling Verification Commands

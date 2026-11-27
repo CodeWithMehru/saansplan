@@ -6,8 +6,9 @@ from collections.abc import Sequence
 from copy import deepcopy
 
 from app.core.constants import TOP_SWAP_LIMIT
-from app.engine.domain_models import ExposureResult, SwapRecommendation
 from app.engine.exposure import interpolate_hourly, simulate_exposure
+from app.engine.exposure_models import ExposureResult
+from app.engine.swaps_models import SwapRecommendation
 from app.schemas.family import FamilyMember
 from app.schemas.routine import Activity, Routine
 

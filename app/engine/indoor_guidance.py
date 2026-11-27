@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TypedDict
 
-from app.engine.domain_models import DiyBoxFanGuide, PurifierCadr
+from app.engine.indoor_models import DiyBoxFanGuide, PurifierCadr
 
 SQFT_PER_SQM = 10.7639
 CFM_PER_M3H = 1.699

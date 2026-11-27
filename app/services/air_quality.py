@@ -16,7 +16,7 @@ from app.core.constants import (
     OUTBOUND_TIMEOUT_SECONDS,
 )
 from app.core.settings import get_settings
-from app.engine.domain_models import AirQualityData
+from app.engine.assistant_models import AirQualityData
 
 # Strict egress allowlist for outbound requests
 ALLOWED_EGRESS_HOSTS = {

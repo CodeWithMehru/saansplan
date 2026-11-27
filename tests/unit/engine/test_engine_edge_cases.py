@@ -67,7 +67,7 @@ def test_exposure_vehicle_and_interpolation_calculation() -> None:
 
 def test_persona_member_attribute_access() -> None:
     """Verify PersonaMember dictionary-like subscript and fallback retrieval."""
-    from app.engine.domain_models import PersonaMember
+    from app.engine.persona_models import PersonaMember
 
     m = PersonaMember(name="Test", age_group="adult", sensitive=False)
     assert m["ageGroup"] == "adult"

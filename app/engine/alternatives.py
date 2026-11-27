@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from app.engine.domain_models import IndoorHack, SustainableAlternative
+from app.engine.swaps_models import IndoorHack, SustainableAlternative
 
 
 def indoor_hacks() -> list[IndoorHack]:

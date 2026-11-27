@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from app.engine.domain_models import PersonaMember, PersonaPreset
+from app.engine.persona_models import PersonaMember, PersonaPreset
 
 PERSONA_PRESETS: dict[str, PersonaPreset] = {
     "working_parents": PersonaPreset(

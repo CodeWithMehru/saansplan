@@ -8,7 +8,7 @@ from collections.abc import Awaitable, Callable, Sequence
 import httpx
 
 from app.core.constants import DEFAULT_FORECAST_DAYS, HOURS_IN_DAY
-from app.engine.domain_models import AirQualityData
+from app.engine.assistant_models import AirQualityData
 from app.services.air_quality import fetch_air_quality
 from app.services.assistant_grounding import (
     AssistantResult,
@@ -82,10 +82,8 @@ async def _fetch_today_pm25(
 ) -> list[float]:
     """Fetch 24-hour PM2.5 forecast slice safely."""
     try:
-        if fetch_aq is not None:
-            air = await fetch_aq(lat, lon, DEFAULT_FORECAST_DAYS, client)
-        else:
-            air = await fetch_air_quality(lat, lon, DEFAULT_FORECAST_DAYS, client)
+        fetch = fetch_aq or fetch_air_quality
+        air = await fetch(lat, lon, DEFAULT_FORECAST_DAYS, client)
         pm25 = air.get("pm25") if hasattr(air, "get") else getattr(air, "pm25", None)
         if isinstance(pm25, Sequence):
             return [float(v) for v in pm25[:HOURS_IN_DAY] if isinstance(v, int | float)]
