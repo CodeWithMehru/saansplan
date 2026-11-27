@@ -150,6 +150,26 @@ def _filter_by_budget(
     return [opt for opt in all_options if opt.upfront_cost_inr <= max_cost]
 
 
+def _calc_commute_totals(commute_mode: str) -> tuple[float, float]:
+    """Calculate baseline weekly commute CO2e and transport costs."""
+    commute_factor = EMISSION_FACTORS_TRANSPORT.get(commute_mode, 0.0)
+    current_commute_co2 = (commute_factor * WEEKLY_COMMUTE_KM) / 1000.0
+    current_commute_cost = COST_PER_KM.get(commute_mode, 0.0) * WEEKLY_COMMUTE_KM
+    return current_commute_co2, current_commute_cost
+
+
+def _calc_cooking_totals(cooking_fuel: str) -> tuple[float, float, float]:
+    """Calculate baseline weekly cooking CO2e, PM emissions, and costs."""
+    cooking_data = EMISSION_FACTORS_COOKING.get(cooking_fuel, EMISSION_FACTORS_COOKING["lpg"])
+    return cooking_data["co2e_kg"], cooking_data["pm_g"], cooking_data["cost_inr"]
+
+
+def _calc_heating_totals(heating_fuel: str) -> tuple[float, float, float]:
+    """Calculate baseline weekly space heating CO2e, PM emissions, and costs."""
+    heating_data = EMISSION_FACTORS_HEATING.get(heating_fuel, EMISSION_FACTORS_HEATING["none"])
+    return heating_data["co2e_kg"], heating_data["pm_g"], heating_data["cost_inr"]
+
+
 def calculate_emissions_and_cost(
     commute_mode: str = "car",
     cooking_fuel: str = "lpg",
@@ -157,19 +177,13 @@ def calculate_emissions_and_cost(
     budget_filter: str = "any",
 ) -> EmissionsResult:
     """Calculate current and alternative weekly carbon emissions, particles, and cost."""
-    commute_factor = EMISSION_FACTORS_TRANSPORT.get(commute_mode, 0.0)
-    current_commute_co2 = (commute_factor * WEEKLY_COMMUTE_KM) / 1000.0
-    current_commute_cost = COST_PER_KM.get(commute_mode, 0.0) * WEEKLY_COMMUTE_KM
-
-    cooking_data = EMISSION_FACTORS_COOKING.get(cooking_fuel, EMISSION_FACTORS_COOKING["lpg"])
-    current_cooking_co2 = cooking_data["co2e_kg"]
-    current_cooking_pm = cooking_data["pm_g"]
-    current_cooking_cost = cooking_data["cost_inr"]
-
-    heating_data = EMISSION_FACTORS_HEATING.get(heating_fuel, EMISSION_FACTORS_HEATING["none"])
-    current_heating_co2 = heating_data["co2e_kg"]
-    current_heating_pm = heating_data["pm_g"]
-    current_heating_cost = heating_data["cost_inr"]
+    current_commute_co2, current_commute_cost = _calc_commute_totals(commute_mode)
+    current_cooking_co2, current_cooking_pm, current_cooking_cost = _calc_cooking_totals(
+        cooking_fuel
+    )
+    current_heating_co2, current_heating_pm, current_heating_cost = _calc_heating_totals(
+        heating_fuel
+    )
 
     total_current_co2 = round(current_commute_co2 + current_cooking_co2 + current_heating_co2, 1)
     total_current_pm = round(current_cooking_pm + current_heating_pm, 1)

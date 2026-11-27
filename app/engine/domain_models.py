@@ -338,11 +338,13 @@ class PersonaMember(FrozenDomainModel):
         }
 
     def __getitem__(self, key: str) -> Any:
+        """Allow subscript access supporting camelCase ageGroup."""
         if key == "ageGroup":
             return self.age_group
         return super().__getitem__(key)
 
     def get(self, key: str, default: Any = None) -> Any:
+        """Provide fallback dictionary-like retrieval supporting camelCase ageGroup."""
         if key == "ageGroup":
             return self.age_group
         return super().get(key, default)

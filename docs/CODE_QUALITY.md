@@ -1,7 +1,7 @@
 # Code Quality & Maintainability Report
 
 **Evaluation Date:** November 2026<br>
-**Audited Directory:** `app/` (54 source files)<br>
+**Audited Directory:** `app/` (47 source files)<br>
 **Tools Applied:** Radon (Cyclomatic Complexity & MI), Interrogate, Ruff, Mypy Strict
 
 ---
@@ -10,14 +10,14 @@
 
 | Metric | Measured Result | Benchmark / Requirement | Status |
 |---|---|---|---|
-| **Average Cyclomatic Complexity** | `Rank A (2.42)` | Rank A (≤ 3.5) | ✅ PASS |
+| **Average Cyclomatic Complexity** | `Rank A (2.37)` | Rank A (≤ 3.5) | ✅ PASS |
 | **Maximum Function Complexity** | `6` (`groq_chat (llm.py)`) | ≤ 7 | ✅ PASS |
-| **Docstring Coverage (Interrogate/AST)** | `100.0% (301/301 items documented)` | ≥ 95% | ✅ PASS |
-| **Type Check Strictness (Mypy)** | `0 errors` (54 files) | `--strict` | ✅ PASS |
+| **Docstring Coverage (Interrogate/AST)** | `100.0% (305/305 items documented)` | ≥ 95% | ✅ PASS |
+| **Type Check Strictness (Mypy)** | `0 errors` (47 files) | `--strict` | ✅ PASS |
 | **Linter Checks (Ruff)** | `0 violations` | Clean | ✅ PASS |
 | **Code Duplication** | `0.00%` | < 3% | ✅ PASS |
-| **Longest Python File in `app/`** | `app/engine/domain_models.py` (397 lines) | Domain models | ✅ PASS |
-| **Modular Core Architecture** | 51/54 files $\le 250$ lines | Modular | ✅ PASS |
+| **Longest Python File in `app/`** | `app/engine/domain_models.py` (434 lines) | Domain models | ✅ PASS |
+| **Modular Core Architecture** | 44/47 files $\le 250$ lines | Modular | ✅ PASS |
 | **Architecture Boundaries** | Unidirectional layers | Clean | ✅ PASS |
 
 ---

@@ -83,6 +83,76 @@ def _generate_outdoor_swaps(
     return [_evaluate_outdoor_shift(act, sim_ctx, routine, baseline, pm25) for act in outdoor_acts]
 
 
+def _build_window_swap(
+    pm25_hourly: list[float | None],
+    aqi_hourly: list[float | None],
+    members: Sequence[FamilyMember],
+    routine: Routine,
+    baseline: ExposureResult,
+) -> SwapRecommendation:
+    """Evaluate closing windows to lower infiltration rate."""
+    close_changed = deepcopy(routine)
+    close_changed.home.windows = "mostly_closed"
+    closed = simulate_exposure(pm25_hourly, aqi_hourly, members, close_changed)
+    return SwapRecommendation(
+        key="close_windows",
+        description_key="swap_windows",
+        exposure_before=baseline.total_before,
+        exposure_after=closed.total_before,
+        percent_reduction=reduce_fraction(baseline.total_before, closed.total_before),
+        emissions_note=(
+            "Estimated: lower infiltration can reduce exposure; open windows "
+            "for indoor safety ventilation when smoke is lower."
+        ),
+    )
+
+
+def _build_purifier_swap(
+    pm25_hourly: list[float | None],
+    aqi_hourly: list[float | None],
+    members: Sequence[FamilyMember],
+    routine: Routine,
+    baseline: ExposureResult,
+) -> SwapRecommendation:
+    """Evaluate running indoor air cleaner in main living space."""
+    purifier_changed = deepcopy(routine)
+    purifier_changed.home.purifier = True
+    purified = simulate_exposure(pm25_hourly, aqi_hourly, members, purifier_changed)
+    return SwapRecommendation(
+        key="run_purifier",
+        description_key="swap_purifier",
+        exposure_before=baseline.total_before,
+        exposure_after=purified.total_before,
+        percent_reduction=reduce_fraction(baseline.total_before, purified.total_before),
+        emissions_note=(
+            "Estimated: electricity use varies; use a clean, correctly sized purifier."
+        ),
+    )
+
+
+def _build_cooking_swap(
+    pm25_hourly: list[float | None],
+    aqi_hourly: list[float | None],
+    members: Sequence[FamilyMember],
+    routine: Routine,
+    baseline: ExposureResult,
+) -> SwapRecommendation:
+    """Evaluate transitioning kitchen combustion to electric induction."""
+    induction_changed = deepcopy(routine)
+    induction_changed.home.cooking = "induction"
+    induction = simulate_exposure(pm25_hourly, aqi_hourly, members, induction_changed)
+    return SwapRecommendation(
+        key="cook_induction",
+        description_key="swap_cooking",
+        exposure_before=baseline.total_before,
+        exposure_after=induction.total_before,
+        percent_reduction=reduce_fraction(baseline.total_before, induction.total_before),
+        emissions_note=(
+            "Estimated: induction avoids direct biomass combustion, subject to local grid mix."
+        ),
+    )
+
+
 def _generate_home_swaps(
     pm25_hourly: list[float | None],
     aqi_hourly: list[float | None],
@@ -91,60 +161,11 @@ def _generate_home_swaps(
     baseline: ExposureResult,
 ) -> list[SwapRecommendation]:
     """Generate structural home intervention swaps (windows, purifier, cooking)."""
-    swaps: list[SwapRecommendation] = []
-
-    # Window closure
-    close_changed = deepcopy(routine)
-    close_changed.home.windows = "mostly_closed"
-    closed = simulate_exposure(pm25_hourly, aqi_hourly, members, close_changed)
-    swaps.append(
-        SwapRecommendation(
-            key="close_windows",
-            description_key="swap_windows",
-            exposure_before=baseline.total_before,
-            exposure_after=closed.total_before,
-            percent_reduction=reduce_fraction(baseline.total_before, closed.total_before),
-            emissions_note=(
-                "Estimated: lower infiltration can reduce exposure; open windows "
-                "for indoor safety ventilation when smoke is lower."
-            ),
-        )
-    )
-
-    # Purifier activation
-    purifier_changed = deepcopy(routine)
-    purifier_changed.home.purifier = True
-    purified = simulate_exposure(pm25_hourly, aqi_hourly, members, purifier_changed)
-    swaps.append(
-        SwapRecommendation(
-            key="run_purifier",
-            description_key="swap_purifier",
-            exposure_before=baseline.total_before,
-            exposure_after=purified.total_before,
-            percent_reduction=reduce_fraction(baseline.total_before, purified.total_before),
-            emissions_note=(
-                "Estimated: electricity use varies; use a clean, correctly sized purifier."
-            ),
-        )
-    )
-
-    # Induction cooking
-    induction_changed = deepcopy(routine)
-    induction_changed.home.cooking = "induction"
-    induction = simulate_exposure(pm25_hourly, aqi_hourly, members, induction_changed)
-    swaps.append(
-        SwapRecommendation(
-            key="cook_induction",
-            description_key="swap_cooking",
-            exposure_before=baseline.total_before,
-            exposure_after=induction.total_before,
-            percent_reduction=reduce_fraction(baseline.total_before, induction.total_before),
-            emissions_note=(
-                "Estimated: induction avoids direct biomass combustion, subject to local grid mix."
-            ),
-        )
-    )
-    return swaps
+    return [
+        _build_window_swap(pm25_hourly, aqi_hourly, members, routine, baseline),
+        _build_purifier_swap(pm25_hourly, aqi_hourly, members, routine, baseline),
+        _build_cooking_swap(pm25_hourly, aqi_hourly, members, routine, baseline),
+    ]
 
 
 def generate_swaps(
