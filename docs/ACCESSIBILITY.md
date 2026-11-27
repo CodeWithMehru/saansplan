@@ -60,13 +60,13 @@ To maintain total integrity and transparent engineering standards, we clearly de
 | **1.4.4** | Resize Text | AA | Text scaling buttons (90%, 100%, 110%) and browser 200% zoom without truncation. | `scripts/verify/a11y.py` |
 | **1.4.10** | Reflow | AA | CSS Flexbox/Grid responsive down to 320 px without horizontal scroll. | `tests/a11y/test_wcag22.py` & `scripts/verify/a11y.py` |
 | **1.4.11** | Non-text Contrast | AA | Form borders, focus rings, and UI components have $\ge 3:1$ contrast. | `scripts/verify/a11y.py` |
-| **1.4.12** | Text Spacing | AA | Evaluated with line-height 1.5x, letter-spacing 0.12em, word-spacing 0.16em with zero clipping. | `tests/a11y/test_wcag22.py` & `app/static/styles.css` |
+| **1.4.12** | Text Spacing | AA | Evaluated with line-height 1.5x, letter-spacing 0.12em, word-spacing 0.16em with zero clipping. | `tests/a11y/test_wcag22.py` & `app/static/css/` |
 | **2.1.1** | Keyboard | A | All buttons, inputs, tabs, and persona presets are verified keyboard operable. | `scripts/verify/a11y.py` |
 | **2.1.2** | No Keyboard Trap | A | No modal focus traps; focus flows sequentially through DOM order. | `scripts/verify/a11y.py` |
 | **2.4.1** | Bypass Blocks | A | Visible skip links to `#main-content`, `#results`, and `#ask-section`. | `scripts/verify/a11y.py` & `tests/a11y/test_static_markup.py` |
-| **2.4.7** | Focus Visible | AA | High-visibility 3px blue outline (`outline: 3px solid #1a56db`) with 3px offset. | `app/static/styles.css` |
-| **2.4.11** | Focus Not Obscured | AA | `scroll-padding-top: 5rem` ensures fixed headers never obscure focused controls. | `tests/a11y/test_wcag22.py` & `app/static/styles.css` |
-| **2.5.8** | Target Size (Minimum) | AA | Interactive controls meet $\ge 24\times 24\text{ px}$ (defaulting to $\ge 44\text{ px}$). | `tests/a11y/test_wcag22.py` & `app/static/styles.css` |
+| **2.4.7** | Focus Visible | AA | High-visibility 3px blue outline (`outline: 3px solid #1a56db`) with 3px offset. | `app/static/css/` |
+| **2.4.11** | Focus Not Obscured | AA | `scroll-padding-top: 5rem` ensures fixed headers never obscure focused controls. | `tests/a11y/test_wcag22.py` & `app/static/css/` |
+| **2.5.8** | Target Size (Minimum) | AA | Interactive controls meet $\ge 24\times 24\text{ px}$ (defaulting to $\ge 44\text{ px}$). | `tests/a11y/test_wcag22.py` & `app/static/css/` |
 | **3.2.6** | Consistent Help | A | Persistent link to Accessibility Statement & GitHub Issues in site footer across all views. | `app/static/index.html` & `tests/a11y/test_static_markup.py` |
 | **3.3.1** | Error Identification | A | Form validation aggregates errors in an ARIA-alert error summary. | `app/static/index.html` |
 | **3.3.3** | Error Suggestion | AA | Input constraints provide guidance for invalid coordinates and time windows. | `app/static/js/app.js` |

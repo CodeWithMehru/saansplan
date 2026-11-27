@@ -59,7 +59,7 @@ Every core challenge phrase from Hack2skill Challenge 6 ("Urban Air Quality Assi
 | **Content-Type 415 Enforcement** | `app/main.py` | `tests/security/test_http_hardening.py` |
 | **Reverse Proxy IP Trust Defense** | `app/core/limiting.py` | `tests/security/test_real_client_ip.py`<br>`tests/security/test_fault_injection.py` |
 | **OpenAPI & Regression Snapshots** | `app/routers/plan.py`<br>`app/routers/geocode.py` | `tests/api/test_characterization_snapshots.py` (7 snapshots)<br>`tests/api/test_geocode_and_csp.py` |
-| **WCAG 2.2 AA Compliance** | `app/static/index.html`<br>`app/static/styles.css` | `tests/a11y/test_static_markup.py`<br>`scripts/verify/a11y.py` (56 rules across 5 states) |
+| **WCAG 2.2 AA Compliance** | `app/static/index.html`<br>`app/static/css/` | `tests/a11y/test_static_markup.py`<br>`scripts/verify/a11y.py` (56 rules across 5 states) |
 | **Sub-50ms Engine Execution** | Pure deterministic Python modules | `scripts/verify/bench.py`<br>`tests/unit/engine/test_golden.py` |
 
 ---

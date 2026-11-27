@@ -26,13 +26,14 @@ def browser() -> Generator[Browser]:
 
 @pytest.fixture
 def page(browser: Browser) -> Generator[Page]:
-    """Open page loaded with local index.html."""
+    """Open page loaded with local index.html and modular stylesheets."""
     context = browser.new_context(viewport={"width": 1280, "height": 800})
     p = context.new_page()
     index_path = Path("app/static/index.html").resolve()
-    css_path = Path("app/static/styles.css").resolve()
+    css_files = ["tokens.css", "base.css", "layout.css", "components.css", "utilities.css"]
     p.goto(f"file://{index_path}")
-    p.add_style_tag(path=str(css_path))
+    for fname in css_files:
+        p.add_style_tag(path=str(Path(f"app/static/css/{fname}").resolve()))
     yield p
     context.close()
 
