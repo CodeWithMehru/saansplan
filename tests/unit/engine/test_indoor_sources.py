@@ -1,4 +1,6 @@
-"""Indoor concentration branch coverage tests."""
+"""Indoor concentration tests for various heating, cooking, and purifier configurations."""
+
+from __future__ import annotations
 
 import pytest
 
@@ -14,9 +16,10 @@ from app.schemas.routine import HomeSetup
         ("gas", "lpg", True, 0.0),
     ],
 )
-def test_indoor_source_branches(
+def test_indoor_source_increments(
     heating: str, cooking: str, purifier: bool, expected_min: float
 ) -> None:
+    """Verify indoor concentration increment bounds under different sources."""
     home = HomeSetup(
         heating=heating, cooking=cooking, windows="mostly_open", purifier=purifier, has_chimney=True
     )

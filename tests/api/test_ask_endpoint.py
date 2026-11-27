@@ -159,7 +159,7 @@ def test_ask_successful_groq_response(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "purifier-sizing" in body["kb_ids"]
 
 
-def test_ask_walk_fallback_branch(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_ask_walk_fallback_behavior(monkeypatch: pytest.MonkeyPatch) -> None:
     async def fail_chat(*args: object, **kwargs: object) -> str:
         raise RuntimeError("Groq down")
 

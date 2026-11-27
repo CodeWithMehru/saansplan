@@ -1,4 +1,4 @@
-"""Targeted edge-case tests to achieve >=97% branch and statement coverage."""
+"""Targeted edge-case tests to achieve verified reliability across components."""
 
 from __future__ import annotations
 
@@ -52,7 +52,7 @@ def test_aqi_category_equal_breakpoints() -> None:
 
 @pytest.mark.asyncio
 async def test_cache_hits_and_cancelled_futures() -> None:
-    """Test BoundedTTLCache fast-path hits and completed future branches."""
+    """Test BoundedTTLCache fast-path hits and completed future handling."""
     cache: BoundedTTLCache[str] = BoundedTTLCache(max_size=5, ttl_seconds=60.0)
     cache.set("preloaded", "val")
 
@@ -60,7 +60,7 @@ async def test_cache_hits_and_cancelled_futures() -> None:
     res1 = await cache.get_or_compute("preloaded", AsyncMock())
     assert res1 == "val"
 
-    # Future already done branch in _execute_compute
+    # Future already done in _execute_compute
     loop = asyncio.get_running_loop()
     f1: asyncio.Future[str] = loop.create_future()
     f1.set_result("cancelled_or_early")
@@ -105,8 +105,8 @@ def test_domain_models_protocols() -> None:
     assert len(row) == 7
 
 
-def test_exposure_and_forecast_edge_branches() -> None:
-    """Test edge branches in exposure interpolation and forecast day slicing."""
+def test_exposure_and_forecast_edge_cases() -> None:
+    """Test edge cases in exposure interpolation and forecast day slicing."""
     assert exposure.interpolate_hourly([]) == ([], [])
     assert exposure._interpolate_between(1, 0, 2, [None, 50.0, 100.0]) == 0.0
     assert exposure._fill_missing_value(1, [0], [None]) == 0.0
@@ -230,7 +230,7 @@ async def test_accessibility_and_security_endpoints() -> None:
 
 @pytest.mark.asyncio
 async def test_assistant_and_resolver_edge_cases() -> None:
-    """Test assistant helper fallbacks and resolver edge branches."""
+    """Test assistant helper fallbacks and resolver edge cases."""
     # Empty question
     res = await assistant.answer_question("")
     assert "Please ask" in res["answer"]
@@ -259,7 +259,7 @@ async def test_assistant_and_resolver_edge_cases() -> None:
     assert len(entries) == 0
 
 
-def test_guard_numbers_and_llm_branches() -> None:
+def test_guard_numbers_and_llm_parsing() -> None:
     """Test guard numbers range parsing and llm shift fact formatting."""
     # Non-number in saved_range
     bad_range = {"inhaled_saved_range_ug": ["low", "high"]}
@@ -306,7 +306,7 @@ def test_nested_domain_model_subscript_and_get() -> None:
     assert cadr_get["recommended_smoke_cadr_cfm"] == 150
 
 
-def test_emissions_cooking_induction_branch() -> None:
+def test_emissions_cooking_induction_option() -> None:
     """Test _build_cooking_options when fuel is already induction."""
     opts = emissions._build_cooking_options("induction", 10.0, 5.0, 500.0)
     assert opts == []

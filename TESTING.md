@@ -21,10 +21,10 @@ Every test in the `tests/` suite executes hermetically:
 | `tests/unit/core/` | Core architecture, settings, and cache | Settings validation, environment variable isolation, bounded TTL cache concurrency and single-flight compute deduplication. |
 | `tests/unit/services/` | Integration services & LLM guardrails | Groq LLM client fallback, strict number guard, wording guard, doctor symptom redirect, and knowledge base retrieval. |
 | `tests/unit/routers/` | Endpoint routing logic | Route parameter extraction, validation envelopes, and delegation to domain engines. |
-| `tests/unit/test_comprehensive_coverage.py` | Edge-case branch coverage | Frozen domain model protocols (`__getitem__`, `get`, `__contains__`, `keys`, `__iter__`, `__len__`), static cache headers, ASGI error boundary, and unprintable character rejection. |
-| `tests/unit/test_branch_coverage.py` | Targeted branch coverage gaps | Cache LRU eviction, geocoding error responses, air quality backoffs, plan defaults, assistant CADR resolution. |
-| `tests/unit/test_fault_injection.py` | Chaos & resilience testing | Open-Meteo 500s, malformed upstream JSON, Groq 429 rate limits, and reverse-proxy client IP spoofing defense. |
-| `tests/unit/test_property_invariants.py` | Hypothesis property-based testing | Inhaled dosage non-negativity, CPCB monotonic ordering, CADR scaling linearity, cleaner-day reduction bounds. |
+| `tests/unit/test_app_edge_cases.py` | Component edge cases | Frozen domain model protocols (`__getitem__`, `get`, `__contains__`, `keys`, `__iter__`, `__len__`), static cache headers, ASGI error boundary, and unprintable character rejection. |
+| `tests/unit/services/test_service_edge_cases.py` | Service and router edge cases | Cache LRU eviction, geocoding error responses, air quality backoffs, plan defaults, assistant CADR resolution. |
+| `tests/security/test_fault_injection.py` | Chaos & resilience testing | Open-Meteo 500s, malformed upstream JSON, Groq 429 rate limits, and reverse-proxy client IP spoofing defense. |
+| `tests/unit/engine/test_property_invariants.py` | Hypothesis property-based testing | Inhaled dosage non-negativity, CPCB monotonic ordering, CADR scaling linearity, cleaner-day reduction bounds. |
 | `tests/unit/test_architecture_boundaries.py` | Static AST architecture boundary check | Verifies unidirectional dependency flow: Routers $\to$ Services $\to$ Engine (pure & deterministic). |
 | `tests/api/test_contract.py` | Contract & schema conformance | Validates exact response schema contracts for `/health`, `/api/geocode`, `/api/ask`, and `/api/plan`. |
 | `tests/api/test_characterization_snapshots.py` | Regression characterization snapshots | 7 full JSON response snapshots matching golden baseline outputs across family personas and edge cases. |
@@ -46,19 +46,19 @@ Every core challenge phrase from Hack2skill Challenge 6 ("Urban Air Quality Assi
 
 | Challenge Phrase / README Claim | Technical Implementation Module | Proving Automated Test(s) |
 |---|---|---|
-| **GenAI-powered assistant** | `app/services/llm.py`<br>`app/services/assistant.py` | `tests/unit/test_llm_branches.py`<br>`tests/api/test_ask_endpoint.py`<br>`tests/test_llm_calls.py` |
-| **Families & communities** | `app/schemas/family.py`<br>`app/engine/community.py`<br>`app/engine/personas.py` | `tests/unit/engine/test_inhaled_properties.py`<br>`tests/api/test_plan_endpoint.py`<br>`tests/test_schema_validation.py` |
-| **Severe winter smog** | `app/core/aqi.py`<br>`app/engine/forecast.py` | `tests/unit/engine/test_cpcb_category.py`<br>`tests/unit/engine/test_forecast.py`<br>`tests/unit/test_property_invariants.py` |
-| **Low-emission daily routines** | `app/engine/cleaner_day.py`<br>`app/engine/swaps.py` | `tests/unit/engine/test_cleaner_day.py`<br>`tests/test_swaps.py`<br>`tests/unit/test_property_invariants.py` |
-| **Indoor air quality hacks** | `app/engine/indoor_guidance.py`<br>`app/engine/indoor_penetration.py` | `tests/unit/engine/test_indoor_module.py`<br>`tests/unit/engine/test_indoor_branches.py`<br>`tests/api/test_ask_endpoint.py` |
-| **Sustainable alternatives** | `app/engine/emissions.py`<br>`app/engine/alternatives.py` | `tests/unit/engine/test_emissions.py`<br>`tests/test_engine.py` |
-| **Tailored to location & lifestyle** | `app/routers/geocode.py`<br>`app/engine/personas.py` | `tests/test_geocode_and_csp.py`<br>`tests/unit/test_branch_coverage.py` |
-| **Explaining direct impact of choices** | `app/engine/inhaled.py`<br>`app/services/guard_numbers.py`<br>`app/services/guard_wording.py` | `tests/unit/engine/test_inhaled_properties.py`<br>`tests/test_guard.py`<br>`tests/unit/test_guard_branches.py` |
-| **Medical Symptom Interception** | `app/services/assistant_grounding.py`<br>`app/services/guard_safety.py` | `tests/api/test_ask_endpoint.py`<br>`tests/unit/test_branch_coverage.py` |
+| **GenAI-powered assistant** | `app/services/llm.py`<br>`app/services/assistant.py` | `tests/unit/services/test_llm_retries.py`<br>`tests/api/test_ask_endpoint.py`<br>`tests/unit/services/test_llm_calls.py` |
+| **Families & communities** | `app/schemas/family.py`<br>`app/engine/community.py`<br>`app/engine/personas.py` | `tests/unit/engine/test_inhaled_properties.py`<br>`tests/api/test_plan_endpoint.py`<br>`tests/unit/schemas/test_schema_validation.py` |
+| **Severe winter smog** | `app/core/aqi.py`<br>`app/engine/forecast.py` | `tests/unit/engine/test_cpcb_category.py`<br>`tests/unit/engine/test_forecast.py`<br>`tests/unit/engine/test_property_invariants.py` |
+| **Low-emission daily routines** | `app/engine/cleaner_day.py`<br>`app/engine/swaps.py` | `tests/unit/engine/test_cleaner_day.py`<br>`tests/unit/engine/test_swaps.py`<br>`tests/unit/engine/test_property_invariants.py` |
+| **Indoor air quality hacks** | `app/engine/indoor_guidance.py`<br>`app/engine/indoor_penetration.py` | `tests/unit/engine/test_indoor_module.py`<br>`tests/unit/engine/test_indoor_sources.py`<br>`tests/api/test_ask_endpoint.py` |
+| **Sustainable alternatives** | `app/engine/emissions.py`<br>`app/engine/alternatives.py` | `tests/unit/engine/test_emissions.py`<br>`tests/unit/engine/test_engine_interpolation.py` |
+| **Tailored to location & lifestyle** | `app/routers/geocode.py`<br>`app/engine/personas.py` | `tests/api/test_geocode_and_csp.py`<br>`tests/unit/services/test_service_edge_cases.py` |
+| **Explaining direct impact of choices** | `app/engine/inhaled.py`<br>`app/services/guard_numbers.py`<br>`app/services/guard_wording.py` | `tests/unit/engine/test_inhaled_properties.py`<br>`tests/unit/services/test_guard_pipeline.py`<br>`tests/unit/services/test_guard_edge_cases.py` |
+| **Medical Symptom Interception** | `app/services/assistant_grounding.py`<br>`app/services/guard_safety.py` | `tests/api/test_ask_endpoint.py`<br>`tests/unit/services/test_service_edge_cases.py` |
 | **Prompt Injection Defense** | `app/services/assistant_grounding.py`<br>`app/services/llm.py` | `tests/security/test_prompt_injection.py` (48 test vectors) |
 | **Content-Type 415 Enforcement** | `app/main.py` | `tests/security/test_http_hardening.py` |
-| **Reverse Proxy IP Trust Defense** | `app/core/limiting.py` | `tests/security/test_real_client_ip.py`<br>`tests/unit/test_fault_injection.py` |
-| **OpenAPI & Regression Snapshots** | `app/routers/plan.py`<br>`app/routers/geocode.py` | `tests/api/test_characterization_snapshots.py` (7 snapshots)<br>`tests/test_geocode_and_csp.py` |
+| **Reverse Proxy IP Trust Defense** | `app/core/limiting.py` | `tests/security/test_real_client_ip.py`<br>`tests/security/test_fault_injection.py` |
+| **OpenAPI & Regression Snapshots** | `app/routers/plan.py`<br>`app/routers/geocode.py` | `tests/api/test_characterization_snapshots.py` (7 snapshots)<br>`tests/api/test_geocode_and_csp.py` |
 | **WCAG 2.2 AA Compliance** | `app/static/index.html`<br>`app/static/styles.css` | `tests/a11y/test_static_markup.py`<br>`scripts/verify/a11y.py` (56 rules across 5 states) |
 | **Sub-50ms Engine Execution** | Pure deterministic Python modules | `scripts/verify/bench.py`<br>`tests/unit/engine/test_golden.py` |
 

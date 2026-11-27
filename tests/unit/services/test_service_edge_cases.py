@@ -1,4 +1,4 @@
-"""Targeted branch coverage tests for core, routers, and services."""
+"""Targeted edge-case tests for core, routers, and services."""
 
 from unittest.mock import AsyncMock, patch
 
@@ -39,7 +39,7 @@ def test_cache_expiration_and_overwriting() -> None:
     """Test BoundedTTLCache expiration on get, key overwrite, and eviction on set."""
     cache = BoundedTTLCache(max_size=3, ttl_seconds=0.05)
     cache.set("k1", "v1")
-    cache.set("k1", "v1_new")  # overwrite branch
+    cache.set("k1", "v1_new")  # overwrite key
     assert cache.get("k1") == "v1_new"
 
     # Wait for expiry
@@ -135,7 +135,7 @@ async def test_air_quality_client_and_error() -> None:
 
 
 @pytest.mark.asyncio
-async def test_plan_helpers_branches() -> None:
+async def test_plan_helpers_fallback_routine() -> None:
     """Test default_routine, _resolve_routine exception fallback, and primary commute."""
     member = FamilyMember(name="A", age_group=AgeGroup.adult, sensitive=False)
     # request with explicit routine
@@ -182,7 +182,7 @@ async def test_plan_helpers_branches() -> None:
         assert "AI explanation unavailable" in expl["explanation"]
 
 
-def test_assistant_hour_and_cadr_branches() -> None:
+def test_assistant_hour_and_cadr_resolvers() -> None:
     """Test 12am clock extraction, Hindi phrases, CADR insertion, and CPCB ensure."""
     assert extract_hour("walk at 12am") == 0
     assert extract_hour("subah 6 baje") == 6
