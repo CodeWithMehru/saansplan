@@ -3,12 +3,12 @@
 from fastapi import Request
 from slowapi import Limiter
 
-from app.core.settings import get_settings, is_proxy_trusted
+from app.core.settings import is_proxy_trusted
 
 
 def client_ip(request: Request) -> str:
     """Return real client IP only when proxy trust is explicitly enabled."""
-    if is_proxy_trusted() or get_settings().trust_proxy:
+    if is_proxy_trusted():
         forwarded = request.headers.get("x-forwarded-for", "")
         if forwarded:
             return forwarded.split(",", 1)[0].strip()[:45]

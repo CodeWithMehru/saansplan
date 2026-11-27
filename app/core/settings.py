@@ -6,8 +6,6 @@ from functools import lru_cache
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
 
 @dataclass(frozen=True)
 class Settings:
@@ -31,6 +29,7 @@ class Settings:
 
 def load_settings() -> Settings:
     """Load settings from environment with verified defaults and validation."""
+    load_dotenv()
     cors_raw = os.getenv("CORS_ORIGINS", "http://localhost:8000")
     cors_tuple = tuple(origin.strip() for origin in cors_raw.split(",") if origin.strip())
 
@@ -64,3 +63,11 @@ def is_proxy_trusted() -> bool:
     if env_val:
         return env_val in ("true", "1", "yes")
     return get_settings().trust_proxy
+
+
+__all__ = [
+    "Settings",
+    "get_settings",
+    "is_proxy_trusted",
+    "load_settings",
+]
