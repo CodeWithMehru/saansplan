@@ -2,7 +2,7 @@
  * Family member profile configuration rendering.
  */
 
-import { translations } from "../../i18n.js";
+import { translations } from "../i18n.js";
 import { $ } from "../utils.js";
 
 function _renderMemberRow({ member, index, family, t, onUpdate, onRemove }) {

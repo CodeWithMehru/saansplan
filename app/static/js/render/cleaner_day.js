@@ -2,7 +2,7 @@
  * Cleaner Day alternative routine, SVG comparison chart, and table rendering.
  */
 
-import { translations } from "../../i18n.js";
+import { translations } from "../i18n.js";
 import { $ } from "../utils.js";
 
 function _createSummaryCard(cleanerDay, t) {

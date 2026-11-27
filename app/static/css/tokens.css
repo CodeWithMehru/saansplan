@@ -1,0 +1,40 @@
+:root {
+  --ink: #10251c;
+  --paper: #f7faf7;
+  --surface: #ffffff;
+  --green: #146b43;
+  --green-dark: #0d4d31;
+  --green-light: #e5efe8;
+  --gold: #8a5a00;
+  --red: #9e2d23;
+  --border: #8ca395;
+  --aqi-good: #176b48;
+  --aqi-satisfactory: #2e7d32;
+  --aqi-moderate: #8a5a00;
+  --aqi-poor: #b74700;
+  --aqi-very-poor: #9e2d23;
+  --aqi-severe: #6a1b15;
+  font-size: 100%;
+}
+
+/* High-Contrast Mode */
+html[data-contrast="high"] {
+  --ink: #000000;
+  --paper: #ffffff;
+  --surface: #ffffff;
+  --border: #000000;
+  --green: #004d26;
+  --green-dark: #002b15;
+  --green-light: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #f0f7f3;
+    --paper: #121c16;
+    --surface: #1b2920;
+    --border: #4d6857;
+    --green-light: #243a2d;
+    --green: #177348;
+  }
+}

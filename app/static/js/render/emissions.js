@@ -2,7 +2,7 @@
  * Carbon emissions, budget tier filtering, and sustainable alternatives rendering.
  */
 
-import { translations } from "../../i18n.js";
+import { translations } from "../i18n.js";
 import { $ } from "../utils.js";
 
 export function renderEmissions(emissionsData, language, onFilterChange) {

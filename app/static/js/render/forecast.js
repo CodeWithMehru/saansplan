@@ -2,7 +2,7 @@
  * Multi-day winter smog forecast cards rendering.
  */
 
-import { translations } from "../../i18n.js";
+import { translations } from "../i18n.js";
 import { $ } from "../utils.js";
 
 export function renderForecast(forecastDays, language) {

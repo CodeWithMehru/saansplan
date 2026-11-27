@@ -2,7 +2,7 @@
  * Main application coordinator: orchestrates state, API communication, accessibility, and UI rendering.
  */
 
-import { translations } from "../i18n.js";
+import { translations } from "./i18n.js";
 import { announce, initTextScale, moveToResults, showErrorSummary } from "./a11y/focus.js";
 import { fetchPlan } from "./api.js";
 import {

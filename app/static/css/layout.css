@@ -1,0 +1,131 @@
+.site-header {
+  min-height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem clamp(0.75rem, 3vw, 3rem);
+  background: var(--green-dark);
+  color: #ffffff;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: #e8f3ec;
+  color: var(--green-dark);
+  font-weight: 900;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.site-header button {
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: transparent;
+  border-radius: 999px;
+  padding: 0.5rem 0.85rem;
+  font-weight: 700;
+}
+
+.text-controls {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+main {
+  max-width: 82rem;
+  margin: auto;
+  padding: 1rem;
+}
+
+.personas-section {
+  margin-bottom: 1.25rem;
+}
+
+.persona-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.layout {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.results {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+}
+
+.results section {
+  margin-top: 1.5rem;
+  border-top: 1px solid #d9e4dd;
+  padding-top: 1.25rem;
+}
+
+.site-footer {
+  max-width: 82rem;
+  margin: 2rem auto 1rem;
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+  color: #4a5c51;
+  font-size: 0.9rem;
+}
+
+@media (min-width: 52rem) {
+  main {
+    padding: 2rem;
+  }
+  .layout {
+    grid-template-columns: minmax(22rem, 0.9fr) minmax(26rem, 1.1fr);
+  }
+  .controls {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 32rem) {
+  .site-header {
+    padding: 0.5rem 0.75rem;
+  }
+  .header-actions {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .row,
+  .controls,
+  .member-row {
+    grid-template-columns: 1fr;
+  }
+  .results,
+  fieldset {
+    padding: 0.75rem;
+  }
+  main {
+    padding: 0.75rem 0.5rem;
+  }
+}

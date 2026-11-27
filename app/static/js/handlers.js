@@ -2,7 +2,7 @@
  * DOM event handlers for personas, geolocation, text scaling, speech, and assistant Q&A.
  */
 
-import { translations } from "../i18n.js";
+import { translations } from "./i18n.js";
 import { announce, initTextScale } from "./a11y/focus.js";
 import { askAssistant, fetchGeocode } from "./api.js";
 import {

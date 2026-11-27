@@ -2,7 +2,7 @@
  * 24-hour timeline and accessible data table rendering.
  */
 
-import { translations } from "../../i18n.js";
+import { translations } from "../i18n.js";
 import { $, aqiLevel } from "../utils.js";
 
 export function renderTimeline(hourly, language) {

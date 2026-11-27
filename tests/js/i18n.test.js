@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { translations } from "../../app/static/i18n.js";
+import { translations } from "../../app/static/js/i18n.js";
 
 test("all locales share the same i18n keys", () => {
   const base = Object.keys(translations.en).sort();

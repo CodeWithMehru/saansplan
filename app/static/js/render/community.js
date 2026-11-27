@@ -2,7 +2,7 @@
  * School day advisories and RWA community checklist rendering.
  */
 
-import { translations } from "../../i18n.js";
+import { translations } from "../i18n.js";
 import { $ } from "../utils.js";
 
 export function renderCommunity(communityData, language) {

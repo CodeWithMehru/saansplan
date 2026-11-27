@@ -2,7 +2,7 @@
  * Indoor air quality interventions: CADR calculator, DIY fan guide, and room checklists.
  */
 
-import { translations } from "../../i18n.js";
+import { translations } from "../i18n.js";
 import { $ } from "../utils.js";
 
 function _buildCadrCard(t) {
