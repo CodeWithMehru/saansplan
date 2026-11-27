@@ -22,7 +22,7 @@ All notable changes to the SaansPlan project are documented here.
   - Added `.htmlvalidate.json` and resolved HTML validation issues in `app/static/index.html` and `app/static/accessibility.html`.
 - **Test & Script Hygiene:**
   - Reorganized script entries with clean forwarders across `scripts/reports/` and `scripts/verify/`.
-  - Automated venv detection in `scripts/a11y.py` and dynamic metric generation in `scripts/quality_report.py` and `scripts/report.py`.
+  - Automated venv detection in `scripts/verify/a11y.py` and dynamic metric generation in `scripts/reports/quality_report.py` and `scripts/reports/report.py`.
   - All 280 automated tests (269 pytest + 11 node.js) pass hermetically with 99.32% statement coverage.
 
 
@@ -33,7 +33,7 @@ All notable changes to the SaansPlan project are documented here.
 - **Code Quality & Typing:** Radon cyclomatic complexity reduced to Rank A (3.22 average, max 9); 187/187 items documented via `interrogate` (100.0% docstring coverage); Mypy `--strict` clean across 46 source files; AST architectural boundary enforcement in `tests/unit/test_architecture_boundaries.py`.
 - **Testing Boost (178 passed, 96.07% coverage):** Coverage threshold raised to `--cov-fail-under=95` in `pyproject.toml`; added branch coverage gap tests (`tests/unit/test_branch_coverage.py`), fault injection tests (`tests/unit/test_fault_injection.py` covering upstream 500s, Groq 429s, and IP spoofing), Hypothesis property-based invariants (`tests/unit/test_property_invariants.py`), and 7 regression characterization snapshots (`tests/api/test_characterization_snapshots.py`).
 - **Security Hardening:** Enforced `Content-Type: application/json` on POST with 415 rejection; added `Cross-Origin-Resource-Policy: same-origin` and `X-Request-ID` headers; published RFC 9116 `app/static/.well-known/security.txt`; SHA-pinned GitHub Actions in `.github/workflows/ci.yml` with weekly scheduled security audit; expanded multi-lingual prompt-injection test corpus to 48 vectors in `tests/security/test_prompt_injection.py`.
-- **Accessibility Enhancements:** Added dedicated `/accessibility` statement page (`app/static/accessibility.html`); Reading Comfort panel in `app/static/index.html` with High Contrast and Text Spacing (WCAG 1.4.12) controls persisting in localStorage; visible skip links for `#main-content`, `#results`, and `#ask-section`; Google Lighthouse accessibility verified at 100/100; zero Axe-Core violations across 56 rules and 5 application states in `scripts/a11y.py`.
+- **Accessibility Enhancements:** Added dedicated `/accessibility` statement page (`app/static/accessibility.html`); Reading Comfort panel in `app/static/index.html` with High Contrast and Text Spacing (WCAG 1.4.12) controls persisting in localStorage; visible skip links for `#main-content`, `#results`, and `#ask-section`; Google Lighthouse accessibility verified at 100/100; zero Axe-Core violations across 56 rules and 5 application states in `scripts/verify/a11y.py`.
 - **Grounded Assistant Grounding:** Grounded `/api/ask` with verified knowledge base snippets, deterministic AHAM 2/3 CADR calculation (150 sq ft → 100 CFM), live plan facts, and immediate medical emergency redirects for acute respiratory symptoms.
 
 ## [2.0.0] - 2026-11-23
@@ -46,7 +46,7 @@ All notable changes to the SaansPlan project are documented here.
 - **Household Persona Presets (`app/engine/personas.py`, `app/static/js/state.js`):** 4 realistic urban Indian presets (Working Parents, Senior Citizen, Student/Hostel, Delivery Rider) for one-click form prefilling.
 - **Community Action Kit (`app/engine/community.py`):** WhatsApp direct-share link generator, morning school advisory, and Resident Welfare Association (RWA) winter smog checklist.
 - **Frontend ES-Module Architecture (`app/static/js/`):** Refactored monolith into clean ES-modules (`app/static/js/api.js`, `app/static/js/state.js`, `app/static/js/utils.js`, `app/static/js/speech.js`, `app/static/js/a11y/focus.js`) with zero inline style violations and zero inline handlers.
-- **Accessibility & Axe 0 Violations (`scripts/a11y.py`):** Full WCAG 2.2 AA validation with 0 violations across English, Hinglish, and Hindi views; 360px mobile reflow (WCAG 1.4.10); keyboard skip link; A-/A/A+ text scaling; and polite/assertive live announcers.
+- **Accessibility & Axe 0 Violations (`scripts/verify/a11y.py`):** Full WCAG 2.2 AA validation with 0 violations across English, Hinglish, and Hindi views; 360px mobile reflow (WCAG 1.4.10); keyboard skip link; A-/A/A+ text scaling; and polite/assertive live announcers.
 - **Performance Optimizations:** In-memory `BoundedTTLCache` with TTL expiration, LRU eviction, and single-flight request coalescing; FastAPI lifespan with shared `httpx.AsyncClient`; HTTP GZip compression; weak ETags; sub-2ms 6-member plan calculation; and 32.7 KB gzipped static bundle.
 
 ### Changed

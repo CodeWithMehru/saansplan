@@ -35,23 +35,23 @@ check-docs: ## Check Markdown consistency, links, paths, and Makefile targets
 check: lint typecheck check-js check-docs ## Run all static analysis, linters, and consistency checks
 
 e2e: ## Run end-to-end multi-locale journey verification
-	python3 scripts/e2e.py
+	python3 scripts/verify/e2e.py
 
 a11y: ## Run automated accessibility verification
-	python3 scripts/a11y.py
+	python3 scripts/verify/a11y.py
 
 security: ## Run static application security testing and dependency vulnerability scan
 	bandit -q -r app
 	pip-audit -r requirements.txt
 
 bench: ## Run performance latency benchmarks
-	python3 scripts/bench.py
+	python3 scripts/verify/bench.py
 
 report: ## Generate docs/TEST_REPORT.md from current test and benchmark results
-	python3 scripts/report.py
+	python3 scripts/reports/report.py
 
 quality: ## Generate docs/CODE_QUALITY.md metrics report
-	python3 scripts/quality_report.py
+	python3 scripts/reports/quality_report.py
 
 mutation: ## Run mutation testing on engine and guard modules
 	mutmut run --paths-to-mutate=app/engine,app/services/guard_numbers.py,app/services/guard_safety.py,app/services/guard_wording.py

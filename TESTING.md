@@ -34,9 +34,9 @@ Every test in the `tests/` suite executes hermetically:
 | `tests/a11y/test_static_markup.py` | Accessibility AST markup tests | Single `<h1>` document hierarchy, semantic landmarks, form control labels, scoped table headers, zero inline JavaScript event handlers. |
 | `tests/a11y/test_aria_snapshots.py` | Playwright ARIA tree verification | Headless Chromium ARIA tree verification for banner, main, contentinfo landmarks, and live announcement regions. |
 | `tests/js/` | Frontend native test runner (`node --test`) | 11 unit tests covering i18n translation key parity across English, Hinglish, and Hindi; CPCB AQI thresholds; human label lookups; and client API network helpers. |
-| `scripts/a11y.py` | Automated Axe-Core audit | End-to-end WCAG 2.2 Level AA compliance check across initial, translated, and populated views (0 violations across 56 rules). |
-| `scripts/verify_lighthouse.py` | Automated Google Lighthouse runner | Runs headless Chrome Lighthouse accessibility audit (measured: 100/100). |
-| `scripts/e2e.py` | Playwright end-to-end journey | Automated verification of city search, persona prefilling, plan generation, human-readable labels, and zero console errors. |
+| `scripts/verify/a11y.py` | Automated Axe-Core audit | End-to-end WCAG 2.2 Level AA compliance check across initial, translated, and populated views (0 violations across 56 rules). |
+| `scripts/verify/verify_lighthouse.py` | Automated Google Lighthouse runner | Runs headless Chrome Lighthouse accessibility audit (measured: 100/100). |
+| `scripts/verify/e2e.py` | Playwright end-to-end journey | Automated verification of city search, persona prefilling, plan generation, human-readable labels, and zero console errors. |
 
 ---
 
@@ -59,8 +59,8 @@ Every core challenge phrase from Hack2skill Challenge 6 ("Urban Air Quality Assi
 | **Content-Type 415 Enforcement** | `app/main.py` | `tests/security/test_http_hardening.py` |
 | **Reverse Proxy IP Trust Defense** | `app/core/limiting.py` | `tests/security/test_real_client_ip.py`<br>`tests/unit/test_fault_injection.py` |
 | **OpenAPI & Regression Snapshots** | `app/routers/plan.py`<br>`app/routers/geocode.py` | `tests/api/test_characterization_snapshots.py` (7 snapshots)<br>`tests/test_geocode_and_csp.py` |
-| **WCAG 2.2 AA Compliance** | `app/static/index.html`<br>`app/static/styles.css` | `tests/a11y/test_static_markup.py`<br>`scripts/a11y.py` (56 rules across 5 states) |
-| **Sub-50ms Engine Execution** | Pure deterministic Python modules | `scripts/bench.py`<br>`tests/unit/engine/test_golden.py` |
+| **WCAG 2.2 AA Compliance** | `app/static/index.html`<br>`app/static/styles.css` | `tests/a11y/test_static_markup.py`<br>`scripts/verify/a11y.py` (56 rules across 5 states) |
+| **Sub-50ms Engine Execution** | Pure deterministic Python modules | `scripts/verify/bench.py`<br>`tests/unit/engine/test_golden.py` |
 
 ---
 

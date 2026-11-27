@@ -10,34 +10,38 @@
 
 | Metric | Measured Result | Benchmark / Requirement | Status |
 |---|---|---|---|
-| **Average Cyclomatic Complexity** | `Rank A (2.37)` | Rank A (≤ 3.5) | ✅ PASS |
-| **Maximum Function Complexity** | `6` (`groq_chat (llm.py)`) | ≤ 7 across all functions | ✅ PASS |
+| **Average Cyclomatic Complexity** | `Rank A (2.42)` | Rank A (≤ 3.5) | ✅ PASS |
+| **Maximum Function Complexity** | `6` (`groq_chat (llm.py)`) | ≤ 7 | ✅ PASS |
 | **Docstring Coverage (Interrogate/AST)** | `100.0% (301/301 items documented)` | ≥ 95% | ✅ PASS |
-| **Type Check Strictness (Mypy)** | `0 errors` across 54 files (`--strict`) | Zero type warnings / errors | ✅ PASS |
-| **Linter Checks (Ruff)** | `0 violations` (E, F, I, B, UP, SIM, C4, PL, S) | Zero violations | ✅ PASS |
+| **Type Check Strictness (Mypy)** | `0 errors` (54 files) | `--strict` | ✅ PASS |
+| **Linter Checks (Ruff)** | `0 violations` | Clean | ✅ PASS |
 | **Code Duplication** | `0.00%` | < 3% | ✅ PASS |
-| **Longest Python File in `app/`** | `app/engine/domain_models.py` (`397` lines) | Domain model declarations | ✅ PASS |
-| **Modular Core Architecture** | 44 of 54 files $\le 250$ lines | Max modular decomposition | ✅ PASS |
-| **Architecture Boundaries** | Unidirectional router $\\to$ service $\\to$ engine | Verified via AST boundary test | ✅ PASS |
+| **Longest Python File in `app/`** | `app/engine/domain_models.py` (397 lines) | Domain models | ✅ PASS |
+| **Modular Core Architecture** | 51/54 files $\le 250$ lines | Modular | ✅ PASS |
+| **Architecture Boundaries** | Unidirectional layers | Clean | ✅ PASS |
 
 ---
 
 ## 2. Architectural Refactoring & Modularity
 
-- **Thin Routers:**
+- **Thin Routers & Centralized API Router:**
+  - `app/api/router.py` consolidates endpoints under `/api`.
   - `app/routers/ask.py` reduced from 292 lines to 52 lines (route handler is 11 lines).
-  - Domain orchestration logic moved into `app/services/assistant.py`.
-  - `app/routers/plan.py` handler modularized into focused helper pipelines.
+  - `app/routers/plan.py` orchestration logic extracted to `app/services/plan_service.py`.
 
 - **Modular Guard Architecture:**
-  - Split monolithic guard into `app/services/guard_numbers.py` (numeric grounding), `app/services/guard_safety.py` (clinical safety & fallbacks), and `app/services/guard_wording.py` (12-hour formatting & past-tense checks).
+  - Split monolithic guard into numeric, safety, and wording modules:
+    `guard_numbers.py`, `guard_safety.py`, `guard_wording.py` under `app/services/`.
   - Maintained backward-compatible facade `app/services/guard.py`.
 
-- **Domain Schemas & Pydantic v2 Models:**
-  - Split `app/models.py` into cohesive domain schemas in `app/schemas/` (`app/schemas/family.py`, `app/schemas/routine.py`, `app/schemas/plan.py`, `app/schemas/ask.py`).
-  - Added control character validation, string stripping, and `extra="forbid"` defenses.
+- **Frozen Domain Models & Value Types:**
+  - `app/engine/domain_models.py` uses frozen Pydantic models for immutability.
+  - Centralized domain enums in `app/schemas/enums.py` (`CPCBCategory`, `BudgetTier`).
 
-- **Frontend Componentization:**
-  - Split monolithic renderer into focused ES modules in `app/static/js/render/`:
-    `app/static/js/render/members.js`, `app/static/js/render/timeline.js`, `app/static/js/render/swaps.js`, `app/static/js/render/forecast.js`, `app/static/js/render/cleaner_day.js`, `app/static/js/render/emissions.js`, `app/static/js/render/indoor.js`, `app/static/js/render/community.js`.
-  - Every frontend JavaScript file is strictly ≤ 240 lines.
+## 3. Tooling Verification Commands
+
+```bash
+make check       # Runs ruff, mypy strict, check-js, and doc consistency
+make quality     # Generates this report via AST and radon metrics
+make typecheck   # Mypy strict mode across all app/ modules
+```

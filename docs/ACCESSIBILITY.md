@@ -8,7 +8,7 @@
 
 ## 1. Automated Audit Results
 
-The automated accessibility test suite (`scripts/a11y.py` and `scripts/verify_lighthouse.py`) exercises the complete application state in headless Chromium with zero violations:
+The automated accessibility test suite (`scripts/verify/a11y.py` and `scripts/verify/verify_lighthouse.py`) exercises the complete application state in headless Chromium with zero violations:
 
 | View / State | Tool | Rules Scanned | Violations / Score | Result |
 |---|---|---|---|---|
@@ -55,15 +55,15 @@ To maintain total integrity and transparent engineering standards, we clearly de
 | **1.1.1** | Non-text Content | A | Decorative icons use `aria-hidden="true"`; chart SVGs include structured text summaries. | `tests/a11y/test_static_markup.py` |
 | **1.3.1** | Info and Relationships | A | Semantic `<header>`, `<main>`, `<footer>`, `<fieldset>`, `<legend>`, `<label>`. | `tests/a11y/test_static_markup.py` & `tests/a11y/test_aria_snapshots.py` |
 | **1.3.5** | Identify Input Purpose | AA | Standard `autocomplete="address-level2"` for city search. | `tests/a11y/test_static_markup.py` |
-| **1.4.1** | Use of Color | A | Color is never used alone; AQI categories and status chips carry explicit text labels. | `scripts/a11y.py` |
-| **1.4.3** | Contrast (Minimum) | AA | Text contrast $\ge 4.5:1$ (measured: $13.5:1$ in light, $14.1:1$ in dark). | `scripts/a11y.py` |
-| **1.4.4** | Resize Text | AA | Text scaling buttons (90%, 100%, 110%) and browser 200% zoom without truncation. | `scripts/a11y.py` |
-| **1.4.10** | Reflow | AA | CSS Flexbox/Grid responsive down to 320 px without horizontal scroll. | `tests/a11y/test_wcag22.py` & `scripts/a11y.py` |
-| **1.4.11** | Non-text Contrast | AA | Form borders, focus rings, and UI components have $\ge 3:1$ contrast. | `scripts/a11y.py` |
+| **1.4.1** | Use of Color | A | Color is never used alone; AQI categories and status chips carry explicit text labels. | `scripts/verify/a11y.py` |
+| **1.4.3** | Contrast (Minimum) | AA | Text contrast $\ge 4.5:1$ (measured: $13.5:1$ in light, $14.1:1$ in dark). | `scripts/verify/a11y.py` |
+| **1.4.4** | Resize Text | AA | Text scaling buttons (90%, 100%, 110%) and browser 200% zoom without truncation. | `scripts/verify/a11y.py` |
+| **1.4.10** | Reflow | AA | CSS Flexbox/Grid responsive down to 320 px without horizontal scroll. | `tests/a11y/test_wcag22.py` & `scripts/verify/a11y.py` |
+| **1.4.11** | Non-text Contrast | AA | Form borders, focus rings, and UI components have $\ge 3:1$ contrast. | `scripts/verify/a11y.py` |
 | **1.4.12** | Text Spacing | AA | Evaluated with line-height 1.5x, letter-spacing 0.12em, word-spacing 0.16em with zero clipping. | `tests/a11y/test_wcag22.py` & `app/static/styles.css` |
-| **2.1.1** | Keyboard | A | All buttons, inputs, tabs, and persona presets are verified keyboard operable. | `scripts/a11y.py` |
-| **2.1.2** | No Keyboard Trap | A | No modal focus traps; focus flows sequentially through DOM order. | `scripts/a11y.py` |
-| **2.4.1** | Bypass Blocks | A | Visible skip links to `#main-content`, `#results`, and `#ask-section`. | `scripts/a11y.py` & `tests/a11y/test_static_markup.py` |
+| **2.1.1** | Keyboard | A | All buttons, inputs, tabs, and persona presets are verified keyboard operable. | `scripts/verify/a11y.py` |
+| **2.1.2** | No Keyboard Trap | A | No modal focus traps; focus flows sequentially through DOM order. | `scripts/verify/a11y.py` |
+| **2.4.1** | Bypass Blocks | A | Visible skip links to `#main-content`, `#results`, and `#ask-section`. | `scripts/verify/a11y.py` & `tests/a11y/test_static_markup.py` |
 | **2.4.7** | Focus Visible | AA | High-visibility 3px blue outline (`outline: 3px solid #1a56db`) with 3px offset. | `app/static/styles.css` |
 | **2.4.11** | Focus Not Obscured | AA | `scroll-padding-top: 5rem` ensures fixed headers never obscure focused controls. | `tests/a11y/test_wcag22.py` & `app/static/styles.css` |
 | **2.5.8** | Target Size (Minimum) | AA | Interactive controls meet $\ge 24\times 24\text{ px}$ (defaulting to $\ge 44\text{ px}$). | `tests/a11y/test_wcag22.py` & `app/static/styles.css` |
@@ -71,7 +71,7 @@ To maintain total integrity and transparent engineering standards, we clearly de
 | **3.3.1** | Error Identification | A | Form validation aggregates errors in an ARIA-alert error summary. | `app/static/index.html` |
 | **3.3.3** | Error Suggestion | AA | Input constraints provide guidance for invalid coordinates and time windows. | `app/static/js/app.js` |
 | **3.3.7** | Redundant Entry | A | Stored user preferences (language, scale, contrast, routine) persist across runs. | `app/static/js/state.js` |
-| **4.1.2** | Name, Role, Value | A | Custom controls have explicit `role`, `aria-label`, and `aria-expanded` attributes. | `scripts/a11y.py` & `tests/a11y/test_aria_snapshots.py` |
+| **4.1.2** | Name, Role, Value | A | Custom controls have explicit `role`, `aria-label`, and `aria-expanded` attributes. | `scripts/verify/a11y.py` & `tests/a11y/test_aria_snapshots.py` |
 | **4.1.3** | Status Messages | AA | Dynamic results, assistant responses, and copy confirmations use `aria-live="polite"`. | `app/static/index.html` & `tests/a11y/test_aria_snapshots.py` |
 
 ---
@@ -132,7 +132,7 @@ Every interactive feature is verified operable via sequential keyboard navigatio
 - **Automated Accessibility Trees:** Validated with Chromium DevTools Accessibility Tree, Axe-Core 4.10.2, and Python HTML/AST markup tests. Semantic landmarks, heading hierarchy (H1 -> H2 -> H3), form labels, and live regions are strictly bound.
 - **Dynamic Announcements:** An offscreen `#a11y-announcer-polite` and `#a11y-announcer-assertive` announce status changes (loading, plan generated, preset loaded, city selected, errors).
 - **Verification Commands:**
-  - Automated Axe-Core audit: `python3 scripts/a11y.py`
-  - Automated Lighthouse audit: `python3 scripts/verify_lighthouse.py`
+  - Automated Axe-Core audit: `python3 scripts/verify/a11y.py`
+  - Automated Lighthouse audit: `python3 scripts/verify/verify_lighthouse.py`
   - Pytest accessibility test suite: `pytest tests/a11y/`
 

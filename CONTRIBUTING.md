@@ -32,14 +32,14 @@ All development verification is standardized via the project `Makefile`. Before 
 | Target | Command | Description |
 |---|---|---|
 | `make verify` | `lint typecheck test test-js security report` | Runs the full verification pipeline before pushing. |
-| `make quality` | `python3 scripts/quality_report.py` | Audits cyclomatic complexity with Radon and docstring coverage with Interrogate. |
+| `make quality` | `python3 scripts/reports/quality_report.py` | Audits cyclomatic complexity with Radon and docstring coverage with Interrogate. |
 | `make test` | `pytest` | Runs the hermetic pytest suite with 95% coverage enforcement (`--cov-fail-under=95`). |
 | `make test-js` | `node --test tests/js/*.test.js` | Runs frontend i18n key parity and script integrity tests. |
 | `make lint` | `ruff format --check && ruff check` | Checks formatting and code style across `app`, `tests`, and `scripts`. |
 | `make typecheck` | `mypy app` | Runs strict static type checking across all 46 Python source files. |
 | `make security` | `bandit -q -r app && pip-audit -r requirements.txt` | Runs static AST security analysis and checks dependencies for CVEs. |
-| `make bench` | `python3 scripts/bench.py` | Benchmarks engine execution latency (< 50 ms budget) and static bundle size (< 60 KB budget). |
-| `make a11y` | `python3 scripts/a11y.py` | Runs Axe-Core 4.10.2 automated WCAG 2.2 AA audit across all UI states and languages. |
-| `make e2e` | `python3 scripts/e2e.py` | Runs automated Playwright multi-language browser journey. |
-| `make report` | `python3 scripts/report.py` | Regenerates `docs/TEST_REPORT.md` with live benchmark measurements. |
+| `make bench` | `python3 scripts/verify/bench.py` | Benchmarks engine execution latency (< 50 ms budget) and static bundle size (< 60 KB budget). |
+| `make a11y` | `python3 scripts/verify/a11y.py` | Runs Axe-Core 4.10.2 automated WCAG 2.2 AA audit across all UI states and languages. |
+| `make e2e` | `python3 scripts/verify/e2e.py` | Runs automated Playwright multi-language browser journey. |
+| `make report` | `python3 scripts/reports/report.py` | Regenerates `docs/TEST_REPORT.md` with live benchmark measurements. |
 | `make install` | `pip install -r requirements.txt -r requirements-dev.txt` | Installs runtime and development dependencies in `.venv`. |
