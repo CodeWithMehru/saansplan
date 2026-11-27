@@ -8,7 +8,7 @@ from collections.abc import Awaitable, Callable
 from fastapi import Request
 from fastapi.responses import JSONResponse, Response
 
-from app.config import MAX_REQUEST_BYTES
+from app.core.constants import MAX_REQUEST_BYTES
 
 
 def _check_content_length(request: Request) -> JSONResponse | None:

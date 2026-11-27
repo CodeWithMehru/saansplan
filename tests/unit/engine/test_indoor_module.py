@@ -1,6 +1,6 @@
 """Unit tests for indoor module: purifier sizing, DIY fan guide, and room checklists."""
 
-from app.engine.indoor_module import (
+from app.engine.indoor_guidance import (
     calculate_purifier_cadr,
     get_diy_box_fan_guide,
     get_room_checklists,

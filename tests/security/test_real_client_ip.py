@@ -2,7 +2,7 @@
 
 from fastapi import Request
 
-from app.limiting import client_ip
+from app.core.limiting import client_ip
 
 
 def test_forwarded_ip_is_ignored_when_proxy_trust_is_disabled(monkeypatch) -> None:

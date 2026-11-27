@@ -32,7 +32,7 @@
 - **Modular Guard Architecture:**
   - Split monolithic guard into numeric, safety, and wording modules:
     `guard_numbers.py`, `guard_safety.py`, `guard_wording.py` under `app/services/`.
-  - Maintained backward-compatible facade `app/services/guard.py`.
+  - Eliminated backward-compatibility facade shims.
 
 - **Frozen Domain Models & Value Types:**
   - `app/engine/domain_models.py` uses frozen Pydantic models for immutability.

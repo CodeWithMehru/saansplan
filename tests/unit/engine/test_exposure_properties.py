@@ -4,7 +4,8 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from app.engine.exposure import interpolate_hourly, simulate_exposure
-from app.models import Activity, FamilyMember, HomeSetup, Routine
+from app.schemas.family import FamilyMember
+from app.schemas.routine import Activity, HomeSetup, Routine
 
 
 @given(st.lists(st.integers(min_value=0, max_value=500), min_size=24, max_size=24))

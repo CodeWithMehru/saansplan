@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from fastapi import Request, Response
 
-from app.config import MAX_REQUEST_BYTES
+from app.core.constants import MAX_REQUEST_BYTES
 from app.core.middleware import (
     _apply_cache_headers,
     _apply_security_headers,

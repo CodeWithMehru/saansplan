@@ -8,16 +8,16 @@ from typing import Any, cast
 
 import httpx
 
-from app.config import GROQ_ENDPOINT, GROQ_MODEL, OUTBOUND_RETRIES, OUTBOUND_TIMEOUT_SECONDS
+from app.core.constants import OUTBOUND_RETRIES, OUTBOUND_TIMEOUT_SECONDS
 from app.core.settings import get_settings
 from app.engine.domain_models import ExplanationResult
-from app.models import Routine
-from app.services.guard import (
-    format_hour_12h,
+from app.schemas.routine import Routine
+from app.services.guard_numbers import (
     rejected_numbers,
-    templated_explanation,
     validate_number_guard,
 )
+from app.services.guard_safety import templated_explanation
+from app.services.guard_wording import format_hour_12h
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ def _build_groq_payload(
         else {"type": "json_object"}
     )
     return {
-        "model": GROQ_MODEL,
+        "model": get_settings().groq_model,
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
         "temperature": temperature,
         "max_tokens": max_tokens,
@@ -51,7 +51,7 @@ async def _execute_groq_request(
     client: httpx.AsyncClient, headers: dict[str, str], payload: dict[str, Any]
 ) -> str:
     """Execute raw HTTP POST to Groq endpoint and extract completion content."""
-    response = await client.post(GROQ_ENDPOINT, headers=headers, json=payload)
+    response = await client.post(get_settings().groq_endpoint, headers=headers, json=payload)
     response.raise_for_status()
     data = response.json()
     return cast(str, data["choices"][0]["message"]["content"])

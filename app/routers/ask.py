@@ -4,9 +4,9 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Request
 
+from app.core.limiting import limiter
 from app.core.settings import Settings, get_settings
-from app.limiting import limiter
-from app.models import AskRequest
+from app.schemas.ask import AskRequest
 from app.services.air_quality import fetch_air_quality
 from app.services.assistant import (
     answer_question,

@@ -9,7 +9,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.models import (
+from app.routers import plan
+from app.schemas.routine import (
     Activity,
     ActivityPlace,
     HomeSetup,
@@ -17,7 +18,6 @@ from app.models import (
     Routine,
     TravelMode,
 )
-from app.routers import plan
 
 client = TestClient(app)
 SNAPSHOT_DIR = Path(__file__).resolve().parent.parent / "fixtures" / "snapshots"

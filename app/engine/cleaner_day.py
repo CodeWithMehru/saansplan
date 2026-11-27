@@ -9,7 +9,8 @@ from app.core.constants import HOURS_IN_DAY
 from app.engine.domain_models import CleanerDayHourlyRow, CleanerDayResult, ExposureResult
 from app.engine.exposure import interpolate_hourly, simulate_exposure
 from app.engine.inhaled import inhaled_micrograms, uncertainty_band
-from app.models import Activity, FamilyMember, Routine
+from app.schemas.family import FamilyMember
+from app.schemas.routine import Activity, Routine
 
 
 def is_fixed_commitment(activity: Activity) -> bool:

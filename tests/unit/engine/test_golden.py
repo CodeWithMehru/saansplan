@@ -4,7 +4,8 @@ import json
 from pathlib import Path
 
 from app.engine.exposure import simulate_exposure
-from app.models import Activity, FamilyMember, HomeSetup, Routine
+from app.schemas.family import FamilyMember
+from app.schemas.routine import Activity, HomeSetup, Routine
 
 
 def test_golden_moderate_fixture_is_deterministic() -> None:

@@ -12,7 +12,8 @@ from app.engine.emissions import calculate_emissions_and_cost
 from app.engine.exposure import interpolate_hourly, simulate_exposure
 from app.engine.forecast import analyze_forecast
 from app.engine.inhaled import inhaled_micrograms, uncertainty_band
-from app.models import AgeGroup, FamilyMember, HomeSetup, Routine
+from app.schemas.family import AgeGroup, FamilyMember
+from app.schemas.routine import HomeSetup, Routine
 
 
 def benchmark_engine() -> None:

@@ -2,8 +2,8 @@
 
 import pytest
 
-from app.engine.indoor import indoor_concentration
-from app.models import HomeSetup
+from app.engine.indoor_penetration import indoor_concentration
+from app.schemas.routine import HomeSetup
 
 
 @pytest.mark.parametrize(

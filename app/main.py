@@ -13,17 +13,9 @@ from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from app.api.router import api_router
-from app.core.error_handlers import (
-    not_found,
-    rate_limit_handler,
-    register_error_handlers,
-    validation_error,
-)
+from app.core.error_handlers import register_error_handlers
 from app.core.limiting import limiter
-from app.core.middleware import (
-    _apply_cache_headers,
-    security_middleware,
-)
+from app.core.middleware import security_middleware
 from app.core.settings import get_settings
 
 _settings = get_settings()
@@ -103,15 +95,10 @@ async def favicon() -> Response:
 register_error_handlers(app)
 
 __all__ = [
-    "_apply_cache_headers",
     "accessibility",
     "app",
     "favicon",
     "index",
     "lifespan",
-    "not_found",
-    "rate_limit_handler",
-    "security_middleware",
     "security_txt",
-    "validation_error",
 ]

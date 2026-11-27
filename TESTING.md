@@ -50,12 +50,12 @@ Every core challenge phrase from Hack2skill Challenge 6 ("Urban Air Quality Assi
 | **Families & communities** | `app/schemas/family.py`<br>`app/engine/community.py`<br>`app/engine/personas.py` | `tests/unit/engine/test_inhaled_properties.py`<br>`tests/api/test_plan_endpoint.py`<br>`tests/test_schema_validation.py` |
 | **Severe winter smog** | `app/core/aqi.py`<br>`app/engine/forecast.py` | `tests/unit/engine/test_cpcb_category.py`<br>`tests/unit/engine/test_forecast.py`<br>`tests/unit/test_property_invariants.py` |
 | **Low-emission daily routines** | `app/engine/cleaner_day.py`<br>`app/engine/swaps.py` | `tests/unit/engine/test_cleaner_day.py`<br>`tests/test_swaps.py`<br>`tests/unit/test_property_invariants.py` |
-| **Indoor air quality hacks** | `app/engine/indoor_module.py`<br>`app/engine/indoor_penetration.py` | `tests/unit/engine/test_indoor_module.py`<br>`tests/unit/engine/test_indoor_branches.py`<br>`tests/api/test_ask_endpoint.py` |
+| **Indoor air quality hacks** | `app/engine/indoor_guidance.py`<br>`app/engine/indoor_penetration.py` | `tests/unit/engine/test_indoor_module.py`<br>`tests/unit/engine/test_indoor_branches.py`<br>`tests/api/test_ask_endpoint.py` |
 | **Sustainable alternatives** | `app/engine/emissions.py`<br>`app/engine/alternatives.py` | `tests/unit/engine/test_emissions.py`<br>`tests/test_engine.py` |
 | **Tailored to location & lifestyle** | `app/routers/geocode.py`<br>`app/engine/personas.py` | `tests/test_geocode_and_csp.py`<br>`tests/unit/test_branch_coverage.py` |
 | **Explaining direct impact of choices** | `app/engine/inhaled.py`<br>`app/services/guard_numbers.py`<br>`app/services/guard_wording.py` | `tests/unit/engine/test_inhaled_properties.py`<br>`tests/test_guard.py`<br>`tests/unit/test_guard_branches.py` |
-| **Medical Symptom Interception** | `app/services/assistant_resolvers.py`<br>`app/services/guard_safety.py` | `tests/api/test_ask_endpoint.py`<br>`tests/unit/test_branch_coverage.py` |
-| **Prompt Injection Defense** | `app/services/assistant_resolvers.py`<br>`app/services/llm.py` | `tests/security/test_prompt_injection.py` (48 test vectors) |
+| **Medical Symptom Interception** | `app/services/assistant_grounding.py`<br>`app/services/guard_safety.py` | `tests/api/test_ask_endpoint.py`<br>`tests/unit/test_branch_coverage.py` |
+| **Prompt Injection Defense** | `app/services/assistant_grounding.py`<br>`app/services/llm.py` | `tests/security/test_prompt_injection.py` (48 test vectors) |
 | **Content-Type 415 Enforcement** | `app/main.py` | `tests/security/test_http_hardening.py` |
 | **Reverse Proxy IP Trust Defense** | `app/core/limiting.py` | `tests/security/test_real_client_ip.py`<br>`tests/unit/test_fault_injection.py` |
 | **OpenAPI & Regression Snapshots** | `app/routers/plan.py`<br>`app/routers/geocode.py` | `tests/api/test_characterization_snapshots.py` (7 snapshots)<br>`tests/test_geocode_and_csp.py` |

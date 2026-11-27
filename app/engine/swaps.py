@@ -5,10 +5,11 @@ from __future__ import annotations
 from collections.abc import Sequence
 from copy import deepcopy
 
-from app.config import TOP_SWAP_LIMIT
+from app.core.constants import TOP_SWAP_LIMIT
 from app.engine.domain_models import ExposureResult, SwapRecommendation
 from app.engine.exposure import interpolate_hourly, simulate_exposure
-from app.models import Activity, FamilyMember, Routine
+from app.schemas.family import FamilyMember
+from app.schemas.routine import Activity, Routine
 
 
 def reduce_fraction(before: float, after: float) -> float:

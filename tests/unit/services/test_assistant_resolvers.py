@@ -1,24 +1,23 @@
-"""Unit tests for app.services.assistant_grounding and assistant_resolvers module."""
+"""Unit tests for app.services.assistant_grounding module."""
 
 from __future__ import annotations
 
-from app.services.assistant_grounding import check_safety, resolve_cadr, resolve_walk
-from app.services.assistant_resolvers import (
-    check_safety as check_safety_res,
-)
-from app.services.assistant_resolvers import (
-    resolve_cadr as resolve_cadr_res,
-)
-from app.services.assistant_resolvers import (
-    resolve_walk as resolve_walk_res,
+from app.services.assistant_grounding import (
+    _extract_12h_hour,
+    _extract_hindi_hour,
+    _is_valid_hour,
+    check_safety,
+    resolve_cadr,
+    resolve_walk,
 )
 
 
 def test_backward_compatibility_aliases() -> None:
-    """Verify assistant_resolvers exports aliases matching assistant_grounding."""
-    assert check_safety_res is check_safety
-    assert resolve_cadr_res is resolve_cadr
-    assert resolve_walk_res is resolve_walk
+    """Verify assistant_grounding hour extraction helpers."""
+    assert _extract_12h_hour("at 6 pm") == 18
+    assert _extract_hindi_hour("shaam 6 baje") == 18
+    assert _is_valid_hour(18, 24) is True
+    assert _is_valid_hour(25, 24) is False
 
 
 def test_check_safety_symptom_detection() -> None:

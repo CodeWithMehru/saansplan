@@ -1,6 +1,7 @@
 """Number guard branch coverage tests."""
 
-from app.services.guard import allowed_numbers, rejected_numbers, templated_explanation
+from app.services.guard_numbers import allowed_numbers, rejected_numbers
+from app.services.guard_safety import templated_explanation
 
 
 def test_allowed_numbers_include_top_swap_and_peaks() -> None:

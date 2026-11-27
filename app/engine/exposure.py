@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from app.config import BREATHING_FACTORS, MEMBER_SENSITIVITY, VEHICLE_FACTOR
 from app.core.aqi import indian_aqi_category
+from app.core.constants import BREATHING_FACTORS, MEMBER_SENSITIVITY, VEHICLE_FACTOR
 from app.engine.domain_models import ExposureResult, HourlyExposureRow, MemberExposure
-from app.engine.indoor import indoor_concentration
-from app.models import Activity, FamilyMember, Routine
+from app.engine.indoor_penetration import indoor_concentration
+from app.schemas.family import FamilyMember
+from app.schemas.routine import Activity, Routine
 
 
 def _interpolate_between(

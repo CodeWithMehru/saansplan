@@ -93,11 +93,11 @@ Every phrase of Hack2skill Challenge 6 ("Urban Air Quality Assistant") is backed
 
 | Challenge Phrase | SaansPlan Solution | Technical Implementation & Tests |
 |---|---|---|
-| **GenAI-powered assistant** | Dual Groq LLM integration (`openai/gpt-oss-20b`) for parsing unstructured routine text and generating guard-validated natural language explanations with deterministic template fallback | `app/services/llm.py`, `app/services/guard.py`, `tests/unit/test_llm_branches.py` |
+| **GenAI-powered assistant** | Dual Groq LLM integration (`openai/gpt-oss-20b`) for parsing unstructured routine text and generating guard-validated natural language explanations with deterministic template fallback | `app/services/llm.py`, `app/services/guard_numbers.py`, `app/services/guard_safety.py`, `tests/unit/test_llm_branches.py` |
 | **Families & communities** | Multi-member household profiles (children, adults, elderly, sensitive members) with age-scaled inhalation; WhatsApp community kit and RWA morning advisories | `app/engine/inhaled.py`, `app/engine/community.py`, `tests/unit/engine/test_inhaled_properties.py` |
 | **Severe winter smog** | Indian CPCB NAQI category breakpoints (Good to Severe), 5-day winter smog forecasting, midday ventilation windows (11 AM–3 PM), surface wind stagnation alerts (< 2 m/s) | `app/core/aqi.py`, `app/engine/forecast.py`, `tests/unit/engine/test_cpcb_category.py` |
 | **Low-emission daily routines** | "Your Cleaner Day" optimizer: shifts flexible outdoor tasks to cleaner afternoon hours while strictly preserving fixed work/school commitments | `app/engine/cleaner_day.py`, `app/engine/swaps.py`, `tests/unit/engine/test_cleaner_day.py` |
-| **Indoor air quality hacks** | AHAM CADR 2/3 room-sizing calculator, verified DIY Corsi-Rosenthal box-fan filter guide (EPA), wet-mopping vs dry sweeping, room checklists | `app/engine/indoor_module.py`, `app/engine/alternatives.py`, `tests/unit/engine/test_indoor_module.py` |
+| **Indoor air quality hacks** | AHAM CADR 2/3 room-sizing calculator, verified DIY Corsi-Rosenthal box-fan filter guide (EPA), wet-mopping vs dry sweeping, room checklists | `app/engine/indoor_guidance.py`, `app/engine/alternatives.py`, `tests/unit/engine/test_indoor_module.py` |
 | **Sustainable alternatives** | Weekly carbon emissions ($\text{kg CO}_2\text{e}$) and cost ($\text{INR}$) comparison for commute, cooking, and heating, filtered by budget tiers (`free`, `< ₹500`, `< ₹5000`, `any`) | `app/engine/emissions.py`, `tests/unit/engine/test_emissions.py` |
 | **Tailored to location & lifestyle** | Open-Meteo geocoding search with auto coordinate binding; 4 lifestyle presets (Working Parents, Senior Citizen, Student, Delivery Rider) | `app/routers/geocode.py`, `app/engine/personas.py`, `tests/test_geocode_and_csp.py` |
 | **Explaining direct impact of choices** | Estimated inhaled PM2.5 dosage in micrograms ($\mu\text{g}$) with transparent $\pm 25\%$ uncertainty band; before-and-after comparison chart and accessible table | `app/engine/inhaled.py`, `app/static/js/render/cleaner_day.js`, `tests/unit/engine/test_exposure_properties.py` |
@@ -137,7 +137,7 @@ flowchart TD
             FC["5-Day Smog Forecast Engine<br/>(app/engine/forecast.py)"]
             CD["Cleaner Day Optimizer<br/>(app/engine/cleaner_day.py)"]
             EM["Emissions & Cost Calculator<br/>(app/engine/emissions.py)"]
-            INDOOR["AHAM CADR & DIY Box-Fan Engine<br/>(app/engine/indoor_module.py)"]
+            INDOOR["AHAM CADR & DIY Box-Fan Engine<br/>(app/engine/indoor_guidance.py)"]
         end
 
         subgraph Guard["Security & Fallback Layer"]

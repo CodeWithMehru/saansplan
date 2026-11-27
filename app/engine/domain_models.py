@@ -6,7 +6,7 @@ from collections.abc import Iterator, Sequence
 from dataclasses import asdict, dataclass, fields
 from typing import Any
 
-from app.models import Routine
+from app.schemas.routine import Routine
 
 
 @dataclass(frozen=True)

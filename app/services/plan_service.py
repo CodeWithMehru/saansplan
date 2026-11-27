@@ -22,14 +22,15 @@ from app.engine.domain_models import AirQualityData, ExposureResult
 from app.engine.emissions import calculate_emissions_and_cost
 from app.engine.exposure import simulate_exposure
 from app.engine.forecast import analyze_forecast
-from app.engine.indoor_module import (
+from app.engine.indoor_guidance import (
     calculate_purifier_cadr,
     get_diy_box_fan_guide,
     get_room_checklists,
 )
 from app.engine.personas import get_personas
 from app.engine.swaps import generate_swaps
-from app.models import HomeSetup, PlanRequest, Routine
+from app.schemas.plan import PlanRequest
+from app.schemas.routine import HomeSetup, Routine
 from app.services.air_quality import fetch_air_quality
 from app.services.llm import explain_with_fallback, parse_routine
 

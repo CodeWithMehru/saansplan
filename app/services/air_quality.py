@@ -5,14 +5,16 @@ from typing import Any
 
 import httpx
 
-from app.config import (
-    AIR_QUALITY_ENDPOINT,
+from app.core.cache import BoundedTTLCache
+from app.core.constants import (
     CACHE_TTL_SECONDS,
+    DEFAULT_FORECAST_DAYS,
+    HOURS_IN_DAY,
+    HTTP_STATUS_OK,
     OUTBOUND_RETRIES,
     OUTBOUND_TIMEOUT_SECONDS,
 )
-from app.core.cache import BoundedTTLCache
-from app.core.constants import DEFAULT_FORECAST_DAYS, HOURS_IN_DAY, HTTP_STATUS_OK
+from app.core.settings import get_settings
 from app.engine.domain_models import AirQualityData
 
 # Strict egress allowlist for outbound requests
@@ -92,7 +94,7 @@ async def _fetch_with_client(
     last_error: Exception | None = None
     for attempt in range(OUTBOUND_RETRIES + 1):
         try:
-            aq_task = c.get(AIR_QUALITY_ENDPOINT, params=params)
+            aq_task = c.get(get_settings().air_quality_endpoint, params=params)
             w_task = c.get(WEATHER_ENDPOINT, params=weather_params)
             aq_resp, w_resp = await asyncio.gather(aq_task, w_task, return_exceptions=True)
 

@@ -3,11 +3,10 @@
 from app.engine.community import get_school_day_advisory
 from app.engine.exposure import interpolate_hourly, simulate_exposure
 from app.engine.inhaled import inhaled_micrograms, member_inhalation_scale
-from app.models import (
+from app.schemas.family import AgeGroup, FamilyMember
+from app.schemas.routine import (
     Activity,
     ActivityPlace,
-    AgeGroup,
-    FamilyMember,
     HomeSetup,
     Intensity,
     Routine,

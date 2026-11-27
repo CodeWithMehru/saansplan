@@ -1,12 +1,12 @@
 """Indoor concentration calculations with documented infiltration and source physics."""
 
-from app.config import (
+from app.core.constants import (
     INDOOR_SOURCE_INCREMENTS,
     INFILTRATION_CLOSED,
     INFILTRATION_OPEN,
     PURIFIER_FACTOR,
 )
-from app.models import HomeSetup
+from app.schemas.routine import HomeSetup
 
 COOKING_SOURCE_INCREMENTS: dict[str, float] = {
     "wood_coal": INDOOR_SOURCE_INCREMENTS["biomass"],

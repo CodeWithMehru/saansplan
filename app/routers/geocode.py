@@ -8,9 +8,9 @@ from typing import Any
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
-from app.config import OUTBOUND_RETRIES, OUTBOUND_TIMEOUT_SECONDS, RATE_LIMIT
+from app.core.constants import OUTBOUND_RETRIES, OUTBOUND_TIMEOUT_SECONDS, RATE_LIMIT
+from app.core.limiting import limiter
 from app.core.settings import Settings, get_settings
-from app.limiting import limiter
 
 router = APIRouter()
 

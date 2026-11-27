@@ -18,7 +18,8 @@ from app.engine.emissions import calculate_emissions_and_cost  # noqa: E402
 from app.engine.exposure import interpolate_hourly, simulate_exposure  # noqa: E402
 from app.engine.forecast import analyze_forecast  # noqa: E402
 from app.engine.inhaled import inhaled_micrograms, uncertainty_band  # noqa: E402
-from app.models import AgeGroup, FamilyMember, HomeSetup, Routine  # noqa: E402
+from app.schemas.family import AgeGroup, FamilyMember  # noqa: E402
+from app.schemas.routine import HomeSetup, Routine  # noqa: E402
 
 INTERP_RUNS = 1000
 BENCH_RUNS = 100

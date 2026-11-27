@@ -6,16 +6,15 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from app.models import (
+from app.schemas.family import AgeGroup, FamilyMember
+from app.schemas.plan import PlanRequest
+from app.schemas.routine import (
     Activity,
     ActivityPlace,
-    AgeGroup,
     CookingFuel,
-    FamilyMember,
     HeatingFuel,
     HomeSetup,
     Intensity,
-    PlanRequest,
     Routine,
     TravelMode,
     WindowHabit,

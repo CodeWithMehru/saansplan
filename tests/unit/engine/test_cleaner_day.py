@@ -1,11 +1,10 @@
 """Unit tests for Your Cleaner Day 24-hour alternative routine generator."""
 
 from app.engine.cleaner_day import generate_cleaner_day, is_fixed_commitment
-from app.models import (
+from app.schemas.family import AgeGroup, FamilyMember
+from app.schemas.routine import (
     Activity,
     ActivityPlace,
-    AgeGroup,
-    FamilyMember,
     HomeSetup,
     Intensity,
     Routine,

@@ -2,7 +2,8 @@ import pytest
 
 from app.core.limiting import limiter
 from app.core.settings import get_settings
-from app.models import Activity, AgeGroup, FamilyMember, HomeSetup, Routine
+from app.schemas.family import AgeGroup, FamilyMember
+from app.schemas.routine import Activity, HomeSetup, Routine
 from app.services.air_quality import clear_air_quality_cache
 
 

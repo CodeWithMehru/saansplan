@@ -14,30 +14,30 @@ from starlette.responses import Response
 
 from app.core import aqi
 from app.core.cache import BoundedTTLCache
+from app.core.error_handlers import not_found, validation_error
+from app.core.middleware import (
+    _apply_cache_headers,
+    security_middleware,
+)
 from app.engine import cleaner_day, emissions, exposure, forecast
 from app.engine.domain_models import HourlyExposureRow, IndoorModulePayload, PurifierCadr
 from app.engine.indoor_penetration import indoor_concentration
 from app.main import (
-    _apply_cache_headers,
     accessibility,
     lifespan,
-    not_found,
-    security_middleware,
     security_txt,
-    validation_error,
 )
-from app.models import (
+from app.schemas.family import AgeGroup, FamilyMember
+from app.schemas.plan import PlanRequest
+from app.schemas.routine import (
     Activity,
     ActivityPlace,
-    AgeGroup,
-    FamilyMember,
     HomeSetup,
     Intensity,
     Routine,
     TravelMode,
 )
-from app.schemas.plan import PlanRequest
-from app.services import assistant, assistant_resolvers, guard_numbers, llm
+from app.services import assistant, assistant_grounding, guard_numbers, llm
 from app.services.kb import KnowledgeBase
 
 
@@ -246,16 +246,16 @@ async def test_assistant_and_resolver_edge_cases() -> None:
     assert res_groq is None
 
     # resolver 12h hour with am
-    h = assistant_resolvers._extract_12h_hour("at 9 am")
+    h = assistant_grounding._extract_12h_hour("at 9 am")
     assert h == 9
 
     # _attach_cadr_kb_entry and _ensure_cpcb_breakpoint_entry with mock KB
     mock_kb = MagicMock(spec=KnowledgeBase)
     mock_kb.entries = []
     entries: list[dict[str, Any]] = []
-    assistant_resolvers._attach_cadr_kb_entry(entries, mock_kb)
+    assistant_grounding._attach_cadr_kb_entry(entries, mock_kb)
     assert len(entries) == 0
-    assistant_resolvers._ensure_cpcb_breakpoint_entry(entries, mock_kb)
+    assistant_grounding._ensure_cpcb_breakpoint_entry(entries, mock_kb)
     assert len(entries) == 0
 
 

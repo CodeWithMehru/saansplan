@@ -1,6 +1,7 @@
 from pydantic import ValidationError
 
-from app.models import PlanRequest, Routine
+from app.schemas.plan import PlanRequest
+from app.schemas.routine import Routine
 
 
 def test_extra_fields_rejected():

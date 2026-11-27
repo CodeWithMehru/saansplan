@@ -6,10 +6,11 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Request
 
-from app.config import RATE_LIMIT
+from app.core.constants import RATE_LIMIT
+from app.core.limiting import limiter
 from app.core.settings import Settings, get_settings
-from app.limiting import limiter
-from app.models import PlanRequest, Routine
+from app.schemas.plan import PlanRequest
+from app.schemas.routine import Routine
 from app.services import plan_service
 from app.services.air_quality import fetch_air_quality
 from app.services.llm import explain_with_fallback, parse_routine

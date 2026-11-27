@@ -4,7 +4,7 @@ import re
 from typing import Any
 
 from app.core.aqi import indian_aqi_category
-from app.engine.indoor_module import SQFT_PER_SQM, calculate_purifier_cadr
+from app.engine.indoor_guidance import SQFT_PER_SQM, calculate_purifier_cadr
 from app.services.kb import KnowledgeBase
 
 NOON_HOUR = 12
