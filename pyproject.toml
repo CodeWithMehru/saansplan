@@ -73,3 +73,12 @@ python_version = "3.13"
 strict = true
 files = ["app"]
 exclude = ["app/static"]
+
+[tool.mutmut]
+source_paths = [
+    "app/engine/",
+    "app/services/guard_numbers.py",
+    "app/services/guard_safety.py",
+    "app/services/guard_wording.py",
+]
+pytest_add_cli_args_test_selection = ["tests/unit/"]

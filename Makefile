@@ -54,6 +54,6 @@ quality: ## Generate docs/CODE_QUALITY.md metrics report
 	python3 scripts/reports/quality_report.py
 
 mutation: ## Run mutation testing on engine and guard modules
-	mutmut run --paths-to-mutate=app/engine,app/services/guard_numbers.py,app/services/guard_safety.py,app/services/guard_wording.py
+	mutmut run
 
 verify: check test test-js security report ## Run complete validation pipeline
