@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-from typing import Any
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -16,7 +15,7 @@ from app.core.settings import Settings, get_settings
 router = APIRouter()
 
 
-def _filter_safe_geocode_results(results: list[dict[str, Any]]) -> list[dict[str, str | float]]:
+def _filter_safe_geocode_results(results: list[dict[str, object]]) -> list[dict[str, str | float]]:
     """Filter raw geocoding payloads to validated safe coordinates."""
     safe: list[dict[str, str | float]] = []
     for result in results:
@@ -63,7 +62,7 @@ async def geocode(
     request: Request,
     name: str = Query(min_length=2, max_length=80),
     settings: Settings = Depends(get_settings),
-) -> dict[str, Any]:
+) -> dict[str, object]:
     """Search a city and return only safe display coordinates."""
     endpoint = getattr(settings, "geocoding_endpoint", None) or get_settings().geocoding_endpoint
     params: dict[str, str | int] = {

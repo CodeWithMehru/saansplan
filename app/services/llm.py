@@ -4,13 +4,14 @@ import asyncio
 import json
 import logging
 import re
-from typing import Any, cast
+from collections.abc import Mapping
+from typing import cast
 
 import httpx
 
 from app.core.constants import OUTBOUND_RETRIES, OUTBOUND_TIMEOUT_SECONDS
 from app.core.settings import get_settings
-from app.engine.domain_models import ExplanationResult
+from app.engine.domain_models import ExplanationResult, ExposureResult
 from app.schemas.routine import Routine
 from app.services.guard_numbers import (
     rejected_numbers,
@@ -27,8 +28,8 @@ def _build_groq_payload(
     user: str,
     temperature: float,
     max_tokens: int,
-    json_schema: dict[str, Any] | None,
-) -> dict[str, Any]:
+    json_schema: dict[str, object] | None,
+) -> dict[str, object]:
     """Format payload dictionary with model and JSON schema response options."""
     resp_fmt = (
         {
@@ -48,7 +49,7 @@ def _build_groq_payload(
 
 
 async def _execute_groq_request(
-    client: httpx.AsyncClient, headers: dict[str, str], payload: dict[str, Any]
+    client: httpx.AsyncClient, headers: dict[str, str], payload: dict[str, object]
 ) -> str:
     """Execute raw HTTP POST to Groq endpoint and extract completion content."""
     response = await client.post(get_settings().groq_endpoint, headers=headers, json=payload)
@@ -62,7 +63,7 @@ async def groq_chat(
     user: str,
     temperature: float,
     max_tokens: int = 1500,
-    json_schema: dict[str, Any] | None = None,
+    json_schema: dict[str, object] | None = None,
 ) -> str:
     """Make one server-side Groq chat-completions call with JSON mode."""
     api_key = get_settings().groq_api_key
@@ -125,7 +126,7 @@ async def parse_routine(text: str) -> Routine:
 
 
 def _append_reduction_facts(
-    facts: dict[str, Any], cleaner: dict[str, Any], top: dict[str, Any]
+    facts: dict[str, object], cleaner: Mapping[str, object], top: Mapping[str, object]
 ) -> None:
     """Attach dose reduction and saved micrograms facts."""
     pct = cleaner.get("percent_reduction") or top.get("percent_reduction")
@@ -133,26 +134,34 @@ def _append_reduction_facts(
         facts["percent_reduction"] = pct
     if cleaner.get("inhaled_saved_ug") is not None:
         facts["inhaled_saved_ug"] = cleaner["inhaled_saved_ug"]
-    if cleaner.get("inhaled_saved_range_ug"):
-        facts["inhaled_saved_range_ug"] = list(cleaner["inhaled_saved_range_ug"])
+    saved_range = cleaner.get("inhaled_saved_range_ug")
+    if isinstance(saved_range, list | tuple):
+        facts["inhaled_saved_range_ug"] = list(saved_range)
 
 
-def _append_shift_facts(facts: dict[str, Any], top: dict[str, Any], language: str) -> None:
+def _append_shift_facts(facts: dict[str, object], top: Mapping[str, object], language: str) -> None:
     """Attach recommended timing shifts."""
-    if top.get("from_hour") is not None:
-        facts["suggested_shift_from"] = format_hour_12h(int(top["from_hour"]), language)
-    if top.get("to_hour") is not None:
-        facts["suggested_shift_to"] = format_hour_12h(int(top["to_hour"]), language)
+    from_h = top.get("from_hour")
+    if from_h is not None and isinstance(from_h, int | float | str):
+        facts["suggested_shift_from"] = format_hour_12h(int(from_h), language)
+    to_h = top.get("to_hour")
+    if to_h is not None and isinstance(to_h, int | float | str):
+        facts["suggested_shift_to"] = format_hour_12h(int(to_h), language)
 
 
-def _build_allowed_facts(engine: dict[str, Any], language: str = "hinglish") -> dict[str, Any]:
+def _build_allowed_facts(
+    engine: ExposureResult | Mapping[str, object], language: str = "hinglish"
+) -> dict[str, object]:
     """Extract UI-aligned grounding facts from engine results without raw exposure units."""
-    cleaner = engine.get("cleaner_day") or {}
-    top = engine.get("top_swap") or {}
-    peak_h = int(engine.get("peak_hour", 18))
+    cleaner_raw = engine.get("cleaner_day")
+    cleaner: Mapping[str, object] = cleaner_raw if isinstance(cleaner_raw, Mapping) else {}
+    top_raw = engine.get("top_swap")
+    top: Mapping[str, object] = top_raw if isinstance(top_raw, Mapping) else {}
+    peak_h_val = engine.get("peak_hour", 18)
+    peak_h = int(peak_h_val) if isinstance(peak_h_val, int | float | str) else 18
     peak_aqi = engine.get("peak_aqi", 200)
 
-    facts: dict[str, Any] = {
+    facts: dict[str, object] = {
         "peak_time": format_hour_12h(peak_h, language),
         "peak_aqi": peak_aqi,
     }
@@ -191,7 +200,9 @@ def _extract_llm_text(raw: str) -> str:
     return re.sub(r"<[^>]*>", "", text).strip()
 
 
-def _parse_and_validate_llm_text(raw: str, engine: dict[str, Any]) -> str | None:
+def _parse_and_validate_llm_text(
+    raw: str, engine: ExposureResult | Mapping[str, object]
+) -> str | None:
     """Parse raw LLM JSON response and validate against numeric grounding rules."""
     text = _extract_llm_text(raw)
     if not text:
@@ -204,7 +215,7 @@ def _parse_and_validate_llm_text(raw: str, engine: dict[str, Any]) -> str | None
 
 
 async def explain_with_fallback(
-    engine: dict[str, Any], language: str = "hinglish"
+    engine: ExposureResult | Mapping[str, object], language: str = "hinglish"
 ) -> ExplanationResult:
     """Explain engine numbers with Groq, retry once on number guard failure, else fallback."""
     allowed_facts = _build_allowed_facts(engine, language)

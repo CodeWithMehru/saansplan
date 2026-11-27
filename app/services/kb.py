@@ -3,7 +3,25 @@
 import json
 import re
 from pathlib import Path
-from typing import Any
+from typing import TypedDict, cast
+
+
+class KBSource(TypedDict):
+    """Citation source metadata."""
+
+    name: str
+    url: str
+    checked: str
+
+
+class KBEntry(TypedDict):
+    """Knowledge base grounded snippet entry."""
+
+    id: str
+    topic: str
+    text: str
+    source: KBSource
+
 
 MIN_WORD_LEN = 3
 DEFAULT_MATCH_BOOST = 5
@@ -78,7 +96,7 @@ def _word_match_score(word: str, topic: str, haystack: str) -> int:
     return TOPIC_MATCH_WEIGHT if word in topic else 1
 
 
-def _score_entry(entry: dict[str, Any], words: set[str], text: str) -> int:
+def _score_entry(entry: KBEntry, words: set[str], text: str) -> int:
     """Calculate keyword and domain boost score for a single KB entry."""
     topic = entry["topic"].lower()
     haystack = f"{topic} {entry['text']}".lower()
@@ -93,9 +111,11 @@ class KnowledgeBase:
 
     def __init__(self, path: str = "app/kb/knowledge.json") -> None:
         """Load knowledge base records from designated JSON storage file."""
-        self.entries: list[dict[str, Any]] = json.loads(Path(path).read_text(encoding="utf-8"))
+        self.entries: list[KBEntry] = cast(
+            list[KBEntry], json.loads(Path(path).read_text(encoding="utf-8"))
+        )
 
-    def retrieve(self, question: str, limit: int = 2, threshold: int = 3) -> list[dict[str, Any]]:
+    def retrieve(self, question: str, limit: int = 2, threshold: int = 3) -> list[KBEntry]:
         """Return keyword-ranked entries meeting relevance threshold."""
         text = question.lower()
         words = _extract_query_words(text)

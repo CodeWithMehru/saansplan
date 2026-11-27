@@ -2,12 +2,22 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TypedDict
 
 from app.engine.domain_models import DiyBoxFanGuide, PurifierCadr
 
 SQFT_PER_SQM = 10.7639
 CFM_PER_M3H = 1.699
+
+
+class RoomChecklistItem(TypedDict):
+    """Targeted room action checklist entry."""
+
+    id: str
+    action: str
+    details: str
+    reduction_estimate: str
+    source: str
 
 
 def calculate_purifier_cadr(
@@ -62,7 +72,7 @@ def get_diy_box_fan_guide() -> DiyBoxFanGuide:
     )
 
 
-KITCHEN_CHECKLIST: list[dict[str, Any]] = [
+KITCHEN_CHECKLIST: list[RoomChecklistItem] = [
     {
         "id": "k1",
         "action": "Ventilate Cooking Exhaust",
@@ -86,7 +96,7 @@ KITCHEN_CHECKLIST: list[dict[str, Any]] = [
     },
 ]
 
-BEDROOM_CHECKLIST: list[dict[str, Any]] = [
+BEDROOM_CHECKLIST: list[RoomChecklistItem] = [
     {
         "id": "b1",
         "action": "Create an Overnight Clean Air Zone",
@@ -110,7 +120,7 @@ BEDROOM_CHECKLIST: list[dict[str, Any]] = [
     },
 ]
 
-LIVING_ROOM_CHECKLIST: list[dict[str, Any]] = [
+LIVING_ROOM_CHECKLIST: list[RoomChecklistItem] = [
     {
         "id": "l1",
         "action": "Seal Windows and Door Gaps",
@@ -127,7 +137,7 @@ LIVING_ROOM_CHECKLIST: list[dict[str, Any]] = [
     },
 ]
 
-CHILDRENS_ROOM_CHECKLIST: list[dict[str, Any]] = [
+CHILDRENS_ROOM_CHECKLIST: list[RoomChecklistItem] = [
     {
         "id": "c1",
         "action": "Dedicated HEPA Filtration for Study & Play",
@@ -144,7 +154,7 @@ CHILDRENS_ROOM_CHECKLIST: list[dict[str, Any]] = [
     },
 ]
 
-ROOM_CHECKLISTS: dict[str, list[dict[str, Any]]] = {
+ROOM_CHECKLISTS: dict[str, list[RoomChecklistItem]] = {
     "kitchen": KITCHEN_CHECKLIST,
     "bedroom": BEDROOM_CHECKLIST,
     "living_room": LIVING_ROOM_CHECKLIST,
@@ -152,6 +162,6 @@ ROOM_CHECKLISTS: dict[str, list[dict[str, Any]]] = {
 }
 
 
-def get_room_checklists() -> dict[str, list[dict[str, Any]]]:
+def get_room_checklists() -> dict[str, list[RoomChecklistItem]]:
     """Return tailored room-by-room indoor air quality checklists with engine impact."""
     return {k: list(v) for k, v in ROOM_CHECKLISTS.items()}

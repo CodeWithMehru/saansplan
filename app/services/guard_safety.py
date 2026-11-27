@@ -2,15 +2,16 @@
 
 from __future__ import annotations
 
-from typing import Any
+from collections.abc import Mapping
 
+from app.engine.domain_models import ExposureResult
 from app.services.guard_wording import format_hour_12h
 
 
 def _template_en(
     time_str: str,
     peak_aqi: int,
-    pct: float,
+    pct: int | float,
     saved_ug: float | None,
     saved_range: list[float] | tuple[float, float] | None,
 ) -> str:
@@ -32,7 +33,7 @@ def _template_en(
 def _template_hi(
     time_str: str,
     peak_aqi: int,
-    pct: float,
+    pct: int | float,
     saved_ug: float | None,
     saved_range: list[float] | tuple[float, float] | None,
 ) -> str:
@@ -50,17 +51,30 @@ def _template_hi(
     )
 
 
-def templated_explanation(engine: dict[str, Any], language: str = "hinglish") -> str:
+def templated_explanation(
+    engine: ExposureResult | Mapping[str, object], language: str = "hinglish"
+) -> str:
     """Return a safe deterministic hypothetical explanation using 12h clock and UI units."""
-    peak_hour = int(engine.get("peak_hour", 18))
-    peak_aqi = int(engine.get("peak_aqi", 200))
-    cleaner = engine.get("cleaner_day") or {}
-    top = engine.get("top_swap") or {}
+    peak_val = engine.get("peak_hour", 18)
+    peak_hour = int(peak_val) if isinstance(peak_val, int | float | str) else 18
+    aqi_val = engine.get("peak_aqi", 200)
+    peak_aqi = int(aqi_val) if isinstance(aqi_val, int | float | str) else 200
+    cleaner_raw = engine.get("cleaner_day")
+    cleaner = cleaner_raw if isinstance(cleaner_raw, Mapping) else {}
+    top_raw = engine.get("top_swap")
+    top = top_raw if isinstance(top_raw, Mapping) else {}
 
     time_str = format_hour_12h(peak_hour, language)
-    pct = cleaner.get("percent_reduction") or top.get("percent_reduction", 25.0)
-    saved_ug = cleaner.get("inhaled_saved_ug")
-    saved_range = cleaner.get("inhaled_saved_range_ug")
+    pct_raw = cleaner.get("percent_reduction") or top.get("percent_reduction", 25)
+    pct: int | float = pct_raw if isinstance(pct_raw, int | float) else 25
+    saved_ug_raw = cleaner.get("inhaled_saved_ug")
+    saved_ug = float(saved_ug_raw) if isinstance(saved_ug_raw, int | float | str) else None
+    saved_range_raw = cleaner.get("inhaled_saved_range_ug")
+    saved_range = (
+        [float(x) for x in saved_range_raw if isinstance(x, int | float | str)]
+        if isinstance(saved_range_raw, list | tuple)
+        else None
+    )
 
     if language == "en":
         return _template_en(time_str, peak_aqi, pct, saved_ug, saved_range)

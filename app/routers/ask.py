@@ -1,7 +1,5 @@
 """Grounded ask-SaansPlan route with server-side engine facts and LLM answers."""
 
-from typing import Any
-
 from fastapi import APIRouter, Depends, Request
 
 from app.core.limiting import limiter
@@ -52,7 +50,7 @@ async def ask(
     request: Request,
     payload: AskRequest,
     settings: Settings = Depends(get_settings),
-) -> dict[str, Any]:
+) -> dict[str, object]:
     """Provide grounded answers using server-side engine facts, KB entries, and Groq."""
     client = getattr(request.app.state, "http_client", None)
     res = await answer_question(

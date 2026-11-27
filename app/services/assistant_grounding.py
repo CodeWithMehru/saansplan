@@ -1,11 +1,11 @@
 """Deterministic resolvers and fallback generators for assistant Q&A."""
 
 import re
-from typing import Any, TypedDict
+from typing import TypedDict
 
 from app.core.aqi import indian_aqi_category
 from app.engine.indoor_guidance import SQFT_PER_SQM, calculate_purifier_cadr
-from app.services.kb import KnowledgeBase
+from app.services.kb import KBEntry, KnowledgeBase
 
 
 class AssistantResult(TypedDict):
@@ -17,6 +17,27 @@ class AssistantResult(TypedDict):
 
 
 SafetyResult = AssistantResult
+
+
+class WalkInfo(TypedDict):
+    """Walk advisory conditions."""
+
+    hour: int
+    pm25: float
+    aqi: int
+    category: str
+    outdoor_advisory: str
+
+
+class CadrInfo(TypedDict):
+    """Purifier CADR sizing info."""
+
+    room_sqft: float
+    recommended_smoke_cadr_cfm: int
+    recommended_smoke_cadr_m3h: int
+    target_ach: int
+    basis: str
+
 
 NOON_HOUR = 12
 MIDNIGHT_HOUR = 0
@@ -145,7 +166,7 @@ def check_safety(q_lower: str) -> SafetyResult | None:
     return None
 
 
-def _find_kb_entry(kb: KnowledgeBase | None, entry_id: str) -> dict[str, Any] | None:
+def _find_kb_entry(kb: KnowledgeBase | None, entry_id: str) -> KBEntry | None:
     """Look up an entry by ID from the knowledge base."""
     if not kb:
         return None
@@ -155,12 +176,12 @@ def _find_kb_entry(kb: KnowledgeBase | None, entry_id: str) -> dict[str, Any] | 
     return None
 
 
-def _has_entry_id(entries: list[dict[str, Any]], entry_id: str) -> bool:
+def _has_entry_id(entries: list[KBEntry], entry_id: str) -> bool:
     """Check if an entry with the designated ID exists in the list."""
     return any(entry["id"] == entry_id for entry in entries)
 
 
-def _attach_cadr_kb_entry(entries: list[dict[str, Any]], kb: KnowledgeBase | None) -> None:
+def _attach_cadr_kb_entry(entries: list[KBEntry], kb: KnowledgeBase | None) -> None:
     """Prepend purifier sizing documentation to retrieved entries."""
     if not _has_entry_id(entries, "purifier-sizing"):
         entry = _find_kb_entry(kb, "purifier-sizing")
@@ -169,19 +190,19 @@ def _attach_cadr_kb_entry(entries: list[dict[str, Any]], kb: KnowledgeBase | Non
 
 
 def resolve_cadr(
-    room_sqft: float | None, entries: list[dict[str, Any]], kb: KnowledgeBase | None = None
-) -> tuple[dict[str, Any] | None, int | None]:
+    room_sqft: float | None, entries: list[KBEntry], kb: KnowledgeBase | None = None
+) -> tuple[CadrInfo | None, int | None]:
     """Calculate deterministic CADR if room area is specified."""
     if room_sqft is None:
         return None, None
     cadr_cfm = round((2.0 / 3.0) * room_sqft)
     cadr_m3h = round(cadr_cfm * 1.699)
     cadr_calc = calculate_purifier_cadr(area_sq_meters=room_sqft / SQFT_PER_SQM)
-    info = {
+    info: CadrInfo = {
         "room_sqft": round(room_sqft, 1),
         "recommended_smoke_cadr_cfm": cadr_cfm,
         "recommended_smoke_cadr_m3h": cadr_m3h,
-        "target_ach": cadr_calc["target_ach"],
+        "target_ach": cadr_calc.target_ach,
         "basis": "AHAM 2/3 Rule (Smoke CADR in CFM >= 2/3 room area in sq ft)",
     }
     _attach_cadr_kb_entry(entries, kb)
@@ -193,9 +214,7 @@ def _is_valid_hour(hour: int | None, total_hours: int) -> bool:
     return hour is not None and 0 <= hour < total_hours
 
 
-def _ensure_cpcb_breakpoint_entry(
-    entries: list[dict[str, Any]], kb: KnowledgeBase | None = None
-) -> None:
+def _ensure_cpcb_breakpoint_entry(entries: list[KBEntry], kb: KnowledgeBase | None = None) -> None:
     """Attach CPCB breakpoint reference to KB context if absent."""
     if not _has_entry_id(entries, "cpcb-aqi-breakpoints"):
         entry = _find_kb_entry(kb, "cpcb-aqi-breakpoints")
@@ -206,9 +225,9 @@ def _ensure_cpcb_breakpoint_entry(
 def resolve_walk(
     asked_hour: int | None,
     today_pm25: list[float],
-    entries: list[dict[str, Any]],
+    entries: list[KBEntry],
     kb: KnowledgeBase | None = None,
-) -> dict[str, Any] | None:
+) -> WalkInfo | None:
     """Evaluate outdoor conditions if a specific time is asked."""
     if asked_hour is None or not (0 <= asked_hour < len(today_pm25)):
         return None
@@ -242,7 +261,7 @@ def _fallback_cadr(room_sqft: float, cadr_cfm: int) -> AssistantResult:
     }
 
 
-def _fallback_walk(asked_hour: int, walk_info: dict[str, Any] | None, city: str) -> AssistantResult:
+def _fallback_walk(asked_hour: int, walk_info: WalkInfo | None, city: str) -> AssistantResult:
     """Return deterministic fallback for walk / outdoor safety queries."""
     h12 = (
         f"{asked_hour - NOON_HOUR} pm"
@@ -274,7 +293,7 @@ def _try_fallback_cadr(room_sqft: float | None, cadr_cfm: int | None) -> Assista
 
 
 def _try_fallback_walk(
-    asked_hour: int | None, walk_info: dict[str, Any] | None, city: str
+    asked_hour: int | None, walk_info: WalkInfo | None, city: str
 ) -> AssistantResult | None:
     """Build walk advisory fallback if hour is available."""
     if asked_hour is not None:
@@ -282,7 +301,7 @@ def _try_fallback_walk(
     return None
 
 
-def _fallback_generic_or_entry(entries: list[dict[str, Any]]) -> AssistantResult:
+def _fallback_generic_or_entry(entries: list[KBEntry]) -> AssistantResult:
     """Return top retrieved entry or general CPCB advisory fallback."""
     if entries:
         return {
@@ -299,8 +318,8 @@ def _fallback_generic_or_entry(entries: list[dict[str, Any]]) -> AssistantResult
 
 def build_deterministic_fallback(
     cadr_data: tuple[float | None, int | None],
-    walk_data: tuple[int | None, dict[str, Any] | None, str],
-    entries: list[dict[str, Any]],
+    walk_data: tuple[int | None, WalkInfo | None, str],
+    entries: list[KBEntry],
 ) -> AssistantResult:
     """Return verified deterministic fallback answer when model call fails."""
     cadr_fb = _try_fallback_cadr(cadr_data[0], cadr_data[1])

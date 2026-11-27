@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator, Sequence
+from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import asdict, dataclass, fields
-from typing import Any
 
 from app.schemas.routine import Routine
 
@@ -13,11 +12,11 @@ from app.schemas.routine import Routine
 class FrozenDomainModel:
     """Base class for frozen domain dataclasses with dict-like mapping access."""
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, object]:
         """Convert dataclass and all nested structures to primitive dictionary."""
         return asdict(self)
 
-    def __getitem__(self, key: str) -> Any:
+    def __getitem__(self, key: str) -> object:
         """Allow subscript access for backwards compatibility."""
         if hasattr(self, key):
             val = getattr(self, key)
@@ -26,11 +25,11 @@ class FrozenDomainModel:
             return val
         raise KeyError(key)
 
-    def __setitem__(self, key: str, value: Any) -> None:
+    def __setitem__(self, key: str, value: object) -> None:
         """Allow mutation for plan assembly."""
         object.__setattr__(self, key, value)
 
-    def get(self, key: str, default: Any = None) -> Any:
+    def get(self, key: str, default: object = None) -> object:
         """Provide fallback dictionary-like retrieval."""
         val = getattr(self, key, default)
         if isinstance(val, FrozenDomainModel):
@@ -54,6 +53,9 @@ class FrozenDomainModel:
     def __len__(self) -> int:
         """Return number of declared fields."""
         return len(fields(self))
+
+
+Mapping.register(FrozenDomainModel)
 
 
 @dataclass(frozen=True)
@@ -90,7 +92,7 @@ class SwapRecommendation(FrozenDomainModel):
     from_hour: int | None = None
     to_hour: int | None = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, object]:
         """Convert dataclass to dict, omitting from_hour/to_hour if None."""
         d = asdict(self)
         if self.from_hour is None:
@@ -168,7 +170,7 @@ class CleanerDayResult(FrozenDomainModel):
     percent_reduction: float
     inhaled_saved_ug: float
     inhaled_saved_range_ug: tuple[float, float]
-    changes: list[dict[str, Any]]
+    changes: list[dict[str, str | int | float]]
     routine: Routine
     hourly_comparison: Sequence[CleanerDayHourlyRow]
 
@@ -199,7 +201,7 @@ class EmissionsOption(FrozenDomainModel):
     is_free: bool = False
     pm_saved_g: float | None = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, object]:
         """Convert dataclass to dict, omitting pm_saved_g if None and is_free for non-commute."""
         d = asdict(self)
         if self.pm_saved_g is None:
@@ -207,16 +209,6 @@ class EmissionsOption(FrozenDomainModel):
         if self.category != "commute":
             d.pop("is_free", None)
         return d
-
-
-def _model_to_dict(model: Any) -> Any:
-    """Normalize model to primitive dict representation."""
-    return model.to_dict() if hasattr(model, "to_dict") else model
-
-
-def _models_to_dict_list(models: Sequence[Any]) -> list[Any]:
-    """Convert sequence of models to list of primitive dictionaries."""
-    return [_model_to_dict(m) for m in models]
 
 
 @dataclass(frozen=True)
@@ -228,12 +220,12 @@ class EmissionsResult(FrozenDomainModel):
     all_alternatives: Sequence[EmissionsOption]
     budget_filter: str
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, object]:
         """Convert result to clean dictionary matching exact schema."""
         return {
-            "current": _model_to_dict(self.current),
-            "alternatives": _models_to_dict_list(self.alternatives),
-            "all_alternatives": _models_to_dict_list(self.all_alternatives),
+            "current": self.current.to_dict(),
+            "alternatives": [alt.to_dict() for alt in self.alternatives],
+            "all_alternatives": [alt.to_dict() for alt in self.all_alternatives],
             "budget_filter": self.budget_filter,
         }
 
@@ -306,8 +298,8 @@ class RwaChecklist(FrozenDomainModel):
 class CommunityPayload(FrozenDomainModel):
     """Community advisories, checklists, and shareable links."""
 
-    school_advisory: SchoolAdvisory | dict[str, Any]
-    rwa_checklist: RwaChecklist | dict[str, Any]
+    school_advisory: SchoolAdvisory | dict[str, object]
+    rwa_checklist: RwaChecklist | dict[str, object]
     whatsapp_url: str
     shareable_text: str
 
@@ -316,9 +308,9 @@ class CommunityPayload(FrozenDomainModel):
 class IndoorModulePayload(FrozenDomainModel):
     """Indoor interventions, purifier CADR, and room checklists."""
 
-    room_checklists: dict[str, list[dict[str, Any]]]
-    purifier_sizing_default: PurifierCadr | dict[str, Any]
-    diy_box_fan_guide: DiyBoxFanGuide | dict[str, Any]
+    room_checklists: dict[str, list[dict[str, str]]]
+    purifier_sizing_default: PurifierCadr | dict[str, object]
+    diy_box_fan_guide: DiyBoxFanGuide | dict[str, object]
 
 
 @dataclass(frozen=True)
@@ -329,7 +321,7 @@ class PersonaMember(FrozenDomainModel):
     age_group: str
     sensitive: bool
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, object]:
         """Convert dataclass ensuring camelCase ageGroup in serialized output."""
         return {
             "name": self.name,
@@ -337,13 +329,13 @@ class PersonaMember(FrozenDomainModel):
             "sensitive": self.sensitive,
         }
 
-    def __getitem__(self, key: str) -> Any:
+    def __getitem__(self, key: str) -> object:
         """Allow subscript access supporting camelCase ageGroup."""
         if key == "ageGroup":
             return self.age_group
         return super().__getitem__(key)
 
-    def get(self, key: str, default: Any = None) -> Any:
+    def get(self, key: str, default: object = None) -> object:
         """Provide fallback dictionary-like retrieval supporting camelCase ageGroup."""
         if key == "ageGroup":
             return self.age_group
@@ -357,7 +349,7 @@ class PersonaPreset(FrozenDomainModel):
     id: str
     name: str
     description: str
-    members: list[PersonaMember | dict[str, Any]]
+    members: list[PersonaMember | dict[str, object]]
     routine_text: str
     commute: str
     outdoor_minutes: int
@@ -367,7 +359,7 @@ class PersonaPreset(FrozenDomainModel):
     purifier: bool
     budget: str
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, object]:
         """Convert preset and its member objects to primitive dictionary."""
         return {
             "id": self.id,

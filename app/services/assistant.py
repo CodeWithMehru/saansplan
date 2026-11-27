@@ -3,15 +3,18 @@
 import asyncio
 import json
 import logging
-from typing import Any
+from collections.abc import Awaitable, Callable, Sequence
 
 import httpx
 
 from app.core.constants import DEFAULT_FORECAST_DAYS, HOURS_IN_DAY
+from app.engine.domain_models import AirQualityData
 from app.services.air_quality import fetch_air_quality
 from app.services.assistant_grounding import (
     AssistantResult,
+    CadrInfo,
     SafetyResult,
+    WalkInfo,
     _is_valid_hour,
     build_deterministic_fallback,
     check_safety,
@@ -27,8 +30,14 @@ from app.services.assistant_grounding import (
 from app.services.assistant_grounding import (
     resolve_walk as _resolve_walk_resolver,
 )
-from app.services.kb import KnowledgeBase
+from app.services.kb import KBEntry, KnowledgeBase
 from app.services.llm import groq_chat
+
+ChatFn = Callable[[str, str, float], Awaitable[str]]
+FetchAirQualityFn = Callable[
+    [float, float, int, httpx.AsyncClient | None],
+    Awaitable[AirQualityData],
+]
 
 logger = logging.getLogger(__name__)
 
@@ -44,14 +53,14 @@ def get_kb() -> KnowledgeBase:
     return _kb_instance
 
 
-def _ensure_cpcb_breakpoint_entry(entries: list[dict[str, Any]]) -> None:
+def _ensure_cpcb_breakpoint_entry(entries: list[KBEntry]) -> None:
     """Attach CPCB breakpoint reference to KB context if absent."""
     _ensure_cpcb_bp_res(entries, kb=_kb_instance)
 
 
 def resolve_cadr(
-    room_sqft: float | None, entries: list[dict[str, Any]]
-) -> tuple[dict[str, Any] | None, int | None]:
+    room_sqft: float | None, entries: list[KBEntry]
+) -> tuple[CadrInfo | None, int | None]:
     """Calculate deterministic CADR with global KB instance."""
     return _resolve_cadr_resolver(room_sqft, entries, kb=_kb_instance)
 
@@ -59,19 +68,27 @@ def resolve_cadr(
 def resolve_walk(
     asked_hour: int | None,
     today_pm25: list[float],
-    entries: list[dict[str, Any]],
-) -> dict[str, Any] | None:
+    entries: list[KBEntry],
+) -> WalkInfo | None:
     """Evaluate outdoor conditions with global KB instance."""
     return _resolve_walk_resolver(asked_hour, today_pm25, entries, kb=_kb_instance)
 
 
-async def _fetch_today_pm25(lat: float, lon: float, client: Any, fetch_aq: Any) -> list[float]:
+async def _fetch_today_pm25(
+    lat: float,
+    lon: float,
+    client: httpx.AsyncClient | None,
+    fetch_aq: FetchAirQualityFn | None,
+) -> list[float]:
     """Fetch 24-hour PM2.5 forecast slice safely."""
     try:
-        air = await fetch_aq(lat, lon, forecast_days=DEFAULT_FORECAST_DAYS, client=client)
-        pm25 = air.get("pm25")
-        if isinstance(pm25, list):
-            return [float(v) for v in pm25[:HOURS_IN_DAY] if v is not None]
+        if fetch_aq is not None:
+            air = await fetch_aq(lat, lon, DEFAULT_FORECAST_DAYS, client)
+        else:
+            air = await fetch_air_quality(lat, lon, DEFAULT_FORECAST_DAYS, client)
+        pm25 = air.get("pm25") if hasattr(air, "get") else getattr(air, "pm25", None)
+        if isinstance(pm25, Sequence):
+            return [float(v) for v in pm25[:HOURS_IN_DAY] if isinstance(v, int | float)]
         return []
     except (
         httpx.HTTPError,
@@ -87,7 +104,7 @@ async def _fetch_today_pm25(lat: float, lon: float, client: Any, fetch_aq: Any) 
 
 
 def _format_assistant_payload(
-    question: str, engine_facts: dict[str, Any], entries: list[dict[str, Any]]
+    question: str, engine_facts: dict[str, object], entries: list[KBEntry]
 ) -> str:
     """Format user prompt payload with grounding facts and retrieved entries."""
     return json.dumps(
@@ -100,7 +117,7 @@ def _format_assistant_payload(
     )
 
 
-def _parse_assistant_response(raw: str, entries: list[dict[str, Any]]) -> AssistantResult | None:
+def _parse_assistant_response(raw: str, entries: list[KBEntry]) -> AssistantResult | None:
     """Parse raw LLM JSON response and extract answer and citation ids."""
     try:
         parsed = json.loads(raw)
@@ -115,9 +132,9 @@ def _parse_assistant_response(raw: str, entries: list[dict[str, Any]]) -> Assist
 
 async def _call_groq_assistant(
     question: str,
-    engine_facts: dict[str, Any],
-    entries: list[dict[str, Any]],
-    chat: Any,
+    engine_facts: dict[str, object],
+    entries: list[KBEntry],
+    chat: ChatFn | None = None,
 ) -> AssistantResult | None:
     """Send structured facts to Groq and parse response."""
     system = (
@@ -130,8 +147,9 @@ async def _call_groq_assistant(
         'Return JSON: {"answer": "...", "kb_ids": ["..."]}.'
     )
     user_payload = _format_assistant_payload(question, engine_facts, entries)
+    chat_call = chat or groq_chat
     try:
-        raw = await asyncio.wait_for(chat(system, user_payload, 0.2), timeout=8.0)
+        raw = await asyncio.wait_for(chat_call(system, user_payload, 0.2), timeout=8.0)
         return _parse_assistant_response(raw, entries)
     except (
         httpx.HTTPError,
@@ -147,11 +165,11 @@ async def _call_groq_assistant(
 
 def _build_engine_facts(
     city: str,
-    cadr_info: dict[str, Any] | None,
-    walk_info: dict[str, Any] | None,
-) -> dict[str, Any]:
+    cadr_info: CadrInfo | None,
+    walk_info: WalkInfo | None,
+) -> dict[str, object]:
     """Assemble location and domain calculation facts for prompt injection."""
-    facts: dict[str, Any] = {"city": city}
+    facts: dict[str, object] = {"city": city}
     if cadr_info:
         facts["purifier_sizing"] = cadr_info
     if walk_info:
@@ -162,10 +180,10 @@ def _build_engine_facts(
 async def _assemble_assistant_context(
     q_clean: str,
     location: tuple[float | None, float | None, str | None],
-    client: Any,
-    fetch_aq: Any,
-    entries: list[dict[str, Any]],
-) -> tuple[dict[str, Any], float | None, int | None, int | None, dict[str, Any] | None, str]:
+    client: httpx.AsyncClient | None,
+    fetch_aq: FetchAirQualityFn | None,
+    entries: list[KBEntry],
+) -> tuple[dict[str, object], float | None, int | None, int | None, WalkInfo | None, str]:
     """Assemble atmospheric context, CADR sizing, and walk conditions."""
     req_lat, req_lon, req_city = location
     lat = req_lat or DEFAULT_LATITUDE
@@ -197,9 +215,9 @@ def _preliminary_check(question: str) -> AssistantResult | None:
 async def answer_question(
     question: str,
     location: tuple[float | None, float | None, str | None] = (None, None, None),
-    client: Any = None,
-    chat_fn: Any = None,
-    fetch_aq_fn: Any = None,
+    client: httpx.AsyncClient | None = None,
+    chat_fn: ChatFn | None = None,
+    fetch_aq_fn: FetchAirQualityFn | None = None,
 ) -> AssistantResult:
     """Provide grounded answer to an air-quality question."""
     prelim = _preliminary_check(question)

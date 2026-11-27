@@ -2,7 +2,7 @@
 
 import asyncio
 import json
-from typing import Any
+from collections.abc import Mapping
 
 import httpx
 
@@ -59,28 +59,46 @@ def _build_request_params(
 
 
 def _parse_air_quality_payload(
-    payload: dict[str, Any],
-    w_resp: Any,
+    payload: Mapping[str, object],
+    w_resp: httpx.Response | None,
     forecast_days: int,
 ) -> AirQualityData:
     """Parse air quality and optional wind speed API responses."""
     total_expected_hours = forecast_days * HOURS_IN_DAY
-    hourly = payload.get("hourly", {})
-    pm25 = hourly.get("pm2_5", [None] * total_expected_hours)
-    aqi = hourly.get("us_aqi", [None] * total_expected_hours)
-    times = hourly.get("time", [])
+    hourly_raw = payload.get("hourly")
+    hourly: Mapping[str, object] = hourly_raw if isinstance(hourly_raw, Mapping) else {}
+    pm25_raw = hourly.get("pm2_5")
+    pm25: list[float | None] = (
+        [float(v) if isinstance(v, int | float) else None for v in pm25_raw]
+        if isinstance(pm25_raw, list)
+        else [None] * total_expected_hours
+    )
+    aqi_raw = hourly.get("us_aqi")
+    aqi: list[float | None] = (
+        [float(v) if isinstance(v, int | float) else None for v in aqi_raw]
+        if isinstance(aqi_raw, list)
+        else [None] * total_expected_hours
+    )
+    times_raw = hourly.get("time")
+    times: list[str] = [str(t) for t in times_raw] if isinstance(times_raw, list) else []
 
-    wind_speeds = None
+    wind_speeds: list[float | None] | None = None
     if isinstance(w_resp, httpx.Response) and w_resp.status_code == HTTP_STATUS_OK:
-        w_hourly = w_resp.json().get("hourly", {})
-        wind_speeds = w_hourly.get("wind_speed_10m")
+        w_json = w_resp.json()
+        w_hourly = w_json.get("hourly", {}) if isinstance(w_json, dict) else {}
+        ws_raw = w_hourly.get("wind_speed_10m")
+        if isinstance(ws_raw, list):
+            wind_speeds = [float(v) if isinstance(v, int | float) else None for v in ws_raw]
+
+    tz_val = payload.get("timezone", "Asia/Kolkata")
+    tz_str = str(tz_val) if tz_val is not None else "Asia/Kolkata"
 
     return AirQualityData(
         pm25=pm25,
         aqi=aqi,
         times=times,
         wind_speed=wind_speeds,
-        timezone=payload.get("timezone", "Asia/Kolkata"),
+        timezone=tz_str,
         source="Open-Meteo Air Quality & Weather API (CAMS Ensemble)",
     )
 
@@ -103,7 +121,8 @@ async def _fetch_with_client(
                 raise aq_resp
 
             aq_resp.raise_for_status()
-            return _parse_air_quality_payload(aq_resp.json(), w_resp, forecast_days)
+            weather_resp = w_resp if isinstance(w_resp, httpx.Response) else None
+            return _parse_air_quality_payload(aq_resp.json(), weather_resp, forecast_days)
         except (httpx.HTTPError, json.JSONDecodeError, KeyError, ValueError) as error:
             last_error = error
             if attempt < OUTBOUND_RETRIES:

@@ -2,8 +2,8 @@
 
 import re
 from collections.abc import Mapping, Sequence
-from typing import Any
 
+from app.engine.domain_models import ExposureResult
 from app.services.guard_wording import NOON, has_past_tense, has_raw_hour_zero, has_raw_units
 
 _NUMBER = re.compile(r"(?<![A-Za-z])[-+]?(?:\d+(?:\.\d+)?|\.\d+)(?![A-Za-z])")
@@ -32,7 +32,9 @@ def _round_variations(val: int | float) -> set[float]:
     return {float(val), round(float(val)), round(float(val), 1), float(int(val))}
 
 
-def _extract_hour_values(source: Mapping[str, Any], keys: tuple[str, ...]) -> set[float]:
+def _extract_hour_values(
+    source: ExposureResult | Mapping[str, object], keys: tuple[str, ...]
+) -> set[float]:
     """Extract clock hours and their 12h/24h variations for designated keys."""
     values: set[float] = set()
     for key in keys:
@@ -42,14 +44,16 @@ def _extract_hour_values(source: Mapping[str, Any], keys: tuple[str, ...]) -> se
     return values
 
 
-def _allowed_hours(engine: Mapping[str, Any]) -> set[float]:
+def _allowed_hours(engine: ExposureResult | Mapping[str, object]) -> set[float]:
     """Extract peak and swap hours with their 12h and 24h clock representations."""
     values = _extract_hour_values(engine, ("peak_hour", "highest_aqi_hour"))
-    values.update(_extract_hour_values(engine.get("top_swap") or {}, ("from_hour", "to_hour")))
+    top = engine.get("top_swap")
+    top_map = top if isinstance(top, Mapping) else {}
+    values.update(_extract_hour_values(top_map, ("from_hour", "to_hour")))
     return values
 
 
-def _allowed_aqi(engine: Mapping[str, Any]) -> set[float]:
+def _allowed_aqi(engine: ExposureResult | Mapping[str, object]) -> set[float]:
     """Extract peak AQI with rounded variations."""
     values: set[float] = set()
     for key in ("peak_aqi", "highest_aqi"):
@@ -59,7 +63,7 @@ def _allowed_aqi(engine: Mapping[str, Any]) -> set[float]:
     return values
 
 
-def _collect_numeric_variations(items: Sequence[Any]) -> set[float]:
+def _collect_numeric_variations(items: Sequence[object]) -> set[float]:
     """Extract rounded variations for all numbers in a sequence."""
     values: set[float] = set()
     for item in items:
@@ -68,7 +72,7 @@ def _collect_numeric_variations(items: Sequence[Any]) -> set[float]:
     return values
 
 
-def _allowed_saved_ug(cleaner: Mapping[str, Any]) -> set[float]:
+def _allowed_saved_ug(cleaner: Mapping[str, object]) -> set[float]:
     """Extract micrograms saved and uncertainty range values."""
     values = _collect_numeric_variations([cleaner.get("inhaled_saved_ug")])
     saved_range = cleaner.get("inhaled_saved_range_ug")
@@ -77,11 +81,13 @@ def _allowed_saved_ug(cleaner: Mapping[str, Any]) -> set[float]:
     return values
 
 
-def _allowed_dose_reductions(engine: Mapping[str, Any]) -> set[float]:
+def _allowed_dose_reductions(engine: ExposureResult | Mapping[str, object]) -> set[float]:
     """Extract percentage reductions and micrograms saved with reasonable rounded forms."""
     values: set[float] = set()
-    cleaner = engine.get("cleaner_day") or {}
-    top = engine.get("top_swap") or {}
+    cleaner_raw = engine.get("cleaner_day")
+    cleaner = cleaner_raw if isinstance(cleaner_raw, Mapping) else {}
+    top_raw = engine.get("top_swap")
+    top = top_raw if isinstance(top_raw, Mapping) else {}
 
     pct = cleaner.get("percent_reduction") or top.get("percent_reduction")
     if isinstance(pct, int | float):
@@ -90,17 +96,17 @@ def _allowed_dose_reductions(engine: Mapping[str, Any]) -> set[float]:
     return values | _allowed_saved_ug(cleaner)
 
 
-def allowed_numbers(engine: Mapping[str, Any]) -> set[float]:
+def allowed_numbers(engine: ExposureResult | Mapping[str, object]) -> set[float]:
     """Build allowed summary facts and sensible rounded forms from UI units only."""
     return _allowed_hours(engine) | _allowed_aqi(engine) | _allowed_dose_reductions(engine)
 
 
-def rejected_numbers(text: str, engine: Mapping[str, Any]) -> set[float]:
+def rejected_numbers(text: str, engine: ExposureResult | Mapping[str, object]) -> set[float]:
     """Return numbers present in text but absent from the compact engine whitelist."""
     return extract_numbers(text) - allowed_numbers(engine)
 
 
-def validate_number_guard(text: str, engine: Mapping[str, Any]) -> bool:
+def validate_number_guard(text: str, engine: ExposureResult | Mapping[str, object]) -> bool:
     """Reject text containing forbidden past tense, raw units, hour 0, or foreign numbers."""
     if has_past_tense(text):
         return False

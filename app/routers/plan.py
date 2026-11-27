@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from collections.abc import Mapping
 
 from fastapi import APIRouter, Depends, Request
 
@@ -24,7 +24,7 @@ async def _resolve_routine(payload: PlanRequest) -> Routine:
     return await plan_service.resolve_routine(payload, parse_routine_fn=parse_routine)
 
 
-async def _generate_explanation(engine: Any, language: str) -> dict[str, Any]:
+async def _generate_explanation(engine: Mapping[str, object], language: str) -> dict[str, object]:
     """Generate explanation using configured or monkeypatched explainer."""
     return await plan_service.generate_explanation(
         engine, language, explain_fn=explain_with_fallback
@@ -54,13 +54,13 @@ async def create_plan(
     request: Request,
     payload: PlanRequest,
     settings: Settings = Depends(get_settings),
-) -> dict[str, Any]:
+) -> dict[str, object]:
     """Fetch AQ, parse routine, run physical engines, and return full suite of recommendations."""
     client = getattr(request.app.state, "http_client", None)
-    return await plan_service.execute_plan_pipeline(
-        payload,
-        client,
+    deps = plan_service.PlanDependencies(
+        client=client,
         fetch_aq_fn=fetch_air_quality,
         parse_routine_fn=parse_routine,
         explain_fn=explain_with_fallback,
     )
+    return await plan_service.execute_plan_pipeline(payload, deps=deps)
