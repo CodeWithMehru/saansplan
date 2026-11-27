@@ -8,10 +8,15 @@ from collections.abc import Awaitable, Callable
 
 from fastapi import Request
 from fastapi.responses import JSONResponse, Response
+from starlette.types import Message
 
 from app.core.constants import MAX_REQUEST_BYTES
 
 REQUEST_ID_REGEX = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
+
+
+class _BodySizeExceededError(Exception):
+    """Internal exception raised when streaming request body exceeds MAX_REQUEST_BYTES."""
 
 
 def _check_content_length(request: Request) -> JSONResponse | None:
@@ -90,6 +95,28 @@ def _apply_cache_headers(response: Response, path: str) -> None:
         response.headers["Cache-Control"] = "no-store"
 
 
+def _wrap_streaming_body_limiter(request: Request) -> None:
+    """Wrap ASGI receive to enforce MAX_REQUEST_BYTES on streaming or chunked payloads."""
+    content_length = request.headers.get("content-length")
+    if content_length is not None:
+        return
+    bytes_received = 0
+    orig_receive = request.receive
+
+    async def limited_receive() -> Message:
+        nonlocal bytes_received
+        msg = await orig_receive()
+        if msg.get("type") == "http.request":
+            body = msg.get("body", b"")
+            if isinstance(body, bytes):
+                bytes_received += len(body)
+                if bytes_received > MAX_REQUEST_BYTES:
+                    raise _BodySizeExceededError
+        return msg
+
+    request._receive = limited_receive
+
+
 async def security_middleware(
     request: Request,
     call_next: Callable[[Request], Awaitable[Response]],
@@ -99,8 +126,12 @@ async def security_middleware(
     if rejection is not None:
         return rejection
 
+    _wrap_streaming_body_limiter(request)
+
     try:
         response = await call_next(request)
+    except _BodySizeExceededError:
+        return JSONResponse(status_code=413, content={"detail": "Request body is too large"})
     except Exception:  # noqa: BLE001  # Top-level ASGI error boundary
         return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 

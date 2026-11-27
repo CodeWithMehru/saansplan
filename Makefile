@@ -43,6 +43,7 @@ a11y: ## Run automated accessibility verification
 security: ## Run static application security testing and dependency vulnerability scan
 	bandit -q -r app
 	pip-audit -r requirements.txt
+	pip-audit -r requirements.lock.txt --require-hashes
 
 bench: ## Run performance latency benchmarks
 	python3 scripts/verify/bench.py

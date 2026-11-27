@@ -37,7 +37,7 @@ All development verification is standardized via the project `Makefile`. Before 
 | `make test-js` | `node --test tests/js/*.test.js` | Runs frontend i18n key parity and script integrity tests. |
 | `make lint` | `ruff format --check && ruff check` | Checks formatting and code style across `app`, `tests`, and `scripts`. |
 | `make typecheck` | `mypy app` | Runs strict static type checking across all 58 Python source files. |
-| `make security` | `bandit -q -r app && pip-audit -r requirements.txt` | Runs static AST security analysis and checks dependencies for CVEs. |
+| `make security` | `bandit -q -r app && pip-audit -r requirements.txt && pip-audit -r requirements.lock.txt --require-hashes` | Runs static AST security analysis and checks dependencies for CVEs. |
 | `make bench` | `python3 scripts/verify/bench.py` | Benchmarks engine execution latency (< 50 ms budget) and static bundle size (< 60 KB budget). |
 | `make a11y` | `python3 scripts/verify/a11y.py` | Runs Axe-Core 4.10.2 automated WCAG 2.2 AA audit across all UI states and languages. |
 | `make e2e` | `python3 scripts/verify/e2e.py` | Runs automated Playwright multi-language browser journey. |
