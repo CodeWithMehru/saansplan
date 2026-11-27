@@ -89,3 +89,31 @@ def test_generate_cleaner_day_preserves_commitments_and_shifts_flexible():
     # Verify fixed commitment hour was preserved
     office_opt = next(a for a in result["routine"].activities if a.label == "Office work shift")
     assert office_opt.start_hour == 9
+
+
+def test_cleaner_day_out_of_range_member_and_purifier_active() -> None:
+    """Verify cleaner_day optimizer with purifier active and out-of-range member reference."""
+    member = FamilyMember(name="A", age_group=AgeGroup.adult, sensitive=False)
+    home = HomeSetup(
+        heating="none",
+        cooking="other",
+        windows="mostly_open",
+        purifier=True,
+        has_chimney=False,
+    )
+    routine = Routine(
+        activities=[
+            Activity(
+                label="Commute",
+                start_hour=9,
+                duration_min=45,
+                place=ActivityPlace.outdoor,
+                mode=TravelMode.walk,
+                intensity=Intensity.moderate,
+                member_refs=[99],  # Out of range index
+            )
+        ],
+        home=home,
+    )
+    res = generate_cleaner_day([100.0] * 24, [100.0] * 24, [member], routine)
+    assert res.total_exposure_before >= 0

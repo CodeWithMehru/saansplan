@@ -27,3 +27,12 @@ def test_uncertainty_band_contains_estimate(concentration: float, minutes: int) 
         assert low == high == 0
         return
     assert low <= estimate <= high
+
+
+def test_elderly_inhalation_scale() -> None:
+    """Verify inhalation factor for elderly family members."""
+    from app.engine.inhaled import inhaled_micrograms, member_inhalation_scale
+
+    assert member_inhalation_scale("elderly") == 0.70
+    dose = inhaled_micrograms(100.0, 60, "rest", "elderly")
+    assert dose > 0

@@ -38,3 +38,10 @@ def test_templated_explanation_contains_required_fields() -> None:
     en_no_saved = templated_explanation(engine_no_saved, language="en")
     assert "None" not in en_no_saved
     assert "save approximately" not in en_no_saved
+
+
+def test_template_english_and_empty_swap_paths() -> None:
+    """Verify fallback template handles missing swaps across locales."""
+    engine = {"peak_hour": 18, "peak_aqi": 312, "top_swap": None}
+    assert "312" in templated_explanation(engine, "en")
+    assert "312" in templated_explanation(engine, "hinglish")

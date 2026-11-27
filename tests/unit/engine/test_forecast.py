@@ -42,3 +42,10 @@ def test_forecast_handles_empty_or_partial_data():
     days_partial = analyze_forecast([80.0] * 10, None, forecast_days=5)
     assert len(days_partial) == 1
     assert days_partial[0]["avg_pm25"] == 80.0
+
+
+def test_forecast_out_of_range_day_extraction() -> None:
+    """Verify extracting forecast day beyond available hours returns None."""
+    from app.engine.forecast import _extract_day_data
+
+    assert _extract_day_data(10, [10.0] * 24, None) is None

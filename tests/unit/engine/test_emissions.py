@@ -29,3 +29,11 @@ def test_emissions_budget_filtering():
     low_res = calculate_emissions_and_cost(commute_mode="car", budget_filter="under_500")
     for alt in low_res["alternatives"]:
         assert alt["upfront_cost_inr"] <= 500
+
+
+def test_emissions_cooking_induction_option() -> None:
+    """Verify _build_cooking_options when fuel is already induction."""
+    from app.engine import emissions
+
+    opts = emissions._build_cooking_options("induction", 10.0, 5.0, 500.0)
+    assert opts == []

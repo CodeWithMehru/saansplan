@@ -38,3 +38,50 @@ def test_validate_number_guard_rejects_hallucination() -> None:
         "cleaner_day": {"inhaled_saved_ug": 100.0, "percent_reduction": 20.0},
     }
     assert validate_number_guard("Could reduce by 99% saving 999 µg", engine) is False
+
+
+def test_allowed_numbers_include_top_swap_and_peaks() -> None:
+    """Verify allowed numbers include peak AQI, hourly conversions, and swap percentages."""
+    engine = {
+        "peak_hour": 18,
+        "peak_aqi": 312,
+        "top_swap": {
+            "from_hour": 18,
+            "to_hour": 13,
+            "percent_reduction": 29,
+            "exposure_before": 100,
+            "exposure_after": 71,
+        },
+        "cleaner_day": {
+            "percent_reduction": 29.5,
+            "inhaled_saved_ug": 24.5,
+            "inhaled_saved_range_ug": (18.4, 30.6),
+        },
+    }
+    allowed = allowed_numbers(engine)
+    assert 312.0 in allowed
+    assert 29.0 in allowed
+    assert 29.5 in allowed
+    assert 24.5 in allowed
+    assert 18.4 in allowed
+    assert 30.6 in allowed
+    assert 6.0 in allowed
+    assert 1.0 in allowed
+    assert 100.0 not in allowed
+    assert 71.0 not in allowed
+
+
+def test_rejected_number_is_reported() -> None:
+    """Verify numbers outside engine values are rejected."""
+    from app.services.guard_numbers import rejected_numbers
+
+    engine = {"peak_hour": 18, "peak_aqi": 312, "top_swap": {"percent_reduction": 29}}
+    assert rejected_numbers("AQI 312 and 45%", engine) == {45.0}
+
+
+def test_guard_numbers_bad_saved_range() -> None:
+    """Verify non-numeric values in saved_range are filtered out."""
+    from app.services.guard_numbers import _allowed_saved_ug
+
+    bad_range = {"inhaled_saved_range_ug": ["low", "high"]}
+    assert len(_allowed_saved_ug(bad_range)) == 0

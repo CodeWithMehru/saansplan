@@ -143,3 +143,28 @@ async def test_generate_explanation_fallback_on_error() -> None:
         res = await _generate_explanation({}, "en")
         assert res["ai_available"] is False
         assert "unavailable" in res["explanation"]
+
+
+def test_extract_primary_commute_when_mode_is_none() -> None:
+    """Verify primary commute mode fallback when travel mode is none."""
+    routine = Routine(
+        activities=[
+            Activity(
+                label="Stationary",
+                start_hour=9,
+                duration_min=30,
+                place=ActivityPlace.vehicle,
+                mode=TravelMode.none,
+                intensity=Intensity.light,
+                member_refs=[0],
+            )
+        ],
+        home=HomeSetup(
+            heating="none",
+            cooking="lpg",
+            windows="mostly_closed",
+            purifier=False,
+            has_chimney=False,
+        ),
+    )
+    assert _extract_primary_commute(routine) == "none"

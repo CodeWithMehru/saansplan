@@ -43,3 +43,18 @@ async def test_explain_with_fallback_serves_templated_on_guard_failure(
     assert result.explanation != ""
     assert "30" in result.explanation
     assert result.ai_available is False
+
+
+def test_llm_shift_facts_and_unallowed_number_rejection() -> None:
+    """Verify shift facts format times and ungrounded numbers are rejected."""
+    from app.services import llm
+
+    facts: dict[str, str] = {}
+    top = {"from_hour": 8, "to_hour": 14}
+    llm._append_shift_facts(facts, top, "en")
+    assert "8 am" in facts["suggested_shift_from"]
+    assert "2 pm" in facts["suggested_shift_to"]
+
+    engine = {"allowed": 10}
+    clean = llm._parse_and_validate_llm_text('{"text": "Unallowed number 99999"}', engine)
+    assert clean is None

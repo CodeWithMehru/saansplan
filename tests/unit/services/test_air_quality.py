@@ -65,3 +65,28 @@ async def test_fetch_air_quality_raw_upstream_response(monkeypatch: pytest.Monke
     result = await air_quality.fetch_air_quality(28.6, 77.2)
     assert result["timezone"] == "Asia/Kolkata"
     assert result["pm25"][1] is None
+
+
+@pytest.mark.asyncio
+async def test_air_quality_client_and_error() -> None:
+    """Verify fetch_air_quality with custom client and error backoff."""
+    from unittest.mock import AsyncMock
+
+    air_quality.clear_air_quality_cache()
+    mock_client = AsyncMock(spec=httpx.AsyncClient)
+    mock_resp = httpx.Response(
+        200,
+        json={"hourly": {"pm2_5": [50.0] * 24, "us_aqi": [100] * 24, "time": ["T"] * 24}},
+        request=httpx.Request("GET", "http://test"),
+    )
+    mock_client.get.return_value = mock_resp
+
+    res = await fetch_air_quality(28.6, 77.2, forecast_days=1, client=mock_client)
+    assert len(res["pm25"]) == 24
+    air_quality.clear_air_quality_cache()
+
+    failing_client = AsyncMock(spec=httpx.AsyncClient)
+    failing_client.get.side_effect = httpx.ConnectTimeout("Timeout")
+    with pytest.raises(RuntimeError, match="Air-quality service unavailable"):
+        await fetch_air_quality(28.6, 77.2, forecast_days=1, client=failing_client)
+    air_quality.clear_air_quality_cache()

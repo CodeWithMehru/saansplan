@@ -25,3 +25,16 @@ def test_indoor_source_increments(
     )
     value = indoor_concentration(100.0, home)
     assert value >= expected_min
+
+
+def test_indoor_penetration_cooking_other() -> None:
+    """Verify indoor concentration when home cooking is 'other'."""
+    home = HomeSetup(
+        heating="none",
+        cooking="other",
+        windows="mostly_closed",
+        purifier=False,
+        has_chimney=False,
+    )
+    conc = indoor_concentration(100.0, home)
+    assert conc > 0
