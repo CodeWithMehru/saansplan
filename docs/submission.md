@@ -2,7 +2,7 @@
 
 ## Changes / updates made in the deployed version
 
-SaansPlan upgrades the Indian air-quality assistant across all evaluation criteria. Code quality: frozen domain models, CC<=7 across all functions (max 7 in groq_chat, avg 2.67 Rank A), 100% docstrings (255/255), thin routers, AST boundary tests. Security: SHA-256 hashed lockfile, CodeQL, Scorecard, Trivy workflows, Gitleaks, ReDoS-safe regexes, 57-vector injection corpus, RFC 6585 Retry-After, RFC 9116 security.txt. Efficiency: BoundedTTLCache (30m TTL, LRU), gzip, 6.49ms plan calculation, 33.48 KB gzipped bundle. Testing: 262 automated tests (251 pytest + 11 node), 99.55% coverage, mutation testing (mutmut), random-order testing (pytest-randomly), API contract tests, ARIA snapshots. Accessibility: WCAG 2.2 AA (0 Axe violations on 56 rules), Lighthouse 100/100, Reading Comfort panel (High Contrast, Text Spacing WCAG 1.4.12), touch targets >=24px, 320px reflow, /accessibility page. Features: 5-day smog forecast, Cleaner Day optimizer, CADR sizing, emissions/cost engine, WhatsApp kit, and grounded Q&A.
+SaansPlan upgrades the Indian air-quality assistant across all evaluation criteria. Code quality: frozen domain models, CC<=7 across all functions (max 7 in groq_chat, avg 2.67 Rank A), 100% docstrings (255/255), thin routers, AST boundary tests. Security: SHA-256 hashed lockfile, CodeQL, Scorecard, Trivy workflows, ReDoS-safe regexes, 57-vector injection corpus, RFC 6585 Retry-After, RFC 9116 security.txt. Efficiency: BoundedTTLCache (30m TTL, LRU), gzip, 6.49ms plan calculation, 33.48 KB gzipped bundle. Testing: 262 automated tests (251 pytest + 11 node), 99.55% coverage, mutation testing (mutmut), random-order testing (pytest-randomly), API contract tests, ARIA snapshots. Accessibility: WCAG 2.2 AA (0 Axe violations on 56 rules), Lighthouse 100/100, Reading Comfort panel (High Contrast, Text Spacing WCAG 1.4.12), touch targets >=24px, 320px reflow, /accessibility page. Features: 5-day smog forecast, Cleaner Day optimizer, CADR sizing, emissions/cost engine, WhatsApp kit, and grounded Q&A.
 
 ## Gen AI services utilized and where
 
@@ -49,6 +49,6 @@ Key Highlights:
 
 ## Character counts
 
-- Changes/updates field: **1016 characters** (limit: < 1024 characters).
+- Changes/updates field: **1006 characters** (limit: < 1024 characters).
 - Gen AI services field: **1002 characters** (limit: < 1024 characters).
 - LinkedIn post draft: **1182 characters** (limit: < 1300 characters).

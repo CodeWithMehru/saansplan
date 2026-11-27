@@ -2,6 +2,20 @@
 
 All notable changes to the SaansPlan project are documented here.
 
+## [2.3.0] - 2026-11-27
+
+### Refactored
+- **Code Quality & Architecture Refactor:**
+  - Consolidated duplicate script layout under canonical `scripts/reports/` and `scripts/verify/` directories, removing legacy root redirects.
+  - Eliminated legacy backward-compatibility shims (legacy config, models, limiting, guard, and indoor shims).
+  - Reorganized test suite into domain hierarchies (`tests/unit/engine/`, `tests/unit/services/`, `tests/api/`, `tests/security/`, `tests/a11y/`) with behavior-based test naming.
+  - Enhanced type safety: defined `AssistantResult` and `SafetyResult` TypedDicts, cleaned Starlette exception signatures, replaced broad `except Exception` with specific tuples, and added dictionary support to `PersonaMember`.
+  - Decomposed long functions: extracted static room checklists in `indoor_guidance.py`, persona presets in `personas.py`, swap helpers in `swaps.py`, and emission calculation helpers in `emissions.py`.
+  - Single source of truth for configuration: deferred `load_dotenv` to runtime setting initialization, exported clean `__all__` in `app/core/settings.py`.
+  - Frontend modularization: moved `i18n.js` to `app/static/js/i18n.js`, modularized `styles.css` into `app/static/css/{tokens,base,layout,components,utilities}.css`, formatted static assets with Prettier, and verified WCAG 2.2 reflow and target size.
+  - Tooling hygiene: aligned `mutmut` 3.x configuration, deleted obsolete `setup.cfg`, and integrated Prettier into `.pre-commit-config.yaml`.
+  - Streamlined `README.md` to a concise $\le 10$ KB structure, extracting detailed upgrade history into `docs/UPGRADES.md`.
+
 ## [2.2.0] - 2026-11-26
 
 ### Refactored
